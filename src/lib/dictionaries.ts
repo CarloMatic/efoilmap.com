@@ -10,7 +10,11 @@ export const dictionaries = {
             loading: "Loading...",
             close: "Close",
             share: "Share",
-            link_copied: "Link copied!"
+            link_copied: "Link copied!",
+            profile: "Profile",
+            save: "Save",
+            logout: "Logout",
+            success: "Success"
         },
         consent: {
             title: "We use cookies",
@@ -77,7 +81,9 @@ export const dictionaries = {
             error_invalid_credentials: "Invalid email or password.",
             error_email_not_confirmed: "Please confirm your email address first.",
             error_rate_limit: "Too many attempts. Please try again later.",
-            error_generic: "An error occurred during authentication."
+            error_generic: "An error occurred during authentication.",
+            profile_updated: "Profile updated!",
+            avatar_updated: "Photo optimized & uploaded!"
         },
         intro: {
             title: "Welcome to eFoilMap",
@@ -97,7 +103,11 @@ export const dictionaries = {
             loading: "Laden...",
             close: "Schließen",
             share: "Teilen",
-            link_copied: "Link kopiert!"
+            link_copied: "Link kopiert!",
+            profile: "Profil",
+            save: "Speichern",
+            logout: "Abmelden",
+            success: "Erfolgreich"
         },
         consent: {
             title: "Wir verwenden Cookies",
@@ -164,7 +174,9 @@ export const dictionaries = {
             error_invalid_credentials: "Ungültige E-Mail oder Passwort.",
             error_email_not_confirmed: "Bitte bestätige zuerst deine E-Mail-Adresse.",
             error_rate_limit: "Zu viele Versuche. Bitte versuche es später noch einmal.",
-            error_generic: "Ein Fehler ist bei der Anmeldung aufgetreten."
+            error_generic: "Ein Fehler ist bei der Anmeldung aufgetreten.",
+            profile_updated: "Profil aktualisiert!",
+            avatar_updated: "Foto optimiert & hochgeladen!"
         },
         intro: {
             title: "Willkommen bei eFoilMap",
@@ -184,7 +196,11 @@ export const dictionaries = {
             loading: "Cargando...",
             close: "Cerrar",
             share: "Compartir",
-            link_copied: "¡Enlace copiado!"
+            link_copied: "¡Enlace copiado!",
+            profile: "Perfil",
+            save: "Guardar",
+            logout: "Cerrar sesión",
+            success: "Éxito"
         },
         consent: {
             title: "Usamos cookies",
@@ -251,7 +267,16 @@ export const dictionaries = {
             error_invalid_credentials: "Correo o contraseña inválidos.",
             error_email_not_confirmed: "Por favor, confirma tu correo electrónico primero.",
             error_rate_limit: "Demasiados intentos. Por favor, inténtalo de nuevo más tarde.",
-            error_generic: "Ocurrió un error durante la autenticación."
+            error_generic: "Ocurrió un error durante la autenticación.",
+            one_last_step: "¡Un último paso!",
+            choose_username_desc: "Elige un nombre de usuario para que te reconozcan en la comunidad.",
+            username: "Nombre de usuario",
+            bio: "Sobre mí",
+            bio_placeholder: "Cuéntanos algo sobre ti...",
+            avatar_desc: "Haz clic para cambiar la foto",
+            click_for_bio: "Haz clic en la foto para ver la bio",
+            profile_updated: "¡Perfil actualizado!",
+            avatar_updated: "¡Foto optimizada y subida!"
         }
     },
     fr: {
@@ -263,7 +288,11 @@ export const dictionaries = {
             loading: "Chargement...",
             close: "Fermer",
             share: "Partager",
-            link_copied: "Lien copié !"
+            link_copied: "Lien copié !",
+            profile: "Profil",
+            save: "Enregistrer",
+            logout: "Déconnexion",
+            success: "Succès"
         },
         consent: {
             title: "Nous utilisons des cookies",
@@ -330,7 +359,16 @@ export const dictionaries = {
             error_invalid_credentials: "E-mail ou mot de passe invalide.",
             error_email_not_confirmed: "Veuillez d'abord confirmer votre adresse e-mail.",
             error_rate_limit: "Trop de tentatives. Veuillez réessayer plus tard.",
-            error_generic: "Une erreur est survenue lors de l'authentification."
+            error_generic: "Une erreur est survenue lors de l'authentification.",
+            one_last_step: "Dernière étape !",
+            choose_username_desc: "Choisissez un nom d'utilisateur pour être reconnu dans la communauté.",
+            username: "Nom d'utilisateur",
+            bio: "À propos de moi",
+            bio_placeholder: "Parlez-nous de vous...",
+            avatar_desc: "Cliquez pour changer de photo",
+            click_for_bio: "Cliquez sur la photo pour la bio",
+            profile_updated: "Profil mis à jour !",
+            avatar_updated: "Photo optimisée et téléchargée !"
         }
     }
 };

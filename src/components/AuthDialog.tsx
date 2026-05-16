@@ -65,7 +65,7 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
                                 {t('auth.welcome')}
                             </h2>
                             <p className="text-xs text-gray-400 mt-1">
-                                {t('auth.magic_link_desc') || "We'll send you a secure login link. No password needed."}
+                                {t('auth.magic_link_desc')}
                             </p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
@@ -101,7 +101,7 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
 
                     <div className="mt-8 pt-6 border-t border-white/10">
                         <p className="text-[10px] text-gray-500 text-center leading-relaxed">
-                            {t('auth.magic_hint') || "By signing in, you agree to our community guidelines and privacy terms."}
+                            {t('auth.magic_hint')}
                         </p>
                     </div>
                 </div>

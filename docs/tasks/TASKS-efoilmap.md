@@ -44,5 +44,6 @@
     - [x] **Auto-Rating**: Created DB Trigger for average rating calculation.
     - [x] **Photo-on-Create**: Allowed uploading photos while creating a spot.
     - [x] **Crash Fix**: Resolved `createSpot` return value format issue.
-- [ ] Performance Audit.
-- [ ] Final Deployment Prep.
+- [x] Performance Audit (Image Compression implemented).
+- [x] Final Deployment Prep (Version 0.2.0 tagged, Changelog updated).
+- [x] **Shipped v0.2.0** (Local build verified).

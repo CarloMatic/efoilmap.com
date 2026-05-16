@@ -35,7 +35,7 @@ export function ProfileSetupDialog() {
             const { error } = await updateProfile({ username: trimmed });
             if (error) throw error;
             
-            showToast(t('auth.welcome_back_toast') || "Profile updated!", "success");
+            showToast(t('auth.profile_updated'), "success");
             // Manually close first to be responsive
             setOpen(false);
         } catch (error: any) {
@@ -58,17 +58,17 @@ export function ProfileSetupDialog() {
                             <Sparkles className="w-8 h-8 text-blue-400" />
                         </div>
                         <h2 className="text-2xl font-bold tracking-tight text-white">
-                            {t('auth.one_last_step') || "Fast geschafft!"}
+                            {t('auth.one_last_step')}
                         </h2>
                         <p className="text-sm text-gray-400 mt-2">
-                            {t('auth.choose_username_desc') || "Wähle einen Benutzernamen, unter dem du in der Community bekannt sein möchtest."}
+                            {t('auth.choose_username_desc')}
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">
-                                {t('auth.username') || "Benutzername"}
+                                {t('auth.username')}
                             </label>
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -90,7 +90,7 @@ export function ProfileSetupDialog() {
                             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-4 border border-blue-400/30"
                         >
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
-                            {t('common.agree') || "Fertigstellen"}
+                            {t('common.agree')}
                         </button>
                     </form>
                 </div>

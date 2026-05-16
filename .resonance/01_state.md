@@ -21,6 +21,7 @@ Implement a premium first-time user experience (Intro Modal) to explain the plat
 - [x] Content Rebranding (eFoilMap as the "Waze for eFoiling")
 - [x] Localized Intro Text (EN, DE, ES, FR)
 - [x] Intro Modal Component
-- [ ] User Onboarding Flow refinement
-- [ ] Spot verification system
+- [x] User Onboarding Flow refinement
+- [x] Spot verification system
+- [x] **Release v0.2.0**: Image compression, username display, and UX fixes.
 
