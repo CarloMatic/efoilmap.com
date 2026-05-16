@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-05-16
+
+### Added
+- **Full Localization**: Localized Profile Edit, Profile Setup, and Auth components across all languages (EN, DE, ES, FR).
+- **Expanded Dictionary**: Added missing keys for profile management and community interactions.
+
 ## [0.2.0] - 2026-05-16
 
 ### Added
