@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Check, Loader2, Camera } from "lucide-react";
+import { X, Loader2, Camera } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { createSpot, updateSpot, Spot } from "@/app/actions";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthDialog } from "@/components/AuthDialog";
+import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/image-utils";
 
 interface AddSpotDialogProps {
     open: boolean;
@@ -14,7 +18,9 @@ interface AddSpotDialogProps {
 }
 
 export function AddSpotDialog({ open, onClose, location, initialData, onSuccess }: AddSpotDialogProps) {
-    const { t } = useLanguage();
+    const { user } = useAuth();
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
+    const { t, locale } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -75,42 +81,68 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
     };
 
     const uploadPhotos = async (spotId: string) => {
-        if (files.length === 0) return;
-
-        // Import supabase if not available in closure - actually it should be imported at top level
-        const { supabase } = await import("@/lib/supabase");
+        if (files.length === 0) return { success: true };
 
         for (const file of files) {
-            const fileName = `${spotId}/${Date.now()}-${file.name}`;
+            // Compress Image (Spots use default 1200px)
+            const compressedBlob = await compressImage(file);
+            const fileName = `${spotId}/${Date.now()}-${file.name.split('.')[0]}.webp`;
+            
+            // 1. Upload to Storage
             const { error: uploadError } = await supabase.storage
                 .from('spots')
-                .upload(fileName, file);
-
-            if (!uploadError) {
-                const publicUrl = supabase.storage.from('spots').getPublicUrl(fileName).data.publicUrl;
-                await supabase.from('spot_photos').insert({
-                    spot_id: spotId,
-                    url: publicUrl
+                .upload(fileName, compressedBlob, {
+                    contentType: 'image/webp',
+                    upsert: true
                 });
+
+            if (uploadError) {
+                console.error(`Storage Upload Error (Spot: ${spotId}):`, uploadError);
+                return { success: false, error: `Upload failed for spot ${spotId}: ${uploadError.message}` };
+            }
+
+            // 2. Get Public URL
+            const publicUrl = supabase.storage.from('spots').getPublicUrl(fileName).data.publicUrl;
+
+            // 3. Insert into Database
+            const { error: insertError } = await supabase.from('spot_photos').insert({
+                spot_id: spotId,
+                url: publicUrl
+            });
+
+            if (insertError) {
+                console.error("Database Insert Error (spot_photos):", insertError);
+                return { success: false, error: `Database error: ${insertError.message}` };
             }
         }
+        return { success: true };
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user) {
+            setIsAuthOpen(true);
+            return;
+        }
         setLoading(true);
         setError(null);
 
         try {
             if (initialData) {
                 // UPDATE MODE
+                const { data: { session } } = await supabase.auth.getSession();
                 const res = await updateSpot(initialData.id, {
                     name,
                     status,
                     attributes
-                });
+                }, session?.access_token);
                 if (res.success) {
-                    await uploadPhotos(initialData.id); // Upload photos if any
+                    const uploadRes = await uploadPhotos(initialData.id); // Upload photos if any
+                    if (!uploadRes.success) {
+                        setError(uploadRes.error || "Photo upload failed");
+                        setLoading(false);
+                        return;
+                    }
                     onSuccess({
                         ...initialData,
                         name, status, attributes
@@ -122,6 +154,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
             } else {
                 // CREATE MODE
                 if (!location) return;
+                const { data: { session } } = await supabase.auth.getSession();
                 const res = await createSpot({
                     name,
                     status,
@@ -129,17 +162,23 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                         type: "Point",
                         coordinates: location
                     },
-                    attributes
-                });
+                    attributes,
+                    source_locale: locale
+                }, session?.access_token);
                 if (res.success && res.data) {
-                    await uploadPhotos(res.data.id); // Upload photos to new spot
+                    const uploadRes = await uploadPhotos(res.data.id); // Upload photos to new spot
+                    if (!uploadRes.success) {
+                        setError(uploadRes.error || "Photo upload failed");
+                        setLoading(false);
+                        return;
+                    }
                     onSuccess(res.data);
                     onClose();
                 } else {
                     setError(res.error || "Failed to save");
                 }
             }
-        } catch (err) {
+        } catch {
             setError("Something went wrong");
         } finally {
             setLoading(false);
@@ -277,7 +316,8 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                             <div className="flex flex-wrap gap-2">
                                 {files.map((file, i) => (
                                     <div key={i} className="relative w-16 h-16 rounded overflow-hidden border">
-                                        <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={URL.createObjectURL(file)} alt={`Upload preview ${i}`} className="w-full h-full object-cover" />
                                         <button
                                             type="button"
                                             onClick={() => removeFile(i)}
@@ -321,6 +361,11 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                     </form>
                 )}
             </div>
+
+            <AuthDialog 
+                open={isAuthOpen} 
+                onClose={() => setIsAuthOpen(false)} 
+            />
         </div>
     );
 }

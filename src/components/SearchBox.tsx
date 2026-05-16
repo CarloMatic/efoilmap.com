@@ -9,11 +9,18 @@ import { useLanguage } from '@/lib/i18n';
 // instead of the heavy default UI control
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+interface GeocodingFeature {
+    id: string;
+    text: string;
+    place_name: string;
+    center: [number, number];
+}
+
 export function SearchBox() {
     const { current: map } = useMap(); // Get map instance
     const { t } = useLanguage();
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState<any[]>([]);
+    const [results, setResults] = useState<GeocodingFeature[]>([]);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleSearch = useCallback(async (q: string) => {
@@ -35,7 +42,7 @@ export function SearchBox() {
         }
     }, []);
 
-    const handleSelect = (feature: any) => {
+    const handleSelect = (feature: GeocodingFeature) => {
         if (!map) return;
 
         const [lng, lat] = feature.center;

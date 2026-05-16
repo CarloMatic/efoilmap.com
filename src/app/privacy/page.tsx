@@ -22,7 +22,7 @@ export default function Privacy() {
 
                     <div>
                         <h2 className="text-xl font-semibold mb-2">2. Mapbox</h2>
-                        <p className="text-muted-foreground">We use Mapbox to display maps. When you activate the map, your IP address and other browser information may be transmitted to Mapbox. We block this transmission by default until you click "Enable Map".</p>
+                        <p className="text-muted-foreground">We use Mapbox to display maps. When you activate the map, your IP address and other browser information may be transmitted to Mapbox. We block this transmission by default until you click &quot;Enable Map&quot;.</p>
                     </div>
 
                     <div>

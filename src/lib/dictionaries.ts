@@ -8,7 +8,9 @@ export const dictionaries = {
             reject: "Reject",
             settings: "Settings",
             loading: "Loading...",
-            close: "Close"
+            close: "Close",
+            share: "Share",
+            link_copied: "Link copied!"
         },
         consent: {
             title: "We use cookies",
@@ -52,6 +54,38 @@ export const dictionaries = {
             no_photos: "No photos yet.",
             add_photo: "Add Photo",
             suggest_edit: "Suggest Edit"
+        },
+        auth: {
+            sign_in: "Login",
+            sign_up: "Sign Up",
+            welcome: "Welcome",
+            email: "Email",
+            welcome_back_toast: "Welcome back!",
+            send_login_link: "Send Login Link",
+            magic_link_sent: "Login link sent to your email!",
+            magic_link_desc: "We'll send you a secure login link. No password needed.",
+            magic_hint: "By signing in, you agree to our community guidelines and privacy terms.",
+            one_last_step: "Almost there!",
+            choose_username_desc: "Choose a username to be recognized in the community.",
+            username: "Username",
+            bio: "About Me",
+            bio_placeholder: "Tell us something about yourself...",
+            avatar_desc: "Click to change photo",
+            click_for_bio: "Click photo for bio",
+            reset_password_sent: "Password reset link sent!",
+            error_existing_user: "User already exists. Please sign in or use Forgot Password.",
+            error_invalid_credentials: "Invalid email or password.",
+            error_email_not_confirmed: "Please confirm your email address first.",
+            error_rate_limit: "Too many attempts. Please try again later.",
+            error_generic: "An error occurred during authentication."
+        },
+        intro: {
+            title: "Welcome to eFoilMap",
+            text: "The community for eFoilers. Find legal spots, share your experiences, and grow the community together.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(automatically translated with AI)"
         }
     },
     de: {
@@ -61,7 +95,9 @@ export const dictionaries = {
             reject: "Ablehnen",
             settings: "Einstellungen",
             loading: "Laden...",
-            close: "Schließen"
+            close: "Schließen",
+            share: "Teilen",
+            link_copied: "Link kopiert!"
         },
         consent: {
             title: "Wir verwenden Cookies",
@@ -105,6 +141,38 @@ export const dictionaries = {
             no_photos: "Noch keine Fotos.",
             add_photo: "Foto hinzufügen",
             suggest_edit: "Änderung vorschlagen"
+        },
+        auth: {
+            sign_in: "Anmelden",
+            sign_up: "Registrieren",
+            welcome: "Willkommen",
+            email: "Email",
+            welcome_back_toast: "Willkommen zurück!",
+            send_login_link: "Login-Link senden",
+            magic_link_sent: "Login-Link wurde gesendet!",
+            magic_link_desc: "Wir senden dir einen sicheren Login-Link. Kein Passwort nötig.",
+            magic_hint: "Mit der Anmeldung stimmst du unseren Community-Richtlinien und Datenschutzbestimmungen zu.",
+            one_last_step: "Fast geschafft!",
+            choose_username_desc: "Wähle einen Benutzernamen für die Community.",
+            username: "Benutzername",
+            bio: "Über mich",
+            bio_placeholder: "Erzähl uns etwas über dich...",
+            avatar_desc: "Klicke zum Ändern",
+            click_for_bio: "Klicke aufs Foto für die Bio",
+            reset_password_sent: "Link zum Zurücksetzen gesendet!",
+            error_existing_user: "Konto existiert bereits. Bitte anmelden oder Passwort vergessen nutzen.",
+            error_invalid_credentials: "Ungültige E-Mail oder Passwort.",
+            error_email_not_confirmed: "Bitte bestätige zuerst deine E-Mail-Adresse.",
+            error_rate_limit: "Zu viele Versuche. Bitte versuche es später noch einmal.",
+            error_generic: "Ein Fehler ist bei der Anmeldung aufgetreten."
+        },
+        intro: {
+            title: "Willkommen bei eFoilMap",
+            text: "Die Community für eFoiler. Finde legale Spots, teile deine Erfahrungen und lass uns gemeinsam die Community vergrößern.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(automatisch mit KI übersetzt)"
         }
     },
     es: {
@@ -114,7 +182,9 @@ export const dictionaries = {
             reject: "Rechazar",
             settings: "Ajustes",
             loading: "Cargando...",
-            close: "Cerrar"
+            close: "Cerrar",
+            share: "Compartir",
+            link_copied: "¡Enlace copiado!"
         },
         consent: {
             title: "Usamos cookies",
@@ -144,7 +214,6 @@ export const dictionaries = {
             name: "Nombre del Spot",
             status: "Estado",
             allowed: "Permitido",
-            tolerated: "Tolerado",
             forbidden: "Prohibido",
             amenities: "Servicios",
             save: "Guardar Spot",
@@ -158,6 +227,31 @@ export const dictionaries = {
             no_photos: "No hay fotos aún.",
             add_photo: "Añadir Foto",
             suggest_edit: "Sugerir Cambio"
+        },
+        intro: {
+            title: "Bienvenido a eFoilMap",
+            text: "La comunidad para eFoilers. Encuentra lugares legales, comparte tus experiencias y hagamos crecer la comunidad juntos.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(traducido automáticamente con IA)"
+        },
+        auth: {
+            sign_in: "Iniciar sesión",
+            sign_up: "Registrarse",
+            welcome: "Bienvenido",
+            email: "Correo electrónico",
+            welcome_back_toast: "¡Bienvenido de nuevo!",
+            send_login_link: "Enviar enlace de acceso",
+            magic_link_sent: "¡Enlace enviado a tu correo!",
+            magic_link_desc: "Te enviaremos un enlace de inicio de sesión seguro. Sin contraseña.",
+            magic_hint: "Al iniciar sesión, aceptas nuestras pautas de la comunidad y términos de privacidad.",
+            reset_password_sent: "¡Enlace de restablecimiento enviado!",
+            error_existing_user: "El usuario ya existe. Inicia sesión o recupera tu contraseña.",
+            error_invalid_credentials: "Correo o contraseña inválidos.",
+            error_email_not_confirmed: "Por favor, confirma tu correo electrónico primero.",
+            error_rate_limit: "Demasiados intentos. Por favor, inténtalo de nuevo más tarde.",
+            error_generic: "Ocurrió un error durante la autenticación."
         }
     },
     fr: {
@@ -167,7 +261,9 @@ export const dictionaries = {
             reject: "Refuser",
             settings: "Paramètres",
             loading: "Chargement...",
-            close: "Fermer"
+            close: "Fermer",
+            share: "Partager",
+            link_copied: "Lien copié !"
         },
         consent: {
             title: "Nous utilisons des cookies",
@@ -197,7 +293,6 @@ export const dictionaries = {
             name: "Nom du Spot",
             status: "Statut",
             allowed: "Autorisé",
-            tolerated: "Toléré",
             forbidden: "Interdit",
             amenities: "Équipements",
             save: "Enregistrer",
@@ -211,6 +306,31 @@ export const dictionaries = {
             no_photos: "Pas encore de photos.",
             add_photo: "Ajouter une photo",
             suggest_edit: "Suggérer une modification"
+        },
+        intro: {
+            title: "Bienvenue sur eFoilMap",
+            text: "La communauté pour les eFoilers. Trouvez des spots légaux, partagez vos expériences et développons la communauté ensemble.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(traduit automatiquement par IA)"
+        },
+        auth: {
+            sign_in: "Se connecter",
+            sign_up: "S'inscrire",
+            welcome: "Bienvenue",
+            email: "E-mail",
+            welcome_back_toast: "Bon retour !",
+            send_login_link: "Envoyer le lien de connexion",
+            magic_link_sent: "Lien envoyé par e-mail !",
+            magic_link_desc: "Nous vous enverrons un lien de connexion sécurisé. Pas besoin de mot de passe.",
+            magic_hint: "En vous connectant, vous acceptez nos directives communautaires et nos conditions de confidentialité.",
+            reset_password_sent: "Lien de réinitialisation envoyé !",
+            error_existing_user: "L'utilisateur existe déjà. Connectez-vous ou réinitialisez votre mot de passe.",
+            error_invalid_credentials: "E-mail ou mot de passe invalide.",
+            error_email_not_confirmed: "Veuillez d'abord confirmer votre adresse e-mail.",
+            error_rate_limit: "Trop de tentatives. Veuillez réessayer plus tard.",
+            error_generic: "Une erreur est survenue lors de l'authentification."
         }
     }
 };

@@ -1,6 +1,6 @@
 {
   "name": "efoilmap.com",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "^5.1.2",
+    "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.93.3",
     "@types/mapbox__mapbox-gl-geocoder": "^5.1.0",
     "clsx": "^2.1.1",

@@ -1,30 +1,41 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
+import Image from "next/image";
 import Map, { GeolocateControl, NavigationControl, ScaleControl, Marker } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { AlertCircle, MapPin } from "lucide-react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { getSpots, Spot } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { SpotDialog } from "@/components/SpotDialog";
 import { ConsentGate } from "@/components/CookieConsent";
 import { useLanguage } from "@/lib/i18n";
-import { Loader2 } from "lucide-react";
+import { User as UserIcon, LogOut } from "lucide-react";
 import { SearchBox } from "@/components/SearchBox";
 import { FilterBar, FilterState } from "@/components/FilterBar";
-import { supabase } from "@/lib/supabase";
-
+import { useAuth } from "@/hooks/useAuth";
+import { AuthDialog } from "@/components/AuthDialog";
 
 import { AddSpotButton } from "@/components/AddSpotButton";
 import { AddSpotDialog } from "@/components/AddSpotDialog";
+import { ProfileSetupDialog } from "@/components/ProfileSetupDialog";
+import { ProfileEditDialog } from "@/components/ProfileEditDialog";
 
 export default function EfoilMap() {
+    const { user, profile, signOut } = useAuth();
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const { t } = useLanguage();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const mapRef = useRef(null);
     // Initialize directly to avoid flicker
-    const [token, setToken] = useState<string>(process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "");
+    // Initialize directly to avoid flicker
+    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
     const [spots, setSpots] = useState<Spot[]>([]);
-    const [filteredSpots, setFilteredSpots] = useState<Spot[]>([]);
+
     const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -41,51 +52,117 @@ export default function EfoilMap() {
         verified: false
     });
 
-    useEffect(() => {
-        // Check for token on mount
-        const envToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-        if (envToken) {
-            setToken(envToken);
-        }
-
-        // Fetch spots from Supabase
-        async function loadSpots() {
-            // Fetch directly from DB
-            const { data, error } = await supabase.from('spots').select('*');
-            if (data && !error) {
-                const mappedSpots: Spot[] = data.map((s: any) => ({
-                    id: s.id,
-                    name: s.name,
-                    status: s.status, // Uses UPPERCASE directly if DB enum is correct, or map it? DB Init Schema uses 'ALLOWED', 'TOLERATED' (uppercase) in ENUM definition line 27.
-                    location: {
-                        type: 'Point',
-                        coordinates: [s.lng, s.lat] // Using the new lat/lng columns we added
-                    },
-                    createdAt: s.created_at,
-                    attributes: {
-                        parking: s.attributes?.parking,
-                        charging: s.attributes?.has_charging || s.attributes?.charging, // handle both just in case
-                        food: s.attributes?.food || s.attributes?.has_food
-                    }
-                }));
-                setSpots(mappedSpots);
-                setFilteredSpots(mappedSpots);
-            }
-        }
-        loadSpots();
-    }, []);
-
-    // Filter Logic
-    useEffect(() => {
+    // Derived state for filtering - replaces useEffect and extra state
+    // Moved here to be after 'filters' definition
+    const filteredSpots = useMemo(() => {
         let res = spots;
         if (filters.status !== 'all') {
             res = res.filter(s => s.status === filters.status.toUpperCase());
         }
         if (filters.parking) res = res.filter(s => s.attributes?.parking);
         if (filters.charging) res = res.filter(s => s.attributes?.charging);
+        return res;
+    }, [spots, filters]);
 
-        setFilteredSpots(res);
-    }, [filters, spots]);
+    // Load Spots on Mount
+    useEffect(() => {
+        async function loadSpots() {
+            try {
+                const data = await getSpots();
+                setSpots(data);
+            } catch (err) {
+                console.error("Error loading spots:", err);
+            }
+        }
+        loadSpots();
+    }, []);
+
+    // Geolocation only after consent
+    useEffect(() => {
+        const checkAndGeolocate = () => {
+            const hasConsent = localStorage.getItem("efoilmap-consent") === "true";
+            if (hasConsent && navigator.geolocation && !searchParams.get('spot')) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { longitude, latitude } = position.coords;
+                        if (mapRef.current) {
+                            (mapRef.current as any).flyTo({
+                                center: [longitude, latitude],
+                                zoom: 12,
+                                duration: 2000
+                            });
+                        }
+                    },
+                    (error) => {
+                        console.warn("Geolocation permission denied or error:", error);
+                    },
+                    { enableHighAccuracy: true }
+                );
+            }
+        };
+
+        // Check on mount
+        checkAndGeolocate();
+
+        // Listen for consent changes
+        window.addEventListener('efoilmap-consent-change', checkAndGeolocate);
+        return () => {
+            window.removeEventListener('efoilmap-consent-change', checkAndGeolocate);
+        };
+    }, [searchParams]);
+
+    // Deep Linking: Sync URL with Selected Spot
+    useEffect(() => {
+        const spotId = searchParams.get('spot');
+        const pathSlug = pathname.startsWith('/spots/') ? pathname.split('/spots/')[1] : null;
+
+        if ((spotId || pathSlug) && spots.length > 0 && !selectedSpot) {
+            const spot = spots.find(s => s.id === spotId || s.slug === pathSlug);
+            if (spot) {
+                const timer = setTimeout(() => {
+                    setSelectedSpot(spot);
+                    setIsDrawerOpen(true);
+                    // Fly to location
+                    if (mapRef.current) {
+                        (mapRef.current as any).flyTo({
+                            center: [spot.location.coordinates[0], spot.location.coordinates[1]],
+                            zoom: 14
+                        });
+                    }
+                }, 100);
+                return () => clearTimeout(timer);
+            }
+        }
+    }, [searchParams, pathname, spots, selectedSpot]);
+
+    const handleSpotSelect = (spot: Spot) => {
+        setSelectedSpot(spot);
+        setIsDrawerOpen(true);
+        
+        // Immediate smooth flyTo
+        if (mapRef.current) {
+            (mapRef.current as any).flyTo({
+                center: [spot.location.coordinates[0], spot.location.coordinates[1]],
+                zoom: 14,
+                duration: 1500,
+                essential: true
+            });
+        }
+
+        if (spot.slug) {
+            window.history.pushState(null, '', `/spots/${spot.slug}`);
+        } else {
+            window.history.pushState(null, '', `/?spot=${spot.id}`);
+        }
+    };
+
+    const handleDrawerClose = () => {
+        setIsDrawerOpen(false);
+        setSelectedSpot(null);
+        window.history.pushState(null, '', '/');
+    };
+
+    // Filter Logic moved to useMemo
 
 
     if (!token) {
@@ -112,6 +189,7 @@ export default function EfoilMap() {
                                 onClick={() => {
                                     localStorage.setItem("efoilmap-consent", "true");
                                     window.dispatchEvent(new Event('efoilmap-consent-change'));
+                                    window.location.reload();
                                 }}
                                 className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
                             >
@@ -152,7 +230,41 @@ export default function EfoilMap() {
 
                     {/* Controls Overlay (Search & Filter) */}
                     <div className="absolute top-4 left-0 right-0 z-10 flex flex-col items-center gap-3 px-4 pointer-events-none">
-                        <SearchBox />
+                        <div className="w-full flex justify-between items-start pointer-events-auto">
+                            {/* Left Spacer for balance */}
+                            <div className="flex-1 hidden md:block" /> 
+
+                            {/* Search Box - Center */}
+                            <SearchBox />
+
+                            {/* Auth / Profile - Right */}
+                            <div className="flex-1 flex justify-end">
+                                {user ? (
+                                    <button 
+                                        onClick={() => setIsProfileOpen(true)}
+                                        className="w-10 h-10 rounded-full bg-gray-900 border border-white/20 flex items-center justify-center text-white shadow-xl overflow-hidden ring-2 ring-white/5 group hover:border-blue-400/50 transition-all active:scale-95 relative"
+                                    >
+                                        {profile?.avatar_url ? (
+                                            <Image 
+                                                src={profile.avatar_url} 
+                                                alt="Profile" 
+                                                fill
+                                                className="object-cover group-hover:scale-110 transition-transform" 
+                                            />
+                                        ) : (
+                                            <UserIcon className="w-5 h-5 text-gray-400 group-hover:text-blue-400" />
+                                        )}
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => setIsAuthOpen(true)}
+                                        className="w-10 h-10 rounded-full bg-gray-900 border border-white/20 flex items-center justify-center text-white shadow-xl hover:bg-white/10 transition-all active:scale-95"
+                                    >
+                                        <UserIcon className="w-5 h-5 text-gray-400" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                         <FilterBar filters={filters} setFilters={setFilters} />
                     </div>
 
@@ -165,7 +277,13 @@ export default function EfoilMap() {
                         )}
                         <div className="pointer-events-auto">
                             <AddSpotButton
-                                onClick={() => setIsSelectingLocation(!isSelectingLocation)}
+                                onClick={() => {
+                                    if (!user) {
+                                        setIsAuthOpen(true);
+                                        return;
+                                    }
+                                    setIsSelectingLocation(!isSelectingLocation);
+                                }}
                                 className={isSelectingLocation ? "opacity-20 hover:opacity-100 transition-opacity" : ""}
                             />
                         </div>
@@ -180,8 +298,7 @@ export default function EfoilMap() {
                             anchor="bottom"
                             onClick={(e) => {
                                 e.originalEvent.stopPropagation();
-                                setSelectedSpot(spot);
-                                setIsDrawerOpen(true);
+                                handleSpotSelect(spot);
                             }}
                         >
                             <div className="group relative flex flex-col items-center justify-center transition-transform hover:scale-110 cursor-pointer">
@@ -205,14 +322,11 @@ export default function EfoilMap() {
             <SpotDialog
                 spot={selectedSpot}
                 open={isDrawerOpen}
-                onClose={() => setIsDrawerOpen(false)}
+                onClose={handleDrawerClose}
                 onEdit={() => {
                     setIsDrawerOpen(false);
                     setIsAddSpotOpen(true);
-                    // Logic to handle edit mode - AddSpotDialog will see selectedSpot if we pass it, 
-                    // but AddSpotDialog currently uses 'newSpotLocation'. We need to pass the *data* separately.
-                    // Actually, let's just make AddSpotDialog accept 'initialData' which we added.
-                    // But we need to pass it.
+                    setNewSpotLocation(null);
                 }}
             />
 
@@ -247,6 +361,18 @@ export default function EfoilMap() {
                     }
                     setIsAddSpotOpen(false);
                 }}
+            />
+
+            <AuthDialog 
+                open={isAuthOpen} 
+                onClose={() => setIsAuthOpen(false)} 
+            />
+
+            <ProfileSetupDialog />
+
+            <ProfileEditDialog 
+                open={isProfileOpen} 
+                onClose={() => setIsProfileOpen(false)} 
             />
         </div>
     );

@@ -6,7 +6,7 @@ import { Globe } from "lucide-react";
 import { useState } from "react";
 
 export function LanguageSwitcher() {
-    const { locale, setLocale, t } = useLanguage();
+    const { locale, setLocale } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
 
     return (

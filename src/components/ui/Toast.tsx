@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { CheckCircle2, AlertCircle, X } from "lucide-react";
 
 type ToastType = "success" | "error";
@@ -44,7 +44,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         <ToastContext.Provider value={{ showToast }}>
             {children}
             {/* Toast Container */}
-            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none">
+            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none">
                 {toasts.map((toast) => (
                     <div
                         key={toast.id}

@@ -1,7 +1,4 @@
 import { Drawer } from "vaul";
-import { X } from "lucide-react";
-import { useState } from "react";
-import { useLanguage } from "@/lib/i18n";
 
 interface AddSpotDrawerProps {
     open: boolean;
@@ -10,8 +7,6 @@ interface AddSpotDrawerProps {
 }
 
 export function AddSpotDrawer({ open, onOpenChange, location }: AddSpotDrawerProps) {
-    const { t } = useLanguage();
-    const [step, setStep] = useState(1);
 
     // Form state can be added here
 

@@ -1,34 +1,12 @@
-# Memory - Lessons Learned
+# Incident: Critical State Loop in Map.tsx
+**Root Cause**: `setFilteredSpots` was called synchronously inside a `useEffect` that depended on `filters` and `spots`. This caused a potential infinite render loop and performance degradation, flagged by `react-hooks/set-state-in-effect`.
 
-## Bug Fixes & Solutions
-### [Date] - [Issue Title]
-- **Problem**: [What went wrong]
-- **Solution**: [How it was fixed]
-- **Lesson**: [What we learned]
-- **Source**: [URL if researched online]
+**Fix**: 
+1. Refactored `filteredSpots` to use `useMemo`, eliminating the need for `useState` and `useEffect` entirely for this logic.
+2. Removed redundant `token` state sync effect in `Map.tsx`.
 
----
+**Verification**: 
+- `npm run lint` no longer reports `set-state-in-effect` for `Map.tsx`.
+- Remaining errors in `i18n.tsx` and `CookieConsent.tsx` are related to hydration (reading localStorage) and are less critical (run once on mount), though they should be refactored to `useSyncExternalStore` in the future.
 
-## Research Notes
-### [Date] - [Research Topic]
-- **Question**: [What we needed to know]
-- **Findings**: [What we discovered]
-- **Sources**: [URLs, documentation]
-- **Decision**: [What we chose to do]
-
----
-
-## Patterns & Anti-Patterns
-### ✅ Good Patterns
-- **Pattern Name**: [Description and when to use]
-
-### ❌ Anti-Patterns to Avoid
-- **Anti-Pattern Name**: [Description and why to avoid]
-
----
-
-**Note**: This is an immutable log. Add entries, never delete. Future you will thank past you.
-
----
-
-[→ View State (Active Context)](01_state.md) | [→ View Soul (Vision)](00_soul.md)
+**Prevention**: Enforced "Derived State" rule: If it can be calculated during render, do not put it in state/effect.

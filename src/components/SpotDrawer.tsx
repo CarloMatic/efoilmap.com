@@ -1,7 +1,7 @@
 "use client";
 
 import { Drawer } from "vaul";
-import { X, BatteryCharging, Utensils, Info } from "lucide-react";
+import { X, BatteryCharging } from "lucide-react";
 import { Spot } from "@/app/actions";
 import { cn } from "@/lib/utils";
 

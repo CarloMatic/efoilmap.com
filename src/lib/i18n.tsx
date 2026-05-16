@@ -16,41 +16,55 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     // Load from localStorage or detection on mount
     useEffect(() => {
+        let target: Locale | null = null;
         const saved = localStorage.getItem('efoilmap-lang') as Locale;
+
         if (saved && dictionaries[saved]) {
-            setLocaleState(saved);
-            return;
+            target = saved;
+        } else {
+            // Auto-detect
+            const browserLang = navigator.language.split('-')[0] as Locale;
+            if (dictionaries[browserLang]) {
+                target = browserLang;
+            }
         }
 
-        // Auto-detect
-        const browserLang = navigator.language.split('-')[0] as Locale;
-        if (dictionaries[browserLang]) {
-            setLocaleState(browserLang);
+        if (target && target !== locale) {
+            const timer = setTimeout(() => setLocaleState(target), 0);
+            return () => clearTimeout(timer);
         }
-    }, []);
+    }, [locale]); // Added locale to dep, but logic guards against loop
 
     const setLocale = (l: Locale) => {
         setLocaleState(l);
         localStorage.setItem('efoilmap-lang', l);
+        // Set cookie for server-side detection
+        document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`;
         document.documentElement.lang = l;
     };
 
     // Helper to get nested keys like "common.agree"
     const t = (path: string) => {
         const keys = path.split('.');
-        let current: any = dictionaries[locale];
+        let current: unknown = dictionaries[locale];
 
         for (const k of keys) {
-            if (current[k] === undefined) {
+            if (current && typeof current === 'object' && k in current) {
+                current = (current as Record<string, unknown>)[k];
+            } else {
                 // Fallback to EN
-                current = dictionaries['en'];
-                let fallback: any = dictionaries['en'];
-                for (const fbK of keys) fallback = fallback?.[fbK];
-                return fallback || path;
+                let fallback: unknown = dictionaries['en'];
+                for (const fbK of keys) {
+                    if (fallback && typeof fallback === 'object' && fbK in fallback) {
+                        fallback = (fallback as Record<string, unknown>)[fbK];
+                    } else {
+                        return path;
+                    }
+                }
+                return typeof fallback === 'string' ? fallback : path;
             }
-            current = current[k];
         }
-        return current as string;
+        return typeof current === 'string' ? current : path;
     };
 
     return (
