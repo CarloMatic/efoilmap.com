@@ -16,6 +16,7 @@ import { SearchBox } from "@/components/SearchBox";
 import { FilterBar, FilterState } from "@/components/FilterBar";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/AuthDialog";
+import { useToast } from "@/components/ui/Toast";
 
 import { AddSpotButton } from "@/components/AddSpotButton";
 import { AddSpotDialog } from "@/components/AddSpotDialog";
@@ -27,6 +28,7 @@ export default function EfoilMap() {
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const { t } = useLanguage();
+    const { showToast } = useToast();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -79,6 +81,34 @@ export default function EfoilMap() {
         }
         loadSpots();
     }, []);
+
+    // Intercept hash fragment authentication errors (e.g., otp_expired)
+    useEffect(() => {
+        const handleHashError = () => {
+            const hash = typeof window !== 'undefined' ? window.location.hash : '';
+            if (hash && hash.includes("error=")) {
+                // Parse hash parameters (e.g., #error=access_denied&error_code=otp_expired)
+                const params = new URLSearchParams(hash.substring(1));
+                const errorCode = params.get("error_code");
+                const errorDesc = params.get("error_description");
+                
+                if (errorCode === "otp_expired") {
+                    showToast(
+                        t("auth.error_otp_expired"),
+                        "error",
+                        10000
+                    );
+                } else if (errorDesc) {
+                    showToast(decodeURIComponent(errorDesc).replace(/\+/g, ' '), "error", 10000);
+                }
+                
+                // Clean hash from URL bar to prevent duplicate messages
+                window.history.replaceState(null, "", window.location.pathname + window.location.search);
+            }
+        };
+        
+        handleHashError();
+    }, [showToast, t]);
 
     // Geolocation only after consent
     useEffect(() => {
