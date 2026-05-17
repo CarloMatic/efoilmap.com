@@ -61,7 +61,7 @@ export default function CommunityRulesPage() {
     const currentContent = content[locale] || content.en;
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex flex-col items-center py-12 px-4 sm:px-6">
+        <div className="h-full overflow-y-auto bg-background text-foreground flex flex-col items-center py-12 px-4 sm:px-6">
             <div className="max-w-2xl w-full">
                 <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
                     <ArrowLeft className="w-4 h-4" />
