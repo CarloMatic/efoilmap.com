@@ -41,19 +41,14 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
             {/* Status Filter */}
             <button
                 onClick={toggleStatus}
-                className={classNames(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm",
-                    filters.status !== 'all'
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background/80 backdrop-blur-md border-white/10 text-muted-foreground hover:bg-background"
-                )}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-primary transition-colors whitespace-nowrap shadow-sm bg-primary text-primary-foreground cursor-pointer"
             >
                 <Filter className="w-3.5 h-3.5" />
                 <span>
-                    {filters.status === 'all' ? (t('filters.all') || 'All Status') :
-                        filters.status === 'allowed' ? t('forms.allowed') :
-                        filters.status === 'tolerated' ? t('forms.tolerated') :
-                        t('forms.unclear')}
+                    {filters.status === 'all' ? t('filters.all_spots') :
+                        filters.status === 'allowed' ? t('filters.allowed_spots') :
+                        filters.status === 'tolerated' ? t('filters.tolerated_spots') :
+                        t('filters.unclear_spots')}
                 </span>
             </button>
 
@@ -62,9 +57,9 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
             <button
                 onClick={() => toggleFilter('parking')}
                 className={classNames(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm cursor-pointer",
                     filters.parking
-                        ? "bg-blue-600 text-white border-blue-600"
+                        ? "bg-primary text-primary-foreground border-primary"
                         : "bg-background/80 backdrop-blur-md border-white/10 text-muted-foreground hover:bg-background"
                 )}
             >
@@ -76,9 +71,9 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
             <button
                 onClick={() => toggleFilter('charging')}
                 className={classNames(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm cursor-pointer",
                     filters.charging
-                        ? "bg-yellow-600 text-white border-yellow-600"
+                        ? "bg-primary text-primary-foreground border-primary"
                         : "bg-background/80 backdrop-blur-md border-white/10 text-muted-foreground hover:bg-background"
                 )}
             >
@@ -90,9 +85,9 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
             <button
                 onClick={() => toggleFilter('food')}
                 className={classNames(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm cursor-pointer",
                     filters.food
-                        ? "bg-orange-600 text-white border-orange-600"
+                        ? "bg-primary text-primary-foreground border-primary"
                         : "bg-background/80 backdrop-blur-md border-white/10 text-muted-foreground hover:bg-background"
                 )}
             >

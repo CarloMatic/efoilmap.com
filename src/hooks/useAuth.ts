@@ -55,6 +55,18 @@ export function useAuth() {
         return () => subscription.unsubscribe();
     }, []);
 
+    useEffect(() => {
+        const handleProfileUpdate = (e: Event) => {
+            const customEvent = e as CustomEvent<Partial<Profile>>;
+            if (customEvent.detail) {
+                setProfile(prev => prev ? { ...prev, ...customEvent.detail } : null);
+            }
+        };
+
+        window.addEventListener("profile-updated", handleProfileUpdate);
+        return () => window.removeEventListener("profile-updated", handleProfileUpdate);
+    }, []);
+
     const signOut = async () => {
         await supabase.auth.signOut();
         setProfile(null);
@@ -71,7 +83,11 @@ export function useAuth() {
             });
             
         if (!error) {
-            setProfile(prev => prev ? { ...prev, ...updates } : null);
+            setProfile(prev => {
+                const newProfile = prev ? { ...prev, ...updates } : null;
+                window.dispatchEvent(new CustomEvent("profile-updated", { detail: updates }));
+                return newProfile;
+            });
         }
         return { error };
     };

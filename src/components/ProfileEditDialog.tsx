@@ -77,6 +77,35 @@ export function ProfileEditDialog({ open, onClose }: ProfileEditDialogProps) {
         }
     };
 
+    const handleDeleteAvatar = async () => {
+        if (!user) return;
+
+        setUploading(true);
+        try {
+            // 1. Delete old avatar if exists
+            if (profile?.avatar_url) {
+                try {
+                    const oldPath = profile.avatar_url.split('/public/avatars/')[1];
+                    if (oldPath) {
+                        await supabase.storage.from('avatars').remove([oldPath]);
+                    }
+                } catch (e) {
+                    console.warn("Could not delete old avatar:", e);
+                }
+            }
+
+            // 2. Set avatar_url to null in DB
+            const { error } = await updateProfile({ avatar_url: null });
+            if (error) throw error;
+
+            showToast("Profilbild gelöscht", "success");
+        } catch (error: any) {
+            showToast(error.message, "error");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -134,11 +163,23 @@ export function ProfileEditDialog({ open, onClose }: ProfileEditDialogProps) {
                                 )}
                             </div>
                             <button 
+                                type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white shadow-lg hover:bg-blue-500 transition-all scale-90 group-hover:scale-100"
+                                className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white shadow-lg hover:bg-blue-500 transition-all scale-90 group-hover:scale-100 cursor-pointer"
+                                title="Bild ändern"
                             >
                                 <Camera className="w-4 h-4" />
                             </button>
+                            {profile?.avatar_url && (
+                                <button 
+                                    type="button"
+                                    onClick={handleDeleteAvatar}
+                                    className="absolute bottom-0 left-0 p-2 bg-red-600 rounded-full text-white shadow-lg hover:bg-red-500 transition-all scale-90 group-hover:scale-100 cursor-pointer"
+                                    title="Bild löschen"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            )}
                             <input 
                                 type="file" 
                                 ref={fileInputRef} 

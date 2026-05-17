@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/Toast";
+import { dictionaries, Locale } from "@/lib/dictionaries";
+import { cookies, headers } from "next/headers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,37 +23,58 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-export const metadata: Metadata = {
-  title: "efoilmap.com | The community for eFoilers",
-  description: "Find legal e-foil spots near you. Community driven map.",
-  openGraph: {
-    title: "efoilmap.com | The community for eFoilers",
-    description: "Find legal e-foil spots near you. Community driven map.",
-    url: "https://efoilmap.com",
-    siteName: "eFoilMap",
-    images: [
-      {
-        url: "https://efoilmap.com/og-image.jpg", // We should add a real image later
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  icons: {
-    icon: "/favicon.svg",
-    apple: "/favicon.svg",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "efoilmap.com | The community for eFoilers",
-    description: "Find legal e-foil spots near you. Community driven map.",
-    images: ["https://efoilmap.com/og-image.jpg"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  let locale = cookieStore.get('NEXT_LOCALE')?.value;
 
-import { cookies, headers } from "next/headers";
+  if (!locale) {
+    const headersList = await headers();
+    const acceptLanguage = headersList.get('accept-language');
+    if (acceptLanguage) {
+      const preferred = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
+      if (['en', 'de', 'es', 'fr'].includes(preferred)) {
+        locale = preferred;
+      }
+    }
+  }
+  if (!locale || !['en', 'de', 'es', 'fr'].includes(locale)) {
+    locale = 'en';
+  }
+
+  const dict = dictionaries[locale as Locale];
+  const title = dict.meta.title;
+  const description = dict.meta.description;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: "https://efoilmap.com",
+      siteName: "eFoilMap",
+      images: [
+        {
+          url: "https://efoilmap.com/og-image.jpg",
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: locale === 'de' ? 'de_DE' : locale === 'es' ? 'es_ES' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      type: "website",
+    },
+    icons: {
+      icon: "/favicon.svg",
+      apple: "/favicon.svg",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://efoilmap.com/og-image.jpg"],
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

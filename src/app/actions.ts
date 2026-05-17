@@ -21,6 +21,7 @@ export interface Spot {
         food?: boolean;
         verified?: boolean;
         description?: string;
+        website?: string;
     };
     source_locale?: string;
     createdAt?: string;

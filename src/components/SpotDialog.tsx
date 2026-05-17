@@ -277,6 +277,23 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                             {t('common.share') || "Share"}
                         </button>
 
+                        {spot.attributes?.website && (
+                            <a
+                                href={spot.attributes.website.startsWith('http') ? spot.attributes.website : `https://${spot.attributes.website}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer"
+                                title="Visit website"
+                            >
+                                <svg className="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
+                                    {t('forms.website')}
+                                </span>
+                            </a>
+                        )}
+
                         <button
                             onClick={() => {
                                 if (!user) {

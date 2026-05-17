@@ -58,24 +58,32 @@ export function CookieBanner() {
 
     if (isRejected) {
         return (
-            <div className="fixed top-0 left-0 right-0 z-[150] p-4 bg-red-950/90 backdrop-blur border-b border-red-900 shadow-2xl animate-in slide-in-from-top duration-300">
+            <div className="fixed bottom-0 left-0 right-0 z-[120] p-4 bg-red-950/90 backdrop-blur border-t border-red-900 shadow-2xl animate-in slide-in-from-bottom duration-300">
                 <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4 items-center justify-between">
                     <p className="text-sm text-red-200 font-medium text-center sm:text-left">
                         {t('consent.rejected_warning') || "The application requires functional cookies to display the map and your location. Limited functionality available."}
                     </p>
-                    <button
-                        onClick={handleAccept}
-                        className="px-6 py-2 text-sm font-bold bg-white text-red-950 rounded-full shadow-lg hover:bg-red-100 transition-all whitespace-nowrap"
-                    >
-                        {t('common.agree') || "Accept Cookies"}
-                    </button>
+                    <div className="flex gap-2 whitespace-nowrap shrink-0">
+                        <button
+                            onClick={() => window.history.back()}
+                            className="px-4 py-2 text-sm font-medium text-red-200 hover:text-white border border-red-200/20 rounded-full transition-colors"
+                        >
+                            {t('consent.leave') || "Weg hier"}
+                        </button>
+                        <button
+                            onClick={handleAccept}
+                            className="px-6 py-2 text-sm font-bold bg-white text-red-950 rounded-full shadow-lg hover:bg-red-100 transition-all"
+                        >
+                            {t('common.agree') || "Accept Cookies"}
+                        </button>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="fixed top-0 left-0 right-0 z-[150] p-4 bg-background/95 backdrop-blur border-b border-border shadow-2xl animate-in slide-in-from-top duration-300">
+        <div className="fixed bottom-0 left-0 right-0 z-[120] p-4 bg-background/95 backdrop-blur border-t border-border shadow-2xl animate-in slide-in-from-bottom duration-300">
             <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
                 <div className="text-sm text-foreground space-y-1">
                     <h3 className="font-bold">{t('consent.title')}</h3>

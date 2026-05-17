@@ -15,6 +15,14 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const [locale, setLocaleState] = useState<Locale>('en');
 
+    // Sync document attributes (title, lang) client-side whenever locale changes
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            document.documentElement.lang = locale;
+            document.title = dictionaries[locale].meta.title;
+        }
+    }, [locale]);
+
     // Load from localStorage or detection on mount
     useEffect(() => {
         let target: Locale | null = null;

@@ -2,7 +2,11 @@ export type Locale = 'en' | 'de' | 'es' | 'fr';
 
 export const dictionaries = {
     en: {
-        meta: { label: "English" },
+        meta: {
+            label: "English",
+            title: "efoilmap.com | The community for eFoilers",
+            description: "Find legal e-foil spots near you. Community-driven interactive map for eFoilers."
+        },
         common: {
             agree: "Accept",
             reject: "Reject",
@@ -14,7 +18,8 @@ export const dictionaries = {
             profile: "Profile",
             save: "Save",
             logout: "Logout",
-            success: "Success"
+            success: "Success",
+            remove: "Remove"
         },
         consent: {
             title: "We use cookies",
@@ -23,16 +28,19 @@ export const dictionaries = {
             map_blocked_text: "To see the map, please accept functional cookies.",
             accept_map: "Enable Map",
             privacy_link: "Privacy Policy",
-            imprint_link: "Imprint"
+            imprint_link: "Imprint",
+            rejected_warning: "The application cannot load the map without cookies and therefore does not work.",
+            leave: "Get me out of here"
         },
         nav: { imprint: "Imprint", privacy: "Privacy" },
         add_spot: "Add Spot",
         search: { placeholder: "Search city or spot..." },
         filters: {
-            all: "All Status",
-            allowed: "Allowed Only",
-            tolerated: "Tolerated",
-            verified: "Verified",
+            title: "Filter all spots by:",
+            all_spots: "All Spots",
+            allowed_spots: "Allowed",
+            tolerated_spots: "Tolerated",
+            unclear_spots: "Unclear",
             parking: "Parking",
             charging: "Charging",
             food: "Food"
@@ -61,7 +69,9 @@ export const dictionaries = {
             suggest_edit: "Suggest Edit",
             update_review: "Update Review",
             description: "Description",
-            description_placeholder: "Where to park, what to know?"
+            description_placeholder: "Where to park, what to know?",
+            add_website: "Add Website",
+            website: "Website"
         },
         auth: {
             sign_in: "Login",
@@ -102,7 +112,11 @@ export const dictionaries = {
         }
     },
     de: {
-        meta: { label: "Deutsch" },
+        meta: {
+            label: "Deutsch",
+            title: "efoilmap.com | Die Community für eFoiler",
+            description: "Finde Einstiegspunkte und legale eFoil-Spots in deiner Nähe. Interaktive Community-Karte."
+        },
         common: {
             agree: "Akzeptieren",
             reject: "Ablehnen",
@@ -114,7 +128,8 @@ export const dictionaries = {
             profile: "Profil",
             save: "Speichern",
             logout: "Abmelden",
-            success: "Erfolgreich"
+            success: "Erfolgreich",
+            remove: "Entfernen"
         },
         consent: {
             title: "Wir verwenden Cookies",
@@ -123,16 +138,19 @@ export const dictionaries = {
             map_blocked_text: "Bitte aktiviere funktionale Cookies, um die Karte zu sehen.",
             accept_map: "Karte aktivieren",
             privacy_link: "Datenschutzerklärung",
-            imprint_link: "Impressum"
+            imprint_link: "Impressum",
+            rejected_warning: "Die Anwendung kann ohne Cookies die Karte nicht laden und funktioniert deshalb nicht.",
+            leave: "Weg hier"
         },
         nav: { imprint: "Impressum", privacy: "Datenschutz" },
         add_spot: "Spot hinzufügen",
         search: { placeholder: "Stadt oder Spot suchen..." },
         filters: {
-            all: "Alle Status",
-            allowed: "Nur Erlaubt",
-            tolerated: "Geduldet",
-            verified: "Verifiziert",
+            title: "Filter alle Spots nach:",
+            all_spots: "Alle Spots",
+            allowed_spots: "Erlaubte",
+            tolerated_spots: "Geduldete",
+            unclear_spots: "Unklare",
             parking: "Parken",
             charging: "Laden",
             food: "Essen"
@@ -161,7 +179,9 @@ export const dictionaries = {
             suggest_edit: "Änderung vorschlagen",
             update_review: "Bewertung aktualisieren",
             description: "Beschreibung",
-            description_placeholder: "Wo kann man parken, was muss man wissen?"
+            description_placeholder: "Wo kann man parken, was muss man wissen?",
+            add_website: "Website hinzufügen",
+            website: "Website"
         },
         auth: {
             sign_in: "Anmelden",
@@ -202,7 +222,11 @@ export const dictionaries = {
         }
     },
     es: {
-        meta: { label: "Español" },
+        meta: {
+            label: "Español",
+            title: "efoilmap.com | La comunidad para eFoilers",
+            description: "Encuentra puntos de entrada y lugares legales para eFoil cerca de ti. Mapa interactivo de la comunidad."
+        },
         common: {
             agree: "Aceptar",
             reject: "Rechazar",
@@ -214,7 +238,8 @@ export const dictionaries = {
             profile: "Perfil",
             save: "Guardar",
             logout: "Cerrar sesión",
-            success: "Éxito"
+            success: "Éxito",
+            remove: "Eliminar"
         },
         consent: {
             title: "Usamos cookies",
@@ -223,16 +248,19 @@ export const dictionaries = {
             map_blocked_text: "Para ver el mapa, acepta las cookies funcionales.",
             accept_map: "Activar Mapa",
             privacy_link: "Política de Privacidad",
-            imprint_link: "Aviso Legal"
+            imprint_link: "Aviso Legal",
+            rejected_warning: "La aplicación no puede cargar el mapa sin cookies y, por lo tanto, no funciona.",
+            leave: "Salir de aquí"
         },
         nav: { imprint: "Aviso Legal", privacy: "Política de Privacidad" },
         add_spot: "Añadir Spot",
         search: { placeholder: "Buscar ciudad o lugar..." },
         filters: {
-            all: "Todos",
-            allowed: "Permitido",
-            tolerated: "Tolerado",
-            verified: "Verificado",
+            title: "Filtrar todos los spots por:",
+            all_spots: "Todos los spots",
+            allowed_spots: "Permitidos",
+            tolerated_spots: "Tolerados",
+            unclear_spots: "Desconocidos",
             parking: "Parking",
             charging: "Carga",
             food: "Comida"
@@ -261,7 +289,9 @@ export const dictionaries = {
             suggest_edit: "Sugerir Cambio",
             update_review: "Actualizar reseña",
             description: "Descripción",
-            description_placeholder: "¿Dónde aparcar, qué hay que saber?"
+            description_placeholder: "¿Dónde aparcar, qué hay que saber?",
+            add_website: "Añadir sitio web",
+            website: "Sitio web"
         },
         intro: {
             title: "Bienvenido a eFoilMap",
@@ -302,7 +332,11 @@ export const dictionaries = {
         }
     },
     fr: {
-        meta: { label: "Français" },
+        meta: {
+            label: "Français",
+            title: "efoilmap.com | La communauté des eFoilers",
+            description: "Trouvez des points d'accès et des spots eFoil légaux près de chez vous. Carte interactive de la communauté."
+        },
         common: {
             agree: "Accepter",
             reject: "Refuser",
@@ -314,7 +348,8 @@ export const dictionaries = {
             profile: "Profil",
             save: "Enregistrer",
             logout: "Déconnexion",
-            success: "Succès"
+            success: "Succès",
+            remove: "Supprimer"
         },
         consent: {
             title: "Nous utilisons des cookies",
@@ -323,19 +358,22 @@ export const dictionaries = {
             map_blocked_text: "Veuillez accepter les cookies fonctionnels pour voir la carte.",
             accept_map: "Activer la carte",
             privacy_link: "Politique de Confidentialité",
-            imprint_link: "Mentions Légales"
+            imprint_link: "Mentions Légales",
+            rejected_warning: "L'application ne peut pas charger la carte sans cookies et ne fonctionne donc pas.",
+            leave: "Sortir d'ici"
         },
         nav: { imprint: "Mentions Légales", privacy: "Politique de Confidentialité" },
         add_spot: "Ajouter un Spot",
         search: { placeholder: "Rechercher..." },
         filters: {
-            all: "Tous",
-            allowed: "Autorisé",
-            tolerated: "Toléré",
-            verified: "Vérifié",
+            title: "Filtrer tous les spots par:",
+            all_spots: "Tous les spots",
+            allowed_spots: "Autorisés",
+            tolerated_spots: "Tolérés",
+            unclear_spots: "Inconnus",
             parking: "Parking",
             charging: "Recharge",
-            food: "Nourriture"
+            food: "Restauration"
         },
         hero: {
             slogan: "Trouvez ensemble les meilleurs points d'entrée pour l'eFoil."
@@ -361,7 +399,9 @@ export const dictionaries = {
             suggest_edit: "Suggérer une modification",
             update_review: "Mettre à jour l'avis",
             description: "Description",
-            description_placeholder: "Où se garer, que faut-il savoir ?"
+            description_placeholder: "Où se garer, que faut-il savoir ?",
+            add_website: "Ajouter un site web",
+            website: "Site web"
         },
         intro: {
             title: "Bienvenue sur eFoilMap",

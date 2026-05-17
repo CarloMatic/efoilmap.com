@@ -60,6 +60,7 @@ export default function EfoilMap() {
         }
         if (filters.parking) res = res.filter(s => s.attributes?.parking);
         if (filters.charging) res = res.filter(s => s.attributes?.charging);
+        if (filters.food) res = res.filter(s => s.attributes?.food);
         return res;
     }, [spots, filters]);
 
@@ -229,7 +230,7 @@ export default function EfoilMap() {
 
                     {/* Controls Overlay (Search & Filter) */}
                     <div className="absolute top-4 left-0 right-0 z-10 flex flex-col items-center gap-3 px-4 pointer-events-none">
-                        <div className="w-full flex justify-between items-start pointer-events-auto">
+                        <div className="w-full flex justify-between items-center pointer-events-auto gap-2">
                             {/* Left Spacer for balance */}
                             <div className="flex-1 hidden md:block" /> 
 
@@ -237,7 +238,7 @@ export default function EfoilMap() {
                             <SearchBox spots={spots} onSelectSpot={handleSpotSelect} />
 
                             {/* Auth / Profile - Right */}
-                            <div className="flex-1 flex justify-end">
+                            <div className="flex-1 flex justify-end shrink-0">
                                 {user ? (
                                     <button 
                                         onClick={() => setIsProfileOpen(true)}
@@ -264,7 +265,15 @@ export default function EfoilMap() {
                                 )}
                             </div>
                         </div>
-                        <FilterBar filters={filters} setFilters={setFilters} />
+                        
+                        <div className="w-full flex flex-col items-center gap-1.5">
+                            <div className="w-full max-w-md px-1.5 text-center pointer-events-auto animate-in fade-in duration-300">
+                                <span className="text-[10px] uppercase font-black text-black tracking-widest">
+                                    {t('filters.title')}
+                                </span>
+                            </div>
+                            <FilterBar filters={filters} setFilters={setFilters} />
+                        </div>
                     </div>
 
                     {/* Add Spot Button Overlay - Bottom Center */}

@@ -33,11 +33,15 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
         charging: boolean;
         food: boolean;
         description?: string;
+        website?: string;
     }>({
         parking: false,
         charging: false,
-        food: false
+        food: false,
+        website: ""
     });
+
+    const [showWebsiteField, setShowWebsiteField] = useState(false);
 
     // New: Photo Upload State
     const [files, setFiles] = useState<File[]>([]);
@@ -46,7 +50,8 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
     const resetForm = () => {
         setName("");
         setStatus("UNCLEAR");
-        setAttributes({ parking: false, charging: false, food: false });
+        setAttributes({ parking: false, charging: false, food: false, website: "" });
+        setShowWebsiteField(false);
         setFiles([]);
     };
 
@@ -62,7 +67,9 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                     charging: !!initialData.attributes?.charging,
                     food: !!initialData.attributes?.food,
                     description: initialData.attributes?.description || "",
+                    website: initialData.attributes?.website || "",
                 });
+                setShowWebsiteField(!!initialData.attributes?.website);
                 setFiles([]); // Don't load existing photos here, only for new uploads
             } else {
                 resetForm();
@@ -320,6 +327,42 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                                     🍔 {t('filters.food')}
                                 </label>
                             </div>
+                        </div>
+
+                        {/* Website Input Section */}
+                        <div className="space-y-2 pt-2 border-t">
+                            {!showWebsiteField ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowWebsiteField(true)}
+                                    className="flex items-center gap-1.5 text-xs text-primary font-bold hover:underline py-1 cursor-pointer"
+                                >
+                                    🌐 {t('forms.add_website')}
+                                </button>
+                            ) : (
+                                <div className="space-y-1">
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-sm font-medium">🌐 {t('forms.website')}</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowWebsiteField(false);
+                                                setAttributes({ ...attributes, website: "" });
+                                            }}
+                                            className="text-xs text-red-500 hover:underline cursor-pointer"
+                                        >
+                                            {t('common.remove')}
+                                        </button>
+                                    </div>
+                                    <input
+                                        type="url"
+                                        value={attributes.website || ""}
+                                        onChange={(e) => setAttributes({ ...attributes, website: e.target.value })}
+                                        placeholder="https://example.com"
+                                        className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* New: Photo Upload Section */}
