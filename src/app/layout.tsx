@@ -51,11 +51,11 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: "https://efoilmap.com",
+      url: "https://www.efoilmap.com",
       siteName: "eFoilMap",
       images: [
         {
-          url: "https://efoilmap.com/teaser.jpg",
+          url: "https://www.efoilmap.com/teaser.jpg",
           width: 1200,
           height: 630,
         },
@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://efoilmap.com/teaser.jpg"],
+      images: ["https://www.efoilmap.com/teaser.jpg"],
     },
   };
 }

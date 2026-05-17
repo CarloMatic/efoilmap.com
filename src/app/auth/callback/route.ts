@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   // Fallback: If redirected to default Vercel domain, rewrite origin to custom domain
   let redirectOrigin = origin;
   if (origin === 'https://efoilmapcom.vercel.app') {
-    redirectOrigin = 'https://efoilmap.com';
+    redirectOrigin = 'https://www.efoilmap.com';
   }
 
   if (code) {
