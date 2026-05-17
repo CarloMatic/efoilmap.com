@@ -37,12 +37,17 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
 
         setLoading(true);
 
+        const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        const emailRedirect = isLocalhost 
+            ? `${window.location.origin}/auth/callback`
+            : 'https://efoilmapcom.vercel.app/auth/callback';
+
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 email,
                 options: {
                     shouldCreateUser: true,
-                    emailRedirectTo: `${window.location.origin}/auth/callback`,
+                    emailRedirectTo: emailRedirect,
                     data: { locale }
                 }
             });
