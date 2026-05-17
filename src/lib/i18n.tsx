@@ -15,6 +15,33 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const [locale, setLocaleState] = useState<Locale>('en');
 
+    const setLocale = async (l: Locale, saveToCloud = true) => {
+        setLocaleState(l);
+        localStorage.setItem('efoilmap-lang', l);
+        // Set cookie for server-side detection
+        document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`;
+        document.documentElement.lang = l;
+
+        // Update URL query parameter
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('lang') !== l) {
+                params.set('lang', l);
+                const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+                window.history.pushState(null, '', newUrl);
+            }
+        }
+
+        if (saveToCloud) {
+            const { data } = await supabase.auth.getSession();
+            if (data.session?.user) {
+                await supabase.auth.updateUser({
+                    data: { locale: l }
+                });
+            }
+        }
+    };
+
     // Sync document attributes (title, lang) client-side whenever locale changes
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -37,7 +64,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (target !== locale) {
-            setLocaleState(target);
+            setTimeout(() => {
+                setLocaleState(target);
+            }, 0);
         }
 
         // Synchronize cookies & localStorage
@@ -75,33 +104,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
         return () => subscription.unsubscribe();
     }, [locale]);
-
-    const setLocale = async (l: Locale, saveToCloud = true) => {
-        setLocaleState(l);
-        localStorage.setItem('efoilmap-lang', l);
-        // Set cookie for server-side detection
-        document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`;
-        document.documentElement.lang = l;
-
-        // Update URL query parameter
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('lang') !== l) {
-                params.set('lang', l);
-                const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
-                window.history.pushState(null, '', newUrl);
-            }
-        }
-
-        if (saveToCloud) {
-            const { data } = await supabase.auth.getSession();
-            if (data.session?.user) {
-                await supabase.auth.updateUser({
-                    data: { locale: l }
-                });
-            }
-        }
-    };
 
     // Helper to get nested keys like "common.agree"
     const t = (path: string) => {
@@ -147,22 +149,26 @@ export function useTranslate(text: string | undefined, targetLang: string) {
 
     useEffect(() => {
         if (!text || !text.trim()) {
-            setTranslatedText('');
-            setIsTranslated(false);
+            setTimeout(() => {
+                setTranslatedText(prev => prev !== '' ? '' : prev);
+                setIsTranslated(prev => prev !== false ? false : prev);
+            }, 0);
             return;
         }
 
         const target = targetLang === 'en' ? 'en' : targetLang === 'de' ? 'de' : targetLang === 'es' ? 'es' : targetLang === 'fr' ? 'fr' : 'en';
         const sl = 'auto';
 
-        setLoading(true);
+        setTimeout(() => {
+            setLoading(true);
+        }, 0);
         const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                if (data && data[0]) {
-                    const translated = data[0].map((x: any) => x[0]).join('');
+                if (data && data[0] && Array.isArray(data[0])) {
+                    const translated = data[0].map((x: unknown) => Array.isArray(x) ? String(x[0]) : '').join('');
                     if (translated.toLowerCase().trim() !== text.toLowerCase().trim()) {
                         setTranslatedText(translated);
                         setIsTranslated(true);
