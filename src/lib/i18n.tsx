@@ -139,3 +139,51 @@ export const useLanguage = () => {
     if (!context) throw new Error('useLanguage must be used within LanguageProvider');
     return context;
 };
+
+export function useTranslate(text: string | undefined, targetLang: string) {
+    const [translatedText, setTranslatedText] = useState<string>('');
+    const [isTranslated, setIsTranslated] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!text || !text.trim()) {
+            setTranslatedText('');
+            setIsTranslated(false);
+            return;
+        }
+
+        const target = targetLang === 'en' ? 'en' : targetLang === 'de' ? 'de' : targetLang === 'es' ? 'es' : targetLang === 'fr' ? 'fr' : 'en';
+        const sl = 'auto';
+
+        setLoading(true);
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data[0]) {
+                    const translated = data[0].map((x: any) => x[0]).join('');
+                    if (translated.toLowerCase().trim() !== text.toLowerCase().trim()) {
+                        setTranslatedText(translated);
+                        setIsTranslated(true);
+                    } else {
+                        setTranslatedText(text);
+                        setIsTranslated(false);
+                    }
+                } else {
+                    setTranslatedText(text);
+                    setIsTranslated(false);
+                }
+            })
+            .catch(err => {
+                console.error("Translation Error:", err);
+                setTranslatedText(text);
+                setIsTranslated(false);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [text, targetLang]);
+
+    return { translatedText: translatedText || text || '', isTranslated, loading };
+}

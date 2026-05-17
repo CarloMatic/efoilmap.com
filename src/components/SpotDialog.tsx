@@ -6,7 +6,7 @@ import { Spot } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/Toast";
-import { useLanguage } from "@/lib/i18n";
+import { useLanguage, useTranslate } from "@/lib/i18n";
 import { verifySpot } from "@/app/actions";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
@@ -45,6 +45,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const { showToast } = useToast();
     const { t, locale } = useLanguage();
+    const { translatedText: translatedDescription, isTranslated: isDescriptionTranslated } = useTranslate(spot?.attributes?.description, locale);
 
     // Reset state when opening a new spot
     useEffect(() => {
@@ -325,7 +326,12 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                     {/* Description Section */}
                     {spot.attributes?.description && (
                         <div className="text-sm text-foreground/90 whitespace-pre-line bg-muted/10 p-3 rounded-lg border border-border/50">
-                            {spot.attributes.description}
+                            {translatedDescription}
+                            {isDescriptionTranslated && (
+                                <p className="text-[10px] text-muted-foreground/60 italic mt-2 border-t border-border/30 pt-1.5">
+                                    {t('ugc.ai_translated')}
+                                </p>
+                            )}
                         </div>
                     )}
 
@@ -392,69 +398,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                             <h3 className="text-sm font-semibold uppercase text-muted-foreground mb-3 tracking-wider">{t('forms.community_reviews')}</h3>
                             <div className="space-y-4">
                                 {reviews.map((rev) => (
-                                    <div key={rev.id} className="p-4 bg-muted/20 rounded-2xl border border-border/50 transition-all hover:bg-muted/30 group">
-                                        <div className="flex items-start gap-3 mb-2">
-                                            {/* Avatar with Bio Popover */}
-                                            <div className="relative group/avatar">
-                                                <div 
-                                                    className="w-10 h-10 rounded-full bg-gray-800 border border-border/50 overflow-hidden flex-shrink-0 cursor-help hover:ring-2 hover:ring-blue-500/30 transition-all relative"
-                                                >
-                                                    {rev.profiles?.avatar_url ? (
-                                                        <Image 
-                                                            src={rev.profiles.avatar_url} 
-                                                            alt={rev.profiles.username || "User"} 
-                                                            width={40} 
-                                                            height={40} 
-                                                            sizes="40px"
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-gray-500">
-                                                            <UserIcon className="w-5 h-5" />
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Tooltip */}
-                                                {rev.profiles?.bio && (
-                                                    <div className="absolute top-full left-0 mt-2 w-48 p-3 bg-gray-900 border border-white/10 rounded-xl shadow-xl opacity-0 invisible group-hover/avatar:opacity-100 group-hover/avatar:visible transition-all z-50 text-xs text-gray-300 pointer-events-none">
-                                                        <p className="font-bold text-white mb-1">{rev.profiles.username}</p>
-                                                        {rev.profiles.bio}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between gap-2 mb-1">
-                                                    <span className="text-sm font-bold text-foreground truncate">
-                                                        {rev.profiles?.username || 'User'}
-                                                    </span>
-                                                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                                                        {new Date(rev.created_at).toLocaleDateString()}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-1 text-yellow-500 mb-2">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star 
-                                                            key={i} 
-                                                            className={cn(
-                                                                "w-3 h-3",
-                                                                i < rev.rating ? "fill-current" : "text-gray-600"
-                                                            )} 
-                                                        />
-                                                    ))}
-                                                </div>
-                                                <p className="text-sm text-foreground/90 leading-relaxed italic">
-                                                    "{rev.comment}"
-                                                </p>
-                                                {rev.profiles?.bio && (
-                                                    <p className="text-[10px] text-blue-400/60 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        {/* This helps prompt hover but isn't required anymore since tooltip handles it. Left for extra UX */}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <ReviewItem key={rev.id} review={rev} targetLang={locale} t={t} />
                                 ))}
                             </div>
                         </div>
@@ -505,6 +449,82 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                 open={isAuthOpen} 
                 onClose={() => setIsAuthOpen(false)} 
             />
+        </div>
+    );
+}
+
+interface ReviewItemProps {
+    review: Review;
+    targetLang: string;
+    t: (key: string) => string;
+}
+
+function ReviewItem({ review, targetLang, t }: ReviewItemProps) {
+    const { translatedText: translatedComment, isTranslated } = useTranslate(review.comment, targetLang);
+
+    return (
+        <div className="p-4 bg-muted/20 rounded-2xl border border-border/50 transition-all hover:bg-muted/30 group">
+            <div className="flex items-start gap-3 mb-2">
+                {/* Avatar with Bio Popover */}
+                <div className="relative group/avatar">
+                    <div 
+                        className="w-10 h-10 rounded-full bg-gray-800 border border-border/50 overflow-hidden flex-shrink-0 cursor-help hover:ring-2 hover:ring-blue-500/30 transition-all relative"
+                    >
+                        {review.profiles?.avatar_url ? (
+                            <Image 
+                                src={review.profiles.avatar_url} 
+                                alt={review.profiles.username || "User"} 
+                                width={40} 
+                                height={40} 
+                                sizes="40px"
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-500">
+                                <UserIcon className="w-5 h-5" />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Tooltip */}
+                    {review.profiles?.bio && (
+                        <div className="absolute top-full left-0 mt-2 w-48 p-3 bg-gray-900 border border-white/10 rounded-xl shadow-xl opacity-0 invisible group-hover/avatar:opacity-100 group-hover/avatar:visible transition-all z-50 text-xs text-gray-300 pointer-events-none">
+                            <p className="font-bold text-white mb-1">{review.profiles.username}</p>
+                            {review.profiles.bio}
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-sm font-bold text-foreground truncate">
+                            {review.profiles?.username || 'User'}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                            {new Date(review.created_at).toLocaleDateString()}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-1 text-yellow-500 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                            <Star 
+                                key={i} 
+                                className={cn(
+                                    "w-3 h-3",
+                                    i < review.rating ? "fill-current" : "text-gray-600"
+                                )} 
+                            />
+                        ))}
+                    </div>
+                    <p className="text-sm text-foreground/90 leading-relaxed italic">
+                        "{translatedComment}"
+                    </p>
+                    {isTranslated && (
+                        <p className="text-[10px] text-muted-foreground/60 italic mt-1.5 border-t border-border/10 pt-1">
+                            {t('ugc.ai_translated')}
+                        </p>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
