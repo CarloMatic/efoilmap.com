@@ -48,8 +48,7 @@ export default function EfoilMap() {
         status: 'all',
         parking: false,
         charging: false,
-        food: false,
-        verified: false
+        food: false
     });
 
     // Derived state for filtering - replaces useEffect and extra state

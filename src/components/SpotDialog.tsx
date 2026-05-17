@@ -247,7 +247,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                 )}>
                                     {spot.status === "ALLOWED" ? t('forms.allowed') :
                                         spot.status === "TOLERATED" ? t('forms.tolerated') :
-                                            spot.status === "FORBIDDEN" ? t('forms.forbidden') : "Unclear"}
+                                            spot.status === "FORBIDDEN" ? t('forms.forbidden') : t('forms.unclear')}
                                 </span>
                                 {spot.average_rating ? (
                                     <div className="flex items-center gap-1 text-xs text-yellow-500 font-bold">

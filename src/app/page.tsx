@@ -21,7 +21,7 @@ export default function Home() {
     <main className="w-full h-full relative flex flex-col">
       <IntroModal />
       {/* Header - Top Bar (Not Overlay) */}
-      <header className="w-full bg-background border-b border-border z-20 shadow-sm">
+      <header className="w-full bg-background border-b border-border z-[101] shadow-sm">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           {/* Logo & Slogan */}
           <div className="flex items-center gap-4">

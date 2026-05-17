@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export default async function RootLayout({
   children,
@@ -59,12 +59,26 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en';
+  let locale = cookieStore.get('NEXT_LOCALE')?.value;
+
+  if (!locale) {
+    const headersList = await headers();
+    const acceptLanguage = headersList.get('accept-language');
+    if (acceptLanguage) {
+      const preferred = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
+      if (['en', 'de', 'es', 'fr'].includes(preferred)) {
+        locale = preferred;
+      }
+    }
+  }
+  if (!locale) {
+    locale = 'en';
+  }
 
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen overflow-hidden bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100dvh] w-screen overflow-hidden bg-background text-foreground`}
       >
         <LanguageProvider>
           <ToastProvider>

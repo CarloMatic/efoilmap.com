@@ -259,7 +259,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                                     >
                                         {s === "ALLOWED" ? t('forms.allowed') :
                                             s === "TOLERATED" ? t('forms.tolerated') :
-                                                s === "FORBIDDEN" ? t('forms.forbidden') : "Unclear"}
+                                                s === "FORBIDDEN" ? t('forms.forbidden') : t('forms.unclear')}
                                     </button>
                                 ))}
                             </div>

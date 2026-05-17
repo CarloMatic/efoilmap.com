@@ -13,7 +13,6 @@ export type FilterState = {
     parking: boolean;
     charging: boolean;
     food: boolean;
-    verified: boolean;
 };
 
 interface FilterBarProps {
@@ -55,19 +54,6 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
                 </span>
             </button>
 
-            {/* Verified */}
-            <button
-                onClick={() => toggleFilter('verified')}
-                className={classNames(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm",
-                    filters.verified
-                        ? "bg-green-600 text-white border-green-600"
-                        : "bg-background/80 backdrop-blur-md border-white/10 text-muted-foreground hover:bg-background"
-                )}
-            >
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>{t('filters.verified') || 'Verified'}</span>
-            </button>
 
             {/* Parking */}
             <button
