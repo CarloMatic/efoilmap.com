@@ -19,7 +19,7 @@ export function AddSpotButton({ onClick, className }: AddSpotButtonProps) {
             )}
         >
             <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">{t('add_spot')}</span>
+            <span>{t('add_spot')}</span>
         </button>
     );
 }

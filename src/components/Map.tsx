@@ -268,7 +268,7 @@ export default function EfoilMap() {
                     </div>
 
                     {/* Add Spot Button Overlay - Bottom Center */}
-                    <div className="absolute bottom-8 left-0 right-0 z-10 flex flex-col items-center justify-center pointer-events-none gap-4">
+                    <div className="absolute bottom-16 left-0 right-0 z-10 flex flex-col items-center justify-center pointer-events-none gap-4">
                         {isSelectingLocation && (
                             <div className="bg-background/90 backdrop-blur border border-primary px-4 py-2 rounded-full shadow-lg animate-in fade-in slide-in-from-bottom-4">
                                 <span className="text-sm font-bold text-primary">👇 Click map to set location</span>

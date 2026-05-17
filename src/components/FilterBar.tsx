@@ -9,7 +9,7 @@ function classNames(...classes: (string | undefined | null | false)[]) {
 }
 
 export type FilterState = {
-    status: 'allowed' | 'tolerated' | 'all';
+    status: 'allowed' | 'tolerated' | 'unclear' | 'all';
     parking: boolean;
     charging: boolean;
     food: boolean;
@@ -30,7 +30,9 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
     const toggleStatus = () => {
         setFilters(prev => ({
             ...prev,
-            status: prev.status === 'all' ? 'allowed' : prev.status === 'allowed' ? 'tolerated' : 'all'
+            status: prev.status === 'all' ? 'allowed' : 
+                    prev.status === 'allowed' ? 'tolerated' : 
+                    prev.status === 'tolerated' ? 'unclear' : 'all'
         }));
     };
 
@@ -49,8 +51,9 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
                 <Filter className="w-3.5 h-3.5" />
                 <span>
                     {filters.status === 'all' ? (t('filters.all') || 'All Status') :
-                        filters.status === 'allowed' ? (t('filters.allowed') || 'Allowed Only') :
-                            (t('filters.tolerated') || 'Tolerated')}
+                        filters.status === 'allowed' ? t('forms.allowed') :
+                        filters.status === 'tolerated' ? t('forms.tolerated') :
+                        t('forms.unclear')}
                 </span>
             </button>
 

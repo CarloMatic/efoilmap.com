@@ -94,7 +94,7 @@ export const dictionaries = {
         },
         intro: {
             title: "Welcome to eFoilMap",
-            text: "The community for eFoilers. Find legal spots, share your experiences, and grow the community together.",
+            text: "The community for eFoilers. Find the best entry points with parking close to the water, charging options, food, and more. Share your experience and let's grow the community together.",
             cta: "Let's Foil"
         },
         ugc: {
@@ -194,7 +194,7 @@ export const dictionaries = {
         },
         intro: {
             title: "Willkommen bei eFoilMap",
-            text: "Die Community für eFoiler. Finde legale Spots, teile deine Erfahrungen und lass uns gemeinsam die Community vergrößern.",
+            text: "Die Community für eFoiler. Finde die besten Einstiegspunkte mit Parkplatz nah am Wasser, Lademöglichkeit, Essen und mehr. Teile deine Erfahrung und lass uns gemeinsam die Community vergrößern.",
             cta: "Let's Foil"
         },
         ugc: {
@@ -265,7 +265,7 @@ export const dictionaries = {
         },
         intro: {
             title: "Bienvenido a eFoilMap",
-            text: "La comunidad para eFoilers. Encuentra lugares legales, comparte tus experiencias y hagamos crecer la comunidad juntos.",
+            text: "La comunidad para eFoilers. Encuentra los mejores puntos de entrada con aparcamiento cerca del agua, opciones de carga, comida y más. Comparte tu experiencia y hagamos crecer la comunidad juntos.",
             cta: "Let's Foil"
         },
         ugc: {
@@ -365,7 +365,7 @@ export const dictionaries = {
         },
         intro: {
             title: "Bienvenue sur eFoilMap",
-            text: "La communauté pour les eFoilers. Trouvez des spots légaux, partagez vos expériences et développons la communauté ensemble.",
+            text: "La communauté pour les eFoilers. Trouvez les meilleurs points d'accès avec parking à proximité de l'eau, possibilités de recharge, restauration et plus encore. Partagez votre expérience et développons la communauté ensemble.",
             cta: "Let's Foil"
         },
         ugc: {
