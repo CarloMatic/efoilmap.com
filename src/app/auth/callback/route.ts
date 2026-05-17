@@ -18,9 +18,12 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       return NextResponse.redirect(`${redirectOrigin}${next}`);
+    } else {
+      console.error("Auth Callback Error:", error);
+      return NextResponse.redirect(`${redirectOrigin}/auth/auth-error?error=${encodeURIComponent(error.message)}`);
     }
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${redirectOrigin}/auth/auth-error`);
+  return NextResponse.redirect(`${redirectOrigin}/auth/auth-error?error=Missing+auth+code`);
 }
