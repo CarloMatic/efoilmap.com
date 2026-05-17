@@ -1,50 +1,59 @@
-"use client";
+import HomeClient from "@/components/HomeClient";
+import { Metadata } from "next";
+import { dictionaries, Locale } from "@/lib/dictionaries";
+import { getSpots } from "@/app/actions";
 
-import dynamic from "next/dynamic";
-const EfoilMap = dynamic(() => import("@/components/Map"), {
-  ssr: false,
-  loading: () => <div className="flex items-center justify-center w-full h-full bg-muted text-muted-foreground font-medium">Loading Map Experience...</div>
-});
-import Logo from "@/components/Logo";
-import { CookieBanner } from "@/components/CookieConsent";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Footer } from "@/components/Footer";
-import IntroModal from "@/components/IntroModal";
+interface PageProps {
+  searchParams: Promise<{ lang?: string; spot?: string }>;
+}
 
-import { useLanguage } from "@/lib/i18n";
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const resolvedSearchParams = await searchParams;
+  const lang = resolvedSearchParams.lang || "en";
+  const spotId = resolvedSearchParams.spot;
+  
+  let title = "";
+  let description = "";
+  
+  const locale = ['en', 'de', 'es', 'fr'].includes(lang) ? lang : 'en';
+  const dict = dictionaries[locale as Locale];
+  
+  if (spotId) {
+    // If a specific spot is shared via ID, fetch it
+    const spots = await getSpots();
+    const spot = spots.find(s => s.id === spotId);
+    if (spot) {
+      title = `${spot.name} - eFoilMap`;
+      description = spot.attributes?.description || dict.meta.description;
+    }
+  }
+  
+  if (!title) {
+    title = dict.meta.title;
+    description = dict.meta.description;
+  }
 
-import { Suspense } from "react";
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: "https://www.efoilmap.com",
+      siteName: "eFoilMap",
+      images: ["https://www.efoilmap.com/teaser.jpg"],
+      locale: locale === 'de' ? 'de_DE' : locale === 'es' ? 'es_ES' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://www.efoilmap.com/teaser.jpg"],
+    },
+  };
+}
 
-export default function Home() {
-  const { t } = useLanguage();
-  return (
-    <main className="w-full h-full relative flex flex-col">
-      <IntroModal />
-      {/* Header - Top Bar (Not Overlay) */}
-      <header className="w-full bg-background border-b border-border z-[101] shadow-sm">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Logo & Slogan */}
-          <div className="flex items-center gap-4">
-            <Logo className="h-8 w-auto" />
-            <h1 className="hidden md:inline-block text-sm font-medium text-muted-foreground whitespace-nowrap">
-              {t('hero.slogan')}
-            </h1>
-          </div>
-
-          {/* Lang Switcher - Pushed to right */}
-          <LanguageSwitcher />
-        </div>
-      </header>
-
-      {/* Map Container */}
-      <div className="flex-1 relative w-full overflow-hidden">
-        <Suspense fallback={<div className="flex items-center justify-center w-full h-full bg-muted text-muted-foreground">Loading Map...</div>}>
-          <EfoilMap />
-        </Suspense>
-      </div>
-
-      <CookieBanner />
-      <Footer />
-    </main>
-  );
+export default function Page() {
+  return <HomeClient />;
 }
