@@ -51,6 +51,9 @@ export default function EfoilMap() {
         food: false
     });
 
+    // derived geolocation ref to ensure geolocation only centers once on start
+    const hasGeolocatedRef = useRef(false);
+
     // Derived state for filtering - replaces useEffect and extra state
     // Moved here to be after 'filters' definition
     const filteredSpots = useMemo(() => {
@@ -81,7 +84,8 @@ export default function EfoilMap() {
     useEffect(() => {
         const checkAndGeolocate = () => {
             const hasConsent = localStorage.getItem("efoilmap-consent") === "true";
-            if (hasConsent && navigator.geolocation && !searchParams.get('spot')) {
+            if (hasConsent && navigator.geolocation && !hasGeolocatedRef.current && !searchParams.get('spot')) {
+                hasGeolocatedRef.current = true;
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { longitude, latitude } = position.coords;

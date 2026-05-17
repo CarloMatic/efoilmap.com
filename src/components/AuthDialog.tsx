@@ -48,7 +48,7 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
             });
             if (error) throw error;
             lastSentRef.current = Date.now();
-            showToast(t('auth.magic_link_sent'), "success");
+            showToast(t('auth.magic_link_sent'), "success", 10000);
             onClose();
         } catch (error) {
             showToast(getLocalizedError(error), "error");

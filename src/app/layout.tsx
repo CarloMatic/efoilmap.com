@@ -55,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "eFoilMap",
       images: [
         {
-          url: "https://efoilmap.com/og-image.jpg",
+          url: "https://efoilmap.com/teaser.jpg",
           width: 1200,
           height: 630,
         },
@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://efoilmap.com/og-image.jpg"],
+      images: ["https://efoilmap.com/teaser.jpg"],
     },
   };
 }

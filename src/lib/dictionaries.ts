@@ -4,7 +4,7 @@ export const dictionaries = {
     en: {
         meta: {
             label: "English",
-            title: "efoilmap.com | The community for eFoilers",
+            title: "The eFoil Community - Find the best access points for eFoiling together.",
             description: "Find legal e-foil spots near you. Community-driven interactive map for eFoilers."
         },
         common: {
@@ -80,7 +80,7 @@ export const dictionaries = {
             email: "Email",
             welcome_back_toast: "Welcome back!",
             send_login_link: "Send Login Link",
-            magic_link_sent: "Login link sent to your email!",
+            magic_link_sent: "Login link sent! Please check your inbox (and possibly your spam folder).",
             magic_link_desc: "We'll send you a secure login link. No password needed.",
             magic_hint: "By signing in, you agree to our community guidelines and privacy terms.",
             one_last_step: "Almost there!",
@@ -114,7 +114,7 @@ export const dictionaries = {
     de: {
         meta: {
             label: "Deutsch",
-            title: "efoilmap.com | Die Community für eFoiler",
+            title: "Die eFoil Community - Gemeinsam die besten Einstiege zum eFoilen finden.",
             description: "Finde Einstiegspunkte und legale eFoil-Spots in deiner Nähe. Interaktive Community-Karte."
         },
         common: {
@@ -190,7 +190,7 @@ export const dictionaries = {
             email: "Email",
             welcome_back_toast: "Willkommen zurück!",
             send_login_link: "Login-Link senden",
-            magic_link_sent: "Login-Link wurde gesendet!",
+            magic_link_sent: "Login-Link wurde gesendet! Bitte prüfe deinen Posteingang (und eventuell den Spam-Ordner).",
             magic_link_desc: "Wir senden dir einen sicheren Login-Link. Kein Passwort nötig.",
             magic_hint: "Mit der Anmeldung stimmst du unseren Community-Richtlinien und Datenschutzbestimmungen zu.",
             one_last_step: "Fast geschafft!",
@@ -224,7 +224,7 @@ export const dictionaries = {
     es: {
         meta: {
             label: "Español",
-            title: "efoilmap.com | La comunidad para eFoilers",
+            title: "La comunidad eFoil - Encuentren juntos los mejores puntos de acceso para eFoil.",
             description: "Encuentra puntos de entrada y lugares legales para eFoil cerca de ti. Mapa interactivo de la comunidad."
         },
         common: {
@@ -308,7 +308,7 @@ export const dictionaries = {
             email: "Correo electrónico",
             welcome_back_toast: "¡Bienvenido de nuevo!",
             send_login_link: "Enviar enlace de acceso",
-            magic_link_sent: "¡Enlace enviado a tu correo!",
+            magic_link_sent: "¡Enlace de acceso enviado! Revisa tu bandeja de entrada (y tal vez tu carpeta de spam).",
             magic_link_desc: "Te enviaremos un enlace de inicio de sesión seguro. Sin contraseña.",
             magic_hint: "Al iniciar sesión, aceptas nuestras pautas de la comunidad y términos de privacidad.",
             reset_password_sent: "¡Enlace de restablecimiento enviado!",
@@ -334,7 +334,7 @@ export const dictionaries = {
     fr: {
         meta: {
             label: "Français",
-            title: "efoilmap.com | La communauté des eFoilers",
+            title: "La communauté eFoil - Trouvez ensemble les meilleurs points d'accès pour l'eFoil.",
             description: "Trouvez des points d'accès et des spots eFoil légaux près de chez vous. Carte interactive de la communauté."
         },
         common: {
@@ -418,7 +418,7 @@ export const dictionaries = {
             email: "E-mail",
             welcome_back_toast: "Bon retour !",
             send_login_link: "Envoyer le lien de connexion",
-            magic_link_sent: "Lien envoyé par e-mail !",
+            magic_link_sent: "Lien envoyé par e-mail ! Vérifiez votre boîte de réception (et éventuellement vos spams).",
             magic_link_desc: "Nous vous enverrons un lien de connexion sécurisé. Pas besoin de mot de passe.",
             magic_hint: "En vous connectant, vous acceptez nos directives communautaires et nos conditions de confidentialité.",
             reset_password_sent: "Lien de réinitialisation envoyé !",

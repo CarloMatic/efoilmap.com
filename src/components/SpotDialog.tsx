@@ -41,7 +41,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [hasExistingReview, setHasExistingReview] = useState(false);
 
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const { showToast } = useToast();
     const { t, locale } = useLanguage();
@@ -140,7 +140,12 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                         id: 'temp-' + Date.now(),
                         rating,
                         comment,
-                        created_at: new Date().toISOString()
+                        created_at: new Date().toISOString(),
+                        profiles: {
+                            username: profile?.username || user?.email?.split('@')[0] || "User",
+                            avatar_url: profile?.avatar_url || null,
+                            bio: profile?.bio || null
+                        }
                     }, ...prev]);
                 }
 

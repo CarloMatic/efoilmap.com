@@ -45,6 +45,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
 
     // New: Photo Upload State
     const [files, setFiles] = useState<File[]>([]);
+    const [existingPhotos, setExistingPhotos] = useState<{ id: string; url: string }[]>([]);
 
     // Reset function
     const resetForm = () => {
@@ -53,6 +54,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
         setAttributes({ parking: false, charging: false, food: false, website: "" });
         setShowWebsiteField(false);
         setFiles([]);
+        setExistingPhotos([]);
     };
 
     // Load initial data for edit mode
@@ -71,6 +73,12 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                 });
                 setShowWebsiteField(!!initialData.attributes?.website);
                 setFiles([]); // Don't load existing photos here, only for new uploads
+                supabase.from('spot_photos')
+                    .select('id, url')
+                    .eq('spot_id', initialData.id)
+                    .then(({ data }) => {
+                        if (data) setExistingPhotos(data);
+                    });
             } else {
                 resetForm();
             }
@@ -87,6 +95,29 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
 
     const removeFile = (index: number) => {
         setFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const deleteExistingPhoto = async (photoId: string, photoUrl: string) => {
+        setExistingPhotos(prev => prev.filter(p => p.id !== photoId));
+        const { error: dbError } = await supabase
+            .from('spot_photos')
+            .delete()
+            .eq('id', photoId);
+            
+        if (dbError) {
+            console.error("Failed to delete photo from DB:", dbError);
+            return;
+        }
+
+        try {
+            const parts = photoUrl.split('/public/spots/');
+            if (parts.length > 1) {
+                const storagePath = decodeURIComponent(parts[1]);
+                await supabase.storage.from('spots').remove([storagePath]);
+            }
+        } catch (storageErr) {
+            console.error("Failed to delete photo from storage:", storageErr);
+        }
     };
 
     const uploadPhotos = async (spotId: string) => {
@@ -365,12 +396,29 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                             )}
                         </div>
 
-                        {/* New: Photo Upload Section */}
+                        {/* Photo Section */}
                         <div className="space-y-2 pt-2 border-t">
                             <label className="text-sm font-medium flex items-center gap-2">
                                 <Camera className="w-4 h-4" /> {t('forms.add_photo')}
                             </label>
                             <div className="flex flex-wrap gap-2">
+                                {/* Render existing photos with small X */}
+                                {existingPhotos.map((photo) => (
+                                    <div key={photo.id} className="relative w-16 h-16 rounded overflow-hidden border">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={photo.url} alt="Existing spot photo" className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => deleteExistingPhoto(photo.id, photo.url)}
+                                            className="absolute top-0 right-0 bg-red-500 text-white rounded-bl p-0.5 cursor-pointer hover:bg-red-600 transition-colors"
+                                            title="Delete photo"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                ))}
+
+                                {/* Render new files */}
                                 {files.map((file, i) => (
                                     <div key={i} className="relative w-16 h-16 rounded overflow-hidden border">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -378,7 +426,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                                         <button
                                             type="button"
                                             onClick={() => removeFile(i)}
-                                            className="absolute top-0 right-0 bg-red-500 text-white rounded-bl p-0.5"
+                                            className="absolute top-0 right-0 bg-red-500 text-white rounded-bl p-0.5 cursor-pointer hover:bg-red-600 transition-colors"
                                         >
                                             <X className="w-3 h-3" />
                                         </button>
