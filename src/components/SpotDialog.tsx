@@ -215,7 +215,11 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
     };
 
     const handleShare = () => {
-        navigator.clipboard.writeText(window.location.href);
+        const baseUrl = `${window.location.origin}${window.location.pathname}`;
+        const params = new URLSearchParams(window.location.search);
+        params.set('lang', locale);
+        const shareUrl = `${baseUrl}?${params.toString()}`;
+        navigator.clipboard.writeText(shareUrl);
         showToast(t('common.link_copied') || "Link copied to clipboard!");
     };
 

@@ -183,17 +183,26 @@ export default function EfoilMap() {
             });
         }
 
+        const params = new URLSearchParams(window.location.search);
+        const lang = params.get('lang');
+        const langQuery = lang ? `?lang=${lang}` : '';
+
         if (spot.slug) {
-            window.history.pushState(null, '', `/spots/${spot.slug}`);
+            window.history.pushState(null, '', `/spots/${spot.slug}${langQuery}`);
         } else {
-            window.history.pushState(null, '', `/?spot=${spot.id}`);
+            params.set('spot', spot.id.toString());
+            window.history.pushState(null, '', `/?${params.toString()}`);
         }
     };
 
     const handleDrawerClose = () => {
         setIsDrawerOpen(false);
         setSelectedSpot(null);
-        window.history.pushState(null, '', '/');
+        
+        const params = new URLSearchParams(window.location.search);
+        params.delete('spot');
+        const query = params.toString() ? `?${params.toString()}` : '';
+        window.history.pushState(null, '', `/${query}`);
     };
 
     // Filter Logic moved to useMemo

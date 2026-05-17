@@ -23,26 +23,35 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
     }, [locale]);
 
-    // Load from localStorage or detection on mount
+    // Load from URL, or default to 'en' if not present in URL
     useEffect(() => {
-        let target: Locale | null = null;
-        const saved = localStorage.getItem('efoilmap-lang') as Locale;
+        if (typeof window === 'undefined') return;
 
-        if (saved && dictionaries[saved]) {
-            target = saved;
-        } else {
-            // Auto-detect
-            const browserLang = navigator.language.split('-')[0] as Locale;
-            if (dictionaries[browserLang]) {
-                target = browserLang;
-            }
+        const params = new URLSearchParams(window.location.search);
+        const urlLang = params.get('lang') as Locale;
+
+        let target: Locale = 'en'; // Default to 'en' if nothing in link
+
+        if (urlLang && dictionaries[urlLang]) {
+            target = urlLang;
         }
 
-        if (target && target !== locale) {
-            const timer = setTimeout(() => setLocaleState(target), 0);
-            return () => clearTimeout(timer);
+        if (target !== locale) {
+            setLocaleState(target);
         }
-    }, [locale]);
+
+        // Synchronize cookies & localStorage
+        localStorage.setItem('efoilmap-lang', target);
+        document.cookie = `NEXT_LOCALE=${target}; path=/; max-age=31536000; SameSite=Lax`;
+        document.documentElement.lang = target;
+
+        // Ensure the URL always has the lang parameter
+        if (params.get('lang') !== target) {
+            params.set('lang', target);
+            const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+            window.history.replaceState(null, '', newUrl);
+        }
+    }, []);
 
     // Listen to Auth State to pull locale from user metadata
     useEffect(() => {
@@ -73,6 +82,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         // Set cookie for server-side detection
         document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`;
         document.documentElement.lang = l;
+
+        // Update URL query parameter
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('lang') !== l) {
+                params.set('lang', l);
+                const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+                window.history.pushState(null, '', newUrl);
+            }
+        }
 
         if (saveToCloud) {
             const { data } = await supabase.auth.getSession();
