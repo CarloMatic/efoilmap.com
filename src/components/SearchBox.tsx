@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import { useMap } from 'react-map-gl/mapbox';
-import { Search } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
+import { Spot } from '@/app/actions';
 
 // We'll use a simple fetch to Mapbox Geocoding API for custom UI control
 // instead of the heavy default UI control
@@ -14,9 +15,16 @@ interface GeocodingFeature {
     text: string;
     place_name: string;
     center: [number, number];
+    isLocalSpot?: boolean;
+    spotData?: Spot;
 }
 
-export function SearchBox() {
+interface SearchBoxProps {
+    spots: Spot[];
+    onSelectSpot: (spot: Spot) => void;
+}
+
+export function SearchBox({ spots, onSelectSpot }: SearchBoxProps) {
     const { current: map } = useMap(); // Get map instance
     const { t } = useLanguage();
     const [query, setQuery] = useState('');
@@ -31,28 +39,45 @@ export function SearchBox() {
         }
 
         try {
+            const localMatches: GeocodingFeature[] = spots
+                .filter(s => s.name.toLowerCase().includes(q.toLowerCase()))
+                .slice(0, 3)
+                .map(s => ({
+                    id: s.id,
+                    text: s.name,
+                    place_name: "eFoil Spot",
+                    center: [s.location.coordinates[0], s.location.coordinates[1]],
+                    isLocalSpot: true,
+                    spotData: s
+                }));
+
             const res = await fetch(
                 `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&types=place,locality,address&limit=5`
             );
             const data = await res.json();
-            setResults(data.features || []);
+            setResults([...localMatches, ...(data.features || [])]);
             setIsOpen(true);
         } catch (e) {
             console.error("Geocoding error:", e);
         }
-    }, []);
+    }, [spots]);
 
     const handleSelect = (feature: GeocodingFeature) => {
         if (!map) return;
 
-        const [lng, lat] = feature.center;
-        map.flyTo({
-            center: [lng, lat],
-            zoom: 12,
-            essential: true
-        });
+        if (feature.isLocalSpot && feature.spotData) {
+            onSelectSpot(feature.spotData);
+            setQuery(''); // Clear so it looks clean after selection
+        } else {
+            const [lng, lat] = feature.center;
+            map.flyTo({
+                center: [lng, lat],
+                zoom: 12,
+                essential: true
+            });
+            setQuery(feature.place_name);
+        }
 
-        setQuery(feature.place_name);
         setIsOpen(false);
         setResults([]);
     };
@@ -75,17 +100,18 @@ export function SearchBox() {
 
             {isOpen && results.length > 0 && (
                 <ul className="absolute z-50 mt-1 w-full bg-card rounded-md shadow-lg max-h-60 overflow-auto py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                    {results.map((result) => (
+                    {results.map((feature) => (
                         <li
-                            key={result.id}
-                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-muted text-foreground"
-                            onClick={() => handleSelect(result)}
+                            key={feature.id}
+                            className={`cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-muted text-foreground ${feature.isLocalSpot ? 'bg-blue-500/5 hover:bg-blue-500/10' : ''}`}
+                            onClick={() => handleSelect(feature)}
                         >
-                            <span className="block truncate font-medium">
-                                {result.text}
+                            <span className="flex items-center gap-2 truncate font-medium">
+                                {feature.isLocalSpot && <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
+                                {feature.text}
                             </span>
                             <span className="block truncate text-xs text-muted-foreground">
-                                {result.place_name}
+                                {feature.place_name}
                             </span>
                         </li>
                     ))}

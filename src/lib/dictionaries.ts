@@ -38,7 +38,7 @@ export const dictionaries = {
             food: "Food"
         },
         hero: {
-            slogan: "Find the best eFoil spots together."
+            slogan: "Find the best entry points for eFoiling together."
         },
         forms: {
             name: "Spot Name",
@@ -57,7 +57,10 @@ export const dictionaries = {
             community_reviews: "Community Reviews",
             no_photos: "No photos yet.",
             add_photo: "Add Photo",
-            suggest_edit: "Suggest Edit"
+            suggest_edit: "Suggest Edit",
+            update_review: "Update Review",
+            description: "Description",
+            description_placeholder: "Where to park, what to know?"
         },
         auth: {
             sign_in: "Login",
@@ -83,7 +86,10 @@ export const dictionaries = {
             error_rate_limit: "Too many attempts. Please try again later.",
             error_generic: "An error occurred during authentication.",
             profile_updated: "Profile updated!",
-            avatar_updated: "Photo optimized & uploaded!"
+            avatar_updated: "Photo optimized & uploaded!",
+            wait_60s: "Link already sent. Please check your spam folder or wait 60s.",
+            privacy_policy: "Privacy Policy",
+            community_rules: "Community Rules"
         },
         intro: {
             title: "Welcome to eFoilMap",
@@ -131,7 +137,7 @@ export const dictionaries = {
             food: "Essen"
         },
         hero: {
-            slogan: "Gemeinsam die besten eFoil Spots finden."
+            slogan: "Gemeinsam die besten Einstiege zum eFoilen finden."
         },
         forms: {
             name: "Spot Name",
@@ -150,7 +156,10 @@ export const dictionaries = {
             community_reviews: "Community Bewertungen",
             no_photos: "Noch keine Fotos.",
             add_photo: "Foto hinzufügen",
-            suggest_edit: "Änderung vorschlagen"
+            suggest_edit: "Änderung vorschlagen",
+            update_review: "Bewertung aktualisieren",
+            description: "Beschreibung",
+            description_placeholder: "Wo kann man parken, was muss man wissen?"
         },
         auth: {
             sign_in: "Anmelden",
@@ -176,7 +185,10 @@ export const dictionaries = {
             error_rate_limit: "Zu viele Versuche. Bitte versuche es später noch einmal.",
             error_generic: "Ein Fehler ist bei der Anmeldung aufgetreten.",
             profile_updated: "Profil aktualisiert!",
-            avatar_updated: "Foto optimiert & hochgeladen!"
+            avatar_updated: "Foto optimiert & hochgeladen!",
+            wait_60s: "Link wurde bereits gesendet. Bitte prüfe auch deinen Spam-Ordner oder warte 60s.",
+            privacy_policy: "Datenschutzbestimmungen",
+            community_rules: "Community-Richtlinien"
         },
         intro: {
             title: "Willkommen bei eFoilMap",
@@ -224,7 +236,7 @@ export const dictionaries = {
             food: "Comida"
         },
         hero: {
-            slogan: "Encuentra los mejores lugares para eFoil juntos."
+            slogan: "Encuentra los mejores puntos de entrada para eFoil juntos."
         },
         forms: {
             name: "Nombre del Spot",
@@ -242,7 +254,10 @@ export const dictionaries = {
             community_reviews: "Reseñas de la Comunidad",
             no_photos: "No hay fotos aún.",
             add_photo: "Añadir Foto",
-            suggest_edit: "Sugerir Cambio"
+            suggest_edit: "Sugerir Cambio",
+            update_review: "Actualizar reseña",
+            description: "Descripción",
+            description_placeholder: "¿Dónde aparcar, qué hay que saber?"
         },
         intro: {
             title: "Bienvenido a eFoilMap",
@@ -276,7 +291,10 @@ export const dictionaries = {
             avatar_desc: "Haz clic para cambiar la foto",
             click_for_bio: "Haz clic en la foto para ver la bio",
             profile_updated: "¡Perfil actualizado!",
-            avatar_updated: "¡Foto optimizada y subida!"
+            avatar_updated: "¡Foto optimizada y subida!",
+            wait_60s: "El enlace ya ha sido enviado. Por favor revisa la carpeta de spam o espera 60s.",
+            privacy_policy: "Política de Privacidad",
+            community_rules: "Reglas de la Comunidad"
         }
     },
     fr: {
@@ -316,7 +334,7 @@ export const dictionaries = {
             food: "Nourriture"
         },
         hero: {
-            slogan: "Trouvez ensemble les meilleurs spots d'eFoil."
+            slogan: "Trouvez ensemble les meilleurs points d'entrée pour l'eFoil."
         },
         forms: {
             name: "Nom du Spot",
@@ -334,7 +352,10 @@ export const dictionaries = {
             community_reviews: "Avis de la Communauté",
             no_photos: "Pas encore de photos.",
             add_photo: "Ajouter une photo",
-            suggest_edit: "Suggérer une modification"
+            suggest_edit: "Suggérer une modification",
+            update_review: "Mettre à jour l'avis",
+            description: "Description",
+            description_placeholder: "Où se garer, que faut-il savoir ?"
         },
         intro: {
             title: "Bienvenue sur eFoilMap",
@@ -368,7 +389,10 @@ export const dictionaries = {
             avatar_desc: "Cliquez pour changer de photo",
             click_for_bio: "Cliquez sur la photo pour la bio",
             profile_updated: "Profil mis à jour !",
-            avatar_updated: "Photo optimisée et téléchargée !"
+            avatar_updated: "Photo optimisée et téléchargée !",
+            wait_60s: "Le lien a déjà été envoyé. Veuillez vérifier vos spams ou attendre 60s.",
+            privacy_policy: "Politique de Confidentialité",
+            community_rules: "Règles de la Communauté"
         }
     }
 };

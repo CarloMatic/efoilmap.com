@@ -32,6 +32,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
         parking_distance?: "<10m" | "<50m" | "<100m" | ">100m";
         charging: boolean;
         food: boolean;
+        description?: string;
     }>({
         parking: false,
         charging: false,
@@ -60,6 +61,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                     parking_distance: initialData.attributes?.parking_distance,
                     charging: !!initialData.attributes?.charging,
                     food: !!initialData.attributes?.food,
+                    description: initialData.attributes?.description || "",
                 });
                 setFiles([]); // Don't load existing photos here, only for new uploads
             } else {
@@ -226,6 +228,18 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="e.g. Sunny Bay Beach"
                                 className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                            />
+                        </div>
+
+                        {/* Description Input */}
+                        <div className="space-y-1">
+                            <label className="text-sm font-medium">{t('forms.description')}</label>
+                            <textarea
+                                value={attributes.description || ""}
+                                onChange={(e) => setAttributes({ ...attributes, description: e.target.value })}
+                                placeholder={t('forms.description_placeholder')}
+                                rows={2}
+                                className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none text-sm"
                             />
                         </div>
 

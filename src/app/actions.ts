@@ -20,6 +20,7 @@ export interface Spot {
         charging?: boolean;
         food?: boolean;
         verified?: boolean;
+        description?: string;
     };
     source_locale?: string;
     createdAt?: string;

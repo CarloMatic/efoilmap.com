@@ -17,6 +17,10 @@ export function Footer() {
                     {t('nav.privacy')}
                 </Link>
                 <span>•</span>
+                <Link href="/community-rules" className="hover:text-foreground transition-colors">
+                    {t('auth.community_rules')}
+                </Link>
+                <span>•</span>
                 <span>© 2026 efoilmap.com</span>
             </div>
         </footer>

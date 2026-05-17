@@ -235,7 +235,7 @@ export default function EfoilMap() {
                             <div className="flex-1 hidden md:block" /> 
 
                             {/* Search Box - Center */}
-                            <SearchBox />
+                            <SearchBox spots={spots} onSelectSpot={handleSpotSelect} />
 
                             {/* Auth / Profile - Right */}
                             <div className="flex-1 flex justify-end">

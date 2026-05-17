@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Locale, dictionaries } from './dictionaries';
+import { supabase } from './supabase';
 
 type LanguageContextType = {
     locale: Locale;
@@ -33,14 +34,46 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             const timer = setTimeout(() => setLocaleState(target), 0);
             return () => clearTimeout(timer);
         }
-    }, [locale]); // Added locale to dep, but logic guards against loop
+    }, [locale]);
 
-    const setLocale = (l: Locale) => {
+    // Listen to Auth State to pull locale from user metadata
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data }) => {
+            if (data.session?.user?.user_metadata?.locale) {
+                const userLocale = data.session.user.user_metadata.locale as Locale;
+                if (dictionaries[userLocale] && userLocale !== locale) {
+                    setLocale(userLocale, false); // Don't trigger another save
+                }
+            }
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session?.user?.user_metadata?.locale) {
+                const userLocale = session.user.user_metadata.locale as Locale;
+                if (dictionaries[userLocale] && userLocale !== locale) {
+                    setLocale(userLocale, false);
+                }
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [locale]);
+
+    const setLocale = async (l: Locale, saveToCloud = true) => {
         setLocaleState(l);
         localStorage.setItem('efoilmap-lang', l);
         // Set cookie for server-side detection
         document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`;
         document.documentElement.lang = l;
+
+        if (saveToCloud) {
+            const { data } = await supabase.auth.getSession();
+            if (data.session?.user) {
+                await supabase.auth.updateUser({
+                    data: { locale: l }
+                });
+            }
+        }
     };
 
     // Helper to get nested keys like "common.agree"

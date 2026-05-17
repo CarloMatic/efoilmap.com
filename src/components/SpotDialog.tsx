@@ -226,72 +226,82 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
             <div className="relative w-full max-w-md bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in max-h-[90vh] flex flex-col">
 
                 {/* Header */}
-                <div className="p-4 border-b flex items-start justify-between bg-muted/30">
-                    <div className="flex-1">
-                        <h2 className="text-xl font-bold tracking-tight">{spot.name}</h2>
-                        {/* AI Translation Badge */}
-                        {spot.source_locale && spot.source_locale !== locale && (
-                            <p className="text-[10px] text-muted-foreground italic mt-0.5">
-                                {t('ugc.ai_translated')}
-                            </p>
-                        )}
-                        <div className="flex items-center gap-2 mt-1">
-                            {/* Status and Rating Row */}
-                            <span className={cn(
-                                "px-2 py-0.5 rounded-full text-xs font-bold uppercase border",
-                                spot.status === "ALLOWED" && "bg-green-500/10 text-green-500 border-green-500/20",
-                                spot.status === "TOLERATED" && "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-                                spot.status === "FORBIDDEN" && "bg-red-500/10 text-red-500 border-red-500/20",
-                                spot.status === "UNCLEAR" && "bg-gray-500/10 text-gray-400 border-gray-500/20"
-                            )}>
-                                {spot.status === "ALLOWED" ? t('forms.allowed') :
-                                    spot.status === "TOLERATED" ? t('forms.tolerated') :
-                                        spot.status === "FORBIDDEN" ? t('forms.forbidden') : "Unclear"}
-                            </span>
-                            {spot.average_rating ? (
-                                <div className="flex items-center gap-1 text-xs text-yellow-500 font-bold">
-                                    <Star className="w-3 h-3 fill-current" />
-                                    {spot.average_rating.toFixed(1)} <span className="text-muted-foreground font-normal">({spot.rating_count})</span>
-                                </div>
-                            ) : null}
+                <div className="p-4 border-b flex flex-col gap-3 bg-muted/30">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1 pr-4">
+                            <h2 className="text-xl font-bold tracking-tight leading-tight">{spot.name}</h2>
+                            {/* AI Translation Badge */}
+                            {spot.source_locale && spot.source_locale !== locale && (
+                                <p className="text-[10px] text-muted-foreground italic mt-0.5">
+                                    {t('ugc.ai_translated')}
+                                </p>
+                            )}
+                            <div className="flex items-center gap-2 mt-2">
+                                {/* Status and Rating Row */}
+                                <span className={cn(
+                                    "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border whitespace-nowrap",
+                                    spot.status === "ALLOWED" && "bg-green-500/10 text-green-500 border-green-500/20",
+                                    spot.status === "TOLERATED" && "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+                                    spot.status === "FORBIDDEN" && "bg-red-500/10 text-red-500 border-red-500/20",
+                                    spot.status === "UNCLEAR" && "bg-gray-500/10 text-gray-400 border-gray-500/20"
+                                )}>
+                                    {spot.status === "ALLOWED" ? t('forms.allowed') :
+                                        spot.status === "TOLERATED" ? t('forms.tolerated') :
+                                            spot.status === "FORBIDDEN" ? t('forms.forbidden') : "Unclear"}
+                                </span>
+                                {spot.average_rating ? (
+                                    <div className="flex items-center gap-1 text-xs text-yellow-500 font-bold">
+                                        <Star className="w-3 h-3 fill-current" />
+                                        {spot.average_rating.toFixed(1)} <span className="text-muted-foreground font-normal">({spot.rating_count})</span>
+                                    </div>
+                                ) : null}
+                            </div>
                         </div>
+
+                        <button
+                            onClick={onClose}
+                            className="p-1 -mr-1 rounded-full hover:bg-muted transition-colors shrink-0"
+                        >
+                            <X className="w-5 h-5 text-muted-foreground" />
+                        </button>
                     </div>
 
-                    {/* Share Button */}
-                    <button
-                        onClick={handleShare}
-                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors hover:underline mr-4"
-                        title="Share this spot"
-                    >
-                        <Share2 className="w-3 h-3" />
-                        {t('common.share') || "Share"}
-                    </button>
+                    {/* Actions Row */}
+                    <div className="flex items-center gap-3 pt-1">
+                        <button
+                            onClick={handleShare}
+                            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md"
+                            title="Share this spot"
+                        >
+                            <Share2 className="w-3.5 h-3.5" />
+                            {t('common.share') || "Share"}
+                        </button>
 
-                    {/* Suggest Edit Link - Top */}
-                    <button
-                        onClick={() => {
-                            if (!user) {
-                                setIsAuthOpen(true);
-                                return;
-                            }
-                            onEdit();
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold text-gray-300 transition-all active:scale-95"
-                    >
-                        <Sparkles className="w-3 h-3 text-blue-400" />
-                        {t('forms.suggest_edit')}
-                    </button>
-
-                    <button
-                        onClick={onClose}
-                        className="p-1 rounded-full hover:bg-muted transition-colors"
-                    >
-                        <X className="w-5 h-5 text-muted-foreground" />
-                    </button>
+                        <button
+                            onClick={() => {
+                                if (!user) {
+                                    setIsAuthOpen(true);
+                                    return;
+                                }
+                                onEdit();
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold text-gray-300 transition-all active:scale-95 ml-auto"
+                        >
+                            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                            {t('forms.suggest_edit')}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Scrollable Body */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-6">
+
+                    {/* Description Section */}
+                    {spot.attributes?.description && (
+                        <div className="text-sm text-foreground/90 whitespace-pre-line bg-muted/10 p-3 rounded-lg border border-border/50">
+                            {spot.attributes.description}
+                        </div>
+                    )}
 
                     {/* Amenities Section - Plain Text/Icons (No borders) */}
                     {(spot.attributes?.parking || spot.attributes?.charging || spot.attributes?.food) && (
@@ -361,13 +371,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                             {/* Avatar with Bio Popover */}
                                             <div className="relative group/avatar">
                                                 <div 
-                                                    className="w-10 h-10 rounded-full bg-gray-800 border border-border/50 overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-500/30 transition-all"
-                                                    title={rev.profiles?.bio || "No bio"}
-                                                    onClick={(e) => {
-                                                        if (rev.profiles?.bio) {
-                                                            showToast(`${rev.profiles.username}: ${rev.profiles.bio}`, "success");
-                                                        }
-                                                    }}
+                                                    className="w-10 h-10 rounded-full bg-gray-800 border border-border/50 overflow-hidden flex-shrink-0 cursor-help hover:ring-2 hover:ring-blue-500/30 transition-all relative"
                                                 >
                                                     {rev.profiles?.avatar_url ? (
                                                         <Image 
@@ -384,6 +388,14 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                                         </div>
                                                     )}
                                                 </div>
+
+                                                {/* Tooltip */}
+                                                {rev.profiles?.bio && (
+                                                    <div className="absolute top-full left-0 mt-2 w-48 p-3 bg-gray-900 border border-white/10 rounded-xl shadow-xl opacity-0 invisible group-hover/avatar:opacity-100 group-hover/avatar:visible transition-all z-50 text-xs text-gray-300 pointer-events-none">
+                                                        <p className="font-bold text-white mb-1">{rev.profiles.username}</p>
+                                                        {rev.profiles.bio}
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="flex-1 min-w-0">
@@ -411,7 +423,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                                 </p>
                                                 {rev.profiles?.bio && (
                                                     <p className="text-[10px] text-blue-400/60 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        {t('auth.click_for_bio') || "Klicke auf das Foto für die Bio"}
+                                                        {/* This helps prompt hover but isn't required anymore since tooltip handles it. Left for extra UX */}
                                                     </p>
                                                 )}
                                             </div>

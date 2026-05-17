@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { X, Mail, Loader2, Sparkles, Send } from "lucide-react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n";
@@ -12,6 +13,7 @@ interface AuthDialogProps {
 export function AuthDialog({ open, onClose }: AuthDialogProps) {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
+    const lastSentRef = useRef<number>(0);
     
     const { showToast } = useToast();
     const { t, locale } = useLanguage();
@@ -26,6 +28,13 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        const now = Date.now();
+        if (now - lastSentRef.current < 60000) {
+            showToast(t('auth.wait_60s'), "error");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -38,6 +47,7 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
                 }
             });
             if (error) throw error;
+            lastSentRef.current = Date.now();
             showToast(t('auth.magic_link_sent'), "success");
             onClose();
         } catch (error) {
@@ -102,6 +112,10 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
                     <div className="mt-8 pt-6 border-t border-white/10">
                         <p className="text-[10px] text-gray-500 text-center leading-relaxed">
                             {t('auth.magic_hint')}
+                            <br />
+                            <Link href="/privacy" className="underline hover:text-gray-300 ml-1">{t('auth.privacy_policy')}</Link>
+                            {" • "}
+                            <Link href="/community-rules" className="underline hover:text-gray-300">{t('auth.community_rules')}</Link>
                         </p>
                     </div>
                 </div>
