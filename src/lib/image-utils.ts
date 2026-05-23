@@ -8,8 +8,13 @@ export async function compressImage(file: File, maxDimension: number = 1200): Pr
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (event) => {
-            const img = new (window as any).Image();
-            img.src = event.target?.result;
+            const img = new Image();
+            if (event.target?.result) {
+                img.src = event.target.result as string;
+            } else {
+                reject(new Error("FileReader result is empty"));
+                return;
+            }
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 let width = img.width;

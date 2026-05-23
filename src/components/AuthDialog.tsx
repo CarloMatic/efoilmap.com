@@ -20,10 +20,11 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
 
     if (!open) return null;
 
-    const getLocalizedError = (error: any) => {
-        const msg = error.message?.toLowerCase() || "";
+    const getLocalizedError = (error: unknown) => {
+        const err = error as { message?: string } | null;
+        const msg = err?.message?.toLowerCase() || "";
         if (msg.includes("rate limit exceeded")) return t('auth.error_rate_limit');
-        return t('auth.error_generic') || error.message;
+        return t('auth.error_generic') || err?.message || String(error);
     };
 
     const handleAuth = async (e: React.FormEvent) => {

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { X, User, Loader2, Sparkles, Check } from "lucide-react";
+import { User, Loader2, Sparkles, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n";
-
+ 
 export function ProfileSetupDialog() {
     const { user, profile, updateProfile } = useAuth();
     const [username, setUsername] = useState("");
@@ -11,7 +11,7 @@ export function ProfileSetupDialog() {
     const [open, setOpen] = useState(false);
     const { showToast } = useToast();
     const { t } = useLanguage();
-
+ 
     useEffect(() => {
         // Show dialog if user is logged in but has no username
         if (user && profile && !profile.username) {
@@ -20,9 +20,9 @@ export function ProfileSetupDialog() {
             setOpen(false);
         }
     }, [user, profile]);
-
+ 
     if (!open) return null;
-
+ 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!username.trim()) return;
@@ -31,15 +31,16 @@ export function ProfileSetupDialog() {
         try {
             const trimmed = username.trim();
             if (!trimmed) throw new Error("Username is required");
-
+ 
             const { error } = await updateProfile({ username: trimmed });
             if (error) throw error;
             
             showToast(t('auth.profile_updated'), "success");
             // Manually close first to be responsive
             setOpen(false);
-        } catch (error: any) {
-            showToast(error.message, "error");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            showToast(message, "error");
         } finally {
             setLoading(false);
         }

@@ -70,8 +70,9 @@ export function ProfileEditDialog({ open, onClose }: ProfileEditDialogProps) {
 
             await updateProfile({ avatar_url: publicUrl });
             showToast(t('auth.avatar_updated'), "success");
-        } catch (error: any) {
-            showToast(error.message, "error");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            showToast(message, "error");
         } finally {
             setUploading(false);
         }
@@ -99,8 +100,9 @@ export function ProfileEditDialog({ open, onClose }: ProfileEditDialogProps) {
             if (error) throw error;
 
             showToast("Profilbild gelöscht", "success");
-        } catch (error: any) {
-            showToast(error.message, "error");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            showToast(message, "error");
         } finally {
             setUploading(false);
         }
@@ -117,8 +119,9 @@ export function ProfileEditDialog({ open, onClose }: ProfileEditDialogProps) {
             if (error) throw error;
             showToast(t('auth.profile_updated'), "success");
             onClose();
-        } catch (error: any) {
-            showToast(error.message, "error");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            showToast(message, "error");
         } finally {
             setLoading(false);
         }

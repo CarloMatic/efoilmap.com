@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/i18n";
+import Link from "next/link";
 
 export function CookieBanner() {
     const { t } = useLanguage();
@@ -12,11 +13,15 @@ export function CookieBanner() {
     useEffect(() => {
         const consent = localStorage.getItem("efoilmap-consent");
         if (consent === "true") {
-            setHasConsent(true);
-            setIsVisible(false);
+            setTimeout(() => {
+                setHasConsent(true);
+                setIsVisible(false);
+            }, 0);
         } else if (consent === "false") {
-            setIsRejected(true);
-            setIsVisible(true);
+            setTimeout(() => {
+                setIsRejected(true);
+                setIsVisible(true);
+            }, 0);
         } else if (!consent) {
             const timer = setTimeout(() => setIsVisible(true), 10);
             return () => clearTimeout(timer);
@@ -58,21 +63,32 @@ export function CookieBanner() {
 
     if (isRejected) {
         return (
-            <div className="fixed bottom-0 left-0 right-0 z-[120] p-4 bg-red-950/90 backdrop-blur border-t border-red-900 shadow-2xl animate-in slide-in-from-bottom duration-300">
-                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4 items-center justify-between">
-                    <p className="text-sm text-red-200 font-medium text-center sm:text-left">
-                        {t('consent.rejected_warning') || "The application requires functional cookies to display the map and your location. Limited functionality available."}
-                    </p>
-                    <div className="flex gap-2 whitespace-nowrap shrink-0">
+            <div className="fixed bottom-0 left-0 right-0 z-[9999] p-6 bg-red-955/95 backdrop-blur-xl border-t border-red-900 shadow-2xl animate-in slide-in-from-bottom duration-300">
+                <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-6 items-center justify-between">
+                    <div className="space-y-2 text-center md:text-left flex-1 pr-0 md:pr-6">
+                        <p className="text-sm text-red-200 font-medium leading-relaxed">
+                            {t('consent.rejected_warning') || "The application requires functional cookies to display the map and your location. Limited functionality available."}
+                        </p>
+                        <div className="flex justify-center md:justify-start gap-3 text-xs text-red-300/80">
+                            <Link href="/privacy" className="hover:underline hover:text-white transition-colors">
+                                {t('consent.privacy_link') || "Privacy Policy"}
+                            </Link>
+                            <span>•</span>
+                            <Link href="/imprint" className="hover:underline hover:text-white transition-colors">
+                                {t('consent.imprint_link') || "Imprint"}
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 whitespace-nowrap shrink-0 w-full md:w-auto">
                         <button
                             onClick={() => window.history.back()}
-                            className="px-4 py-2 text-sm font-medium text-red-200 hover:text-white border border-red-200/20 rounded-full transition-colors"
+                            className="w-full sm:w-auto px-6 py-3 text-sm font-semibold text-red-200 hover:text-white border border-red-200/20 rounded-xl transition-all cursor-pointer text-center active:scale-[0.98]"
                         >
                             {t('consent.leave') || "Weg hier"}
                         </button>
                         <button
                             onClick={handleAccept}
-                            className="px-6 py-2 text-sm font-bold bg-white text-red-950 rounded-full shadow-lg hover:bg-red-100 transition-all"
+                            className="w-full sm:w-auto px-8 py-3 text-sm font-bold bg-white text-red-950 rounded-xl shadow-lg hover:bg-red-100 transition-all cursor-pointer text-center active:scale-[0.98]"
                         >
                             {t('common.agree') || "Accept Cookies"}
                         </button>
@@ -83,22 +99,31 @@ export function CookieBanner() {
     }
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-[120] p-4 bg-background/95 backdrop-blur border-t border-border shadow-2xl animate-in slide-in-from-bottom duration-300">
-            <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="text-sm text-foreground space-y-1">
-                    <h3 className="font-bold">{t('consent.title')}</h3>
-                    <p>{t('consent.text')}</p>
+        <div className="fixed bottom-0 left-0 right-0 z-[9999] p-6 bg-background/98 backdrop-blur-xl border-t border-border shadow-2xl animate-in slide-in-from-bottom duration-300">
+            <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div className="text-sm text-foreground space-y-2 text-center md:text-left flex-1 pr-0 md:pr-6">
+                    <h3 className="font-bold text-base">{t('consent.title')}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{t('consent.text')}</p>
+                    <div className="flex justify-center md:justify-start gap-3 text-xs text-muted-foreground">
+                        <Link href="/privacy" className="hover:underline hover:text-foreground transition-colors">
+                            {t('consent.privacy_link') || "Privacy Policy"}
+                        </Link>
+                        <span>•</span>
+                        <Link href="/imprint" className="hover:underline hover:text-foreground transition-colors">
+                            {t('consent.imprint_link') || "Imprint"}
+                        </Link>
+                    </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
                     <button
                         onClick={handleReject}
-                        className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        className="w-full sm:w-auto px-6 py-3 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all cursor-pointer text-center active:scale-[0.98]"
                     >
                         {t('common.reject')}
                     </button>
                     <button
                         onClick={handleAccept}
-                        className="px-6 py-2 text-sm font-bold bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-all"
+                        className="w-full sm:w-auto px-8 py-3 text-sm font-bold bg-primary text-primary-foreground rounded-xl shadow-lg hover:bg-primary/90 transition-all cursor-pointer text-center active:scale-[0.98]"
                     >
                         {t('common.agree')}
                     </button>

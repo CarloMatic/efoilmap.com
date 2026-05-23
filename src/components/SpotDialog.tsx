@@ -84,12 +84,11 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                 .order('created_at', { ascending: false })
                 .then(({ data }) => {
                     if (data) {
-                        let userReview: any = null;
+                        const userReview = data.find(d => user && d.user_id === user.id);
 
                         const mapped: Review[] = data
                             .filter(d => {
                                 if (user && d.user_id === user.id) {
-                                    userReview = d;
                                     return false; // Hide own review from community list
                                 }
                                 // Only show community reviews that have a comment
@@ -100,7 +99,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                 rating: d.rating,
                                 comment: d.comment,
                                 created_at: d.created_at,
-                                profiles: Array.isArray(d.profiles) ? d.profiles[0] : d.profiles
+                                profiles: Array.isArray(d.profiles) ? d.profiles[0] : (d.profiles as Review['profiles'])
                             }));
 
                         if (userReview) {
@@ -516,7 +515,7 @@ function ReviewItem({ review, targetLang, t }: ReviewItemProps) {
                         ))}
                     </div>
                     <p className="text-sm text-foreground/90 leading-relaxed italic">
-                        "{translatedComment}"
+                        &ldquo;{translatedComment}&rdquo;
                     </p>
                     {isTranslated && (
                         <p className="text-[10px] text-muted-foreground/60 italic mt-1.5 border-t border-border/10 pt-1">

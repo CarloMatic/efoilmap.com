@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from '@/lib/i18n';
-import { Filter, BatteryCharging, ParkingSquare, Utensils, CheckCircle2 } from 'lucide-react';
+import { Filter, BatteryCharging, ParkingSquare, Utensils } from 'lucide-react';
 
 // Simple cn utility if not exists (checked imports, but to be safe)
 function classNames(...classes: (string | undefined | null | false)[]) {

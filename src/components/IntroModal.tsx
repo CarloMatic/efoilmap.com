@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/i18n";
-import Logo from "./Logo";
 import { Waves } from "lucide-react";
+import Image from "next/image";
 
 export default function IntroModal() {
     const { t } = useLanguage();
@@ -29,10 +29,12 @@ export default function IntroModal() {
             <div className="max-w-md w-full bg-card border border-border rounded-[2rem] overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in duration-300">
                 {/* Full width teaser banner image */}
                 <div className="w-full h-56 relative shrink-0">
-                    <img 
+                    <Image 
                         src="/teaser.jpg" 
                         alt="eFoil community" 
-                        className="w-full h-full object-cover"
+                        fill
+                        priority
+                        className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-card/30 via-transparent to-transparent" />
                 </div>

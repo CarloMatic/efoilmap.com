@@ -3,15 +3,15 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Map, { GeolocateControl, NavigationControl, ScaleControl, Marker } from "react-map-gl/mapbox";
-import "mapbox-gl/dist/mapbox-gl.css";
+import type { MapRef } from "react-map-gl/mapbox";
 import { AlertCircle, MapPin } from "lucide-react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { getSpots, Spot } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { SpotDialog } from "@/components/SpotDialog";
 import { ConsentGate } from "@/components/CookieConsent";
 import { useLanguage } from "@/lib/i18n";
-import { User as UserIcon, LogOut } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { SearchBox } from "@/components/SearchBox";
 import { FilterBar, FilterState } from "@/components/FilterBar";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,15 +24,14 @@ import { ProfileSetupDialog } from "@/components/ProfileSetupDialog";
 import { ProfileEditDialog } from "@/components/ProfileEditDialog";
 
 export default function EfoilMap() {
-    const { user, profile, signOut } = useAuth();
+    const { user, profile } = useAuth();
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const { t } = useLanguage();
     const { showToast } = useToast();
-    const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const mapRef = useRef(null);
+    const mapRef = useRef<MapRef>(null);
     // Initialize directly to avoid flicker
     // Initialize directly to avoid flicker
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
@@ -119,13 +118,11 @@ export default function EfoilMap() {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { longitude, latitude } = position.coords;
-                        if (mapRef.current) {
-                            (mapRef.current as any).flyTo({
-                                center: [longitude, latitude],
-                                zoom: 12,
-                                duration: 2000
-                            });
-                        }
+                        mapRef.current?.flyTo({
+                            center: [longitude, latitude],
+                            zoom: 12,
+                            duration: 2000
+                        });
                     },
                     (error) => {
                         console.warn("Geolocation permission denied or error:", error);
@@ -157,12 +154,10 @@ export default function EfoilMap() {
                     setSelectedSpot(spot);
                     setIsDrawerOpen(true);
                     // Fly to location
-                    if (mapRef.current) {
-                        (mapRef.current as any).flyTo({
-                            center: [spot.location.coordinates[0], spot.location.coordinates[1]],
-                            zoom: 14
-                        });
-                    }
+                    mapRef.current?.flyTo({
+                        center: [spot.location.coordinates[0], spot.location.coordinates[1]],
+                        zoom: 14
+                    });
                 }, 100);
                 return () => clearTimeout(timer);
             }
@@ -174,14 +169,12 @@ export default function EfoilMap() {
         setIsDrawerOpen(true);
         
         // Immediate smooth flyTo
-        if (mapRef.current) {
-            (mapRef.current as any).flyTo({
-                center: [spot.location.coordinates[0], spot.location.coordinates[1]],
-                zoom: 14,
-                duration: 1500,
-                essential: true
-            });
-        }
+        mapRef.current?.flyTo({
+            center: [spot.location.coordinates[0], spot.location.coordinates[1]],
+            zoom: 14,
+            duration: 1500,
+            essential: true
+        });
 
         const params = new URLSearchParams(window.location.search);
         const lang = params.get('lang');

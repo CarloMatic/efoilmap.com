@@ -18,9 +18,13 @@ export default function Imprint() {
                     <p className="text-sm text-muted-foreground">Information according to § 5 TMG</p>
 
                     <div className="bg-card border border-border p-6 rounded-lg space-y-2">
-                        <p className="font-bold">Angelpower UG / efoilmap.com</p>
+                        <p className="font-bold">Angelpower UG (haftungsbeschränkt)</p>
                         <p>Belvedereallee 5</p>
                         <p>52070 Aachen</p>
+                        <p className="text-xs text-muted-foreground mt-4">
+                            Registergericht: Amtsgericht Aachen<br />
+                            Registernummer: HRB 16897
+                        </p>
                     </div>
 
                     <div className="space-y-2">
@@ -30,7 +34,12 @@ export default function Imprint() {
                     </div>
 
                     <div className="space-y-2">
-                        <h2 className="text-xl font-semibold">Responsible for Non-User Generated Content</h2>
+                        <h2 className="text-xl font-semibold">Represented By</h2>
+                        <p>Carlo Matic (Geschäftsführer / Managing Director)</p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <h2 className="text-xl font-semibold">Responsible for Content (§ 55 Abs. 2 RStV)</h2>
                         <p>Carlo Matic</p>
                     </div>
                 </section>

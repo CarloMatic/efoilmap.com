@@ -29,16 +29,31 @@ export interface Spot {
     rating_count?: number;
 }
 
+export interface DbSpot {
+    id: string;
+    name: string;
+    status: Spot['status'];
+    lng: number;
+    lat: number;
+    attributes: Spot['attributes'];
+    source_locale?: string;
+    created_at: string;
+    average_rating?: number;
+    rating_count?: number;
+}
+
 export async function getSpots(): Promise<Spot[]> {
     const supabase = await createClient();
     try {
         // Try fetching with source_locale first
-        let { data, error } = await supabase
+        const fetchRes = await supabase
             .from("spots")
             .select(`
                 id, name, status, attributes, created_at, lat, lng,
                 average_rating, rating_count, source_locale
             `);
+        let data = fetchRes.data as DbSpot[] | null;
+        let error = fetchRes.error;
 
         // If source_locale is missing, try without it
         if (error && error.message.includes("source_locale")) {
@@ -49,7 +64,7 @@ export async function getSpots(): Promise<Spot[]> {
                     id, name, status, attributes, created_at, lat, lng,
                     average_rating, rating_count
                 `);
-            data = basicFetch.data as any[];
+            data = basicFetch.data as DbSpot[] | null;
             error = basicFetch.error;
         }
 
@@ -62,7 +77,7 @@ export async function getSpots(): Promise<Spot[]> {
             return [];
         }
 
-        return (data || []).map((d: Record<string, any>) => {
+        return (data || []).map((d: DbSpot) => {
             const s: Spot = {
                 id: d.id,
                 name: d.name,
@@ -137,31 +152,7 @@ export async function updateSpot(spotId: string, data: Partial<Spot>, token?: st
     }
 }
 
-function getMockSpots(): Spot[] {
-    return [
-        {
-            id: "1",
-            name: "Rursee Example",
-            status: "TOLERATED",
-            location: { type: "Point", coordinates: [6.38, 50.60] }, // Near Aachen
-            attributes: { parking: true },
-        },
-        {
-            id: "2",
-            name: "Forbidden Zone",
-            status: "FORBIDDEN",
-            location: { type: "Point", coordinates: [6.1, 50.8] },
-            attributes: {},
-        },
-        {
-            id: "3",
-            name: "Official E-Foil Harbor",
-            status: "ALLOWED",
-            location: { type: "Point", coordinates: [6.05, 50.75] },
-            attributes: { charging: true },
-        },
-    ];
-}
+
 
 export async function createSpot(spotData: Omit<Spot, "id" | "createdAt">, token?: string) {
     const supabase = await createClient();
@@ -204,7 +195,7 @@ export async function createSpot(spotData: Omit<Spot, "id" | "createdAt">, token
     ) : supabase;
 
     try {
-        const dbData: Record<string, any> = {
+        const dbData: Record<string, unknown> = {
             name: spotData.name,
             status: spotData.status,
             lat: spotData.location.coordinates[1],
@@ -226,19 +217,20 @@ export async function createSpot(spotData: Omit<Spot, "id" | "createdAt">, token
                 console.warn("DB Schema fallback: inserting without source_locale/user_id");
                 const basic = await dbClient.from("spots").insert([dbData]).select().single();
                 if (basic.error) throw basic.error;
-                return { success: true, data: formatSpot(basic.data) };
+                return { success: true, data: formatSpot(basic.data as DbSpot) };
             }
             throw error;
         }
 
-        return { success: true, data: formatSpot(data) };
-    } catch (error: any) {
+        return { success: true, data: formatSpot(data as DbSpot) };
+    } catch (error) {
         console.error("Create Spot Exception:", error);
-        return { success: false, error: error.message || "Unknown error" };
+        const message = error instanceof Error ? error.message : "Unknown error";
+        return { success: false, error: message };
     }
 }
 
-function formatSpot(data: any): Spot {
+function formatSpot(data: DbSpot): Spot {
     const s: Spot = {
         id: data.id,
         name: data.name,

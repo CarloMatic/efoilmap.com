@@ -80,6 +80,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
             window.history.replaceState(null, '', newUrl);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Listen to Auth State to pull locale from user metadata
