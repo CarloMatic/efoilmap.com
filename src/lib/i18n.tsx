@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Locale, dictionaries } from './dictionaries';
+import { Locale, dictionaries, SUPPORTED_LOCALES } from './dictionaries';
 import { supabase } from './supabase';
 
 type LanguageContextType = {
@@ -157,7 +157,7 @@ export function useTranslate(text: string | undefined, targetLang: string) {
             return;
         }
 
-        const target = targetLang === 'en' ? 'en' : targetLang === 'de' ? 'de' : targetLang === 'es' ? 'es' : targetLang === 'fr' ? 'fr' : 'en';
+        const target = (SUPPORTED_LOCALES as readonly string[]).includes(targetLang) ? targetLang : 'en';
         const sl = 'auto';
 
         setTimeout(() => {

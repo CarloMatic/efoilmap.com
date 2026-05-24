@@ -1,4 +1,5 @@
-export type Locale = 'en' | 'de' | 'es' | 'fr';
+export const SUPPORTED_LOCALES = ['en', 'de', 'es', 'fr', 'it', 'pt', 'nl', 'pl', 'sv'] as const;
+export type Locale = typeof SUPPORTED_LOCALES[number];
 
 export const dictionaries = {
     en: {
@@ -444,5 +445,561 @@ export const dictionaries = {
             privacy_policy: "Politique de Confidentialité",
             community_rules: "Règles de la Communauté"
         }
+    },
+    it: {
+        meta: {
+            label: "Italiano",
+            title: "La community eFoil - Troviamo insieme i migliori punti di accesso per l'eFoil.",
+            description: "Trova punti di acesso e spot eFoil legali vicino a te. Mappa interattiva della community."
+        },
+        common: {
+            agree: "Accetta",
+            reject: "Rifiuta",
+            settings: "Impostazioni",
+            loading: "Caricamento...",
+            close: "Chiudi",
+            share: "Condividi",
+            link_copied: "Link copiato!",
+            profile: "Profilo",
+            save: "Salva",
+            logout: "Disconnetti",
+            success: "Successo",
+            remove: "Rimuovi"
+        },
+        consent: {
+            title: "Utilizziamo i cookie",
+            text: "Utilizziamo i cookie per migliorare la tua esperienza. Questo include contenuti di terze parti come Mapbox.",
+            map_blocked: "La mappa è disabilitata",
+            map_blocked_text: "Per vedere la mappa, accetta i cookie funzionali.",
+            accept_map: "Abilita Mappa",
+            privacy_link: "Informativa sulla Privacy",
+            imprint_link: "Note Legali",
+            rejected_warning: "L'applicazione non può caricare la mappa senza cookie e quindi non funziona.",
+            leave: "Fammi uscire da qui"
+        },
+        nav: { imprint: "Note Legali", privacy: "Privacy" },
+        add_spot: "Aggiungi Spot",
+        search: { placeholder: "Cerca città o spot..." },
+        filters: {
+            title: "Filtra tutti gli spot per:",
+            all_spots: "Tutti gli spot",
+            allowed_spots: "Consentiti",
+            tolerated_spots: "Tollerati",
+            unclear_spots: "Non chiari",
+            parking: "Parcheggio",
+            charging: "Ricarica",
+            food: "Cibo"
+        },
+        hero: {
+            slogan: "Trova insieme i migliori punti di ingresso per l'eFoil."
+        },
+        forms: {
+            name: "Nome dello Spot",
+            status: "Stato",
+            allowed: "Consentito",
+            tolerated: "Tolerato",
+            forbidden: "Vietato",
+            unclear: "Sconosciuto",
+            amenities: "Servizi",
+            save: "Salva Spot",
+            creating: "Salvataggio...",
+            update: "Aggiorna Spot",
+            photo_upload: "Carica Foto",
+            review_title: "Scrivi una Recensione",
+            review_placeholder: "Condividi la tua esperienza...",
+            post_review: "Invia Recensione",
+            community_reviews: "Recensioni della Community",
+            no_photos: "Ancora nessuna foto.",
+            add_photo: "Aggiungi Foto",
+            suggest_edit: "Suggerisci Modifica",
+            update_review: "Aggiorna Recensione",
+            description: "Descrizione",
+            description_placeholder: "Dove parcheggiare, cosa sapere?",
+            add_website: "Aggiungi Sito Web",
+            website: "Sito Web"
+        },
+        auth: {
+            sign_in: "Accedi",
+            sign_up: "Registrati",
+            welcome: "Benvenuto",
+            email: "Email",
+            welcome_back_toast: "Bentornato!",
+            send_login_link: "Invia Link di Accesso",
+            magic_link_sent: "Link di accesso inviato! Controlla la tua casella di posta (e la cartella spam).",
+            magic_link_desc: "Ti invieremo un link di accesso sicuro. Nessuna password richiesta.",
+            magic_hint: "Accedendo, accetti le nostre linee guida della community e i termini sulla privacy.",
+            one_last_step: "Quasi fatto!",
+            choose_username_desc: "Scegli un nome utente per farti riconoscere nella community.",
+            username: "Nome utente",
+            bio: "Su di me",
+            bio_placeholder: "Raccontaci qualcosa di te...",
+            avatar_desc: "Clicca per cambiare foto",
+            click_for_bio: "Clicca sulla foto per la biografia",
+            reset_password_sent: "Link di ripristino password inviato!",
+            error_existing_user: "L'utente esiste già. Accedi o usa Password Dimenticata.",
+            error_invalid_credentials: "Email o password non valide.",
+            error_email_not_confirmed: "Conferma prima il tuo indirizzo email.",
+            error_rate_limit: "Troppi tentativi. Riprova più tardi.",
+            error_generic: "Si è verificato un errore durante l'autenticazione.",
+            error_otp_expired: "Il link di accesso non è valido o è scaduto. Richiedine uno nuovo.",
+            profile_updated: "Profilo aggiornato!",
+            avatar_updated: "Foto ottimizzata e caricata!",
+            wait_60s: "Link già inviato. Controlla la cartella spam o attendi 60 secondi.",
+            privacy_policy: "Informativa sulla Privacy",
+            community_rules: "Regole della Community"
+        },
+        intro: {
+            title: "Benvenuto su eFoilMap",
+            text: "La community per gli eFoiler. Trova i migliori punti di accesso con parcheggio vicino all'acqua, opzioni di ricarica, cibo e altro ancora. Condividi la tua esperienza e facciamo crescere la community insieme.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(tradotto automaticamente con IA)"
+        }
+    },
+    pt: {
+        meta: {
+            label: "Português",
+            title: "A Comunidade eFoil - Encontre os melhores pontos de acesso para eFoiling juntos.",
+            description: "Encontre spots de e-foil legais perto de si. Mapa interativo da comunidade para eFoilers."
+        },
+        common: {
+            agree: "Aceitar",
+            reject: "Rejeitar",
+            settings: "Definições",
+            loading: "A carregar...",
+            close: "Fechar",
+            share: "Partilhar",
+            link_copied: "Link copiado!",
+            profile: "Perfil",
+            save: "Guardar",
+            logout: "Sair",
+            success: "Sucesso",
+            remove: "Remover"
+        },
+        consent: {
+            title: "Usamos cookies",
+            text: "Usamos cookies para melhorar a sua experiência. Isto inclui conteúdo de terceiros como o Mapbox.",
+            map_blocked: "O mapa está desativado",
+            map_blocked_text: "Para ver o mapa, por favor aceite os cookies funcionais.",
+            accept_map: "Ativar Mapa",
+            privacy_link: "Política de Privacidade",
+            imprint_link: "Aviso Legal",
+            rejected_warning: "A aplicação não pode carregar o mapa sem cookies e, portanto, não funciona.",
+            leave: "Tire-me daqui"
+        },
+        nav: { imprint: "Aviso Legal", privacy: "Privacidade" },
+        add_spot: "Adicionar Spot",
+        search: { placeholder: "Procurar cidade ou spot..." },
+        filters: {
+            title: "Filtrar todos os spots por:",
+            all_spots: "Todos os Spots",
+            allowed_spots: "Permitidos",
+            tolerated_spots: "Tolerados",
+            unclear_spots: "Pouco Claros",
+            parking: "Estacionamento",
+            charging: "Carregamento",
+            food: "Alimentação"
+        },
+        hero: {
+            slogan: "Encontre os melhores pontos de entrada para eFoiling juntos."
+        },
+        forms: {
+            name: "Nome do Spot",
+            status: "Estado",
+            allowed: "Permitido",
+            tolerated: "Tolerado",
+            forbidden: "Proibido",
+            unclear: "Desconhecido",
+            amenities: "Comodidades",
+            save: "Guardar Spot",
+            creating: "A guardar...",
+            update: "Atualizar Spot",
+            photo_upload: "Carregar Foto",
+            review_title: "Escrever uma Avaliação",
+            review_placeholder: "Partilhe a sua experiência...",
+            post_review: "Publicar Avaliação",
+            community_reviews: "Avaliações da Comunidade",
+            no_photos: "Ainda sem fotos.",
+            add_photo: "Adicionar Foto",
+            suggest_edit: "Sugerir Edição",
+            update_review: "Atualizar Avaliação",
+            description: "Descrição",
+            description_placeholder: "Onde estacionar, o que saber?",
+            add_website: "Adicionar Website",
+            website: "Website"
+        },
+        auth: {
+            sign_in: "Iniciar Sessão",
+            sign_up: "Registar-se",
+            welcome: "Bem-vindo",
+            email: "E-mail",
+            welcome_back_toast: "Bem-vindo de volta!",
+            send_login_link: "Enviar Link de Acesso",
+            magic_link_sent: "Link de acesso enviado! Por favor verifique a sua caixa de entrada (e a pasta de spam).",
+            magic_link_desc: "Enviar-lhe-emos um link de início de sessão seguro. Sem palavra-passe.",
+            magic_hint: "Ao iniciar sessão, aceita as nossas diretrizes da comunidade e termos de privacidade.",
+            one_last_step: "Quase lá!",
+            choose_username_desc: "Escolha um nome de utilizador para ser reconhecido na comunidade.",
+            username: "Nome de utilizador",
+            bio: "Sobre Mim",
+            bio_placeholder: "Fale-nos um pouco sobre si...",
+            avatar_desc: "Clique para mudar a foto",
+            click_for_bio: "Clique na foto para ver a bio",
+            reset_password_sent: "Link de reposição de palavra-passe enviado!",
+            error_existing_user: "O utilizador já existe. Inicie sessão ou utilize Recuperar Palavra-passe.",
+            error_invalid_credentials: "E-mail ou palavra-passe inválidos.",
+            error_email_not_confirmed: "Por favor confirme primeiro o seu endereço de e-mail.",
+            error_rate_limit: "Demasiadas tentativas. Por favor tente mais tarde.",
+            error_generic: "Ocorreu um erro durante a autenticação.",
+            error_otp_expired: "O link de acesso é inválido ou expirou. Por favor solicite um novo.",
+            profile_updated: "Perfil atualizado!",
+            avatar_updated: "Foto otimizada e carregada!",
+            wait_60s: "Link já enviado. Verifique a pasta de spam ou aguarde 60 segundos.",
+            privacy_policy: "Política de Privacidade",
+            community_rules: "Regras da Comunidade"
+        },
+        intro: {
+            title: "Bem-vindo ao eFoilMap",
+            text: "A comunidade de eFoilers. Encontre os melhores pontos de acesso com estacionamento perto da água, opções de carregamento, alimentação e muito mais. Partilhe a sua experiência e vamos fazer crescer a comunidade juntos.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(traduzido automaticamente com IA)"
+        }
+    },
+    nl: {
+        meta: {
+            label: "Nederlands",
+            title: "De eFoil Community - Vind samen de beste toegangspunten voor eFoiling.",
+            description: "Vind legale e-foil spots bij jou in de buurt. Interactieve communitykaart voor eFoilers."
+        },
+        common: {
+            agree: "Accepteren",
+            reject: "Weigeren",
+            settings: "Instellingen",
+            loading: "Laden...",
+            close: "Sluiten",
+            share: "Delen",
+            link_copied: "Link gekopieerd!",
+            profile: "Profiel",
+            save: "Opslaan",
+            logout: "Uitloggen",
+            success: "Succes",
+            remove: "Verwijderen"
+        },
+        consent: {
+            title: "We gebruiken cookies",
+            text: "We gebruiken cookies om jouw ervaring te verbeteren. Dit omvat inhoud van derden zoals Mapbox.",
+            map_blocked: "Kaart is uitgeschakeld",
+            map_blocked_text: "Accepteer functionele cookies om de kaart te zien.",
+            accept_map: "Kaart inschakelen",
+            privacy_link: "Privacybeleid",
+            imprint_link: "Colofon",
+            rejected_warning: "De applicatie kan de kaart niet laden zonder cookies en werkt daarom niet.",
+            leave: "Breng me hier weg"
+        },
+        nav: { imprint: "Colofon", privacy: "Privacy" },
+        add_spot: "Spot toevoegen",
+        search: { placeholder: "Zoek stad of spot..." },
+        filters: {
+            title: "Filter alle spots op:",
+            all_spots: "Alle spots",
+            allowed_spots: "Toegestaan",
+            tolerated_spots: "Gedoogd",
+            unclear_spots: "Onduidelijk",
+            parking: "Parkeren",
+            charging: "Opladen",
+            food: "Eten"
+        },
+        hero: {
+            slogan: "Vind samen de beste toegangspunten voor eFoiling."
+        },
+        forms: {
+            name: "Spotnaam",
+            status: "Status",
+            allowed: "Toegestaan",
+            tolerated: "Gedoogd",
+            forbidden: "Verboden",
+            unclear: "Onbekend",
+            amenities: "Voorzieningen",
+            save: "Spot opslaan",
+            creating: "Opslaan...",
+            update: "Spot bijwerken",
+            photo_upload: "Foto uploaden",
+            review_title: "Schrijf een beoordeling",
+            review_placeholder: "Deel je ervaring...",
+            post_review: "Beoordeling plaatsen",
+            community_reviews: "Community beoordelingen",
+            no_photos: "Nog geen foto's.",
+            add_photo: "Foto toevoegen",
+            suggest_edit: "Wijziging voorstellen",
+            update_review: "Beoordeling bijwerken",
+            description: "Beschrijving",
+            description_placeholder: "Waar parkeren, wat te weten?",
+            add_website: "Website toevoegen",
+            website: "Website"
+        },
+        auth: {
+            sign_in: "Inloggen",
+            sign_up: "Registreren",
+            welcome: "Welkom",
+            email: "E-mail",
+            welcome_back_toast: "Welkom terug!",
+            send_login_link: "Stuur inloglink",
+            magic_link_sent: "Inloglink verzonden! Controleer je inbox (en eventueel de spammap).",
+            magic_link_desc: "We sturen je een beveiligde inloglink. Geen wachtwoord nodig.",
+            magic_hint: "Door in te loggen ga je akkoord met onze communityrichtlijnen en privacyvoorwaarden.",
+            one_last_step: "Bijna klaar!",
+            choose_username_desc: "Kies een gebruikersnaam om herkend te worden in de community.",
+            username: "Gebruikersnaam",
+            bio: "Over mij",
+            bio_placeholder: "Vertel ons iets over jezelf...",
+            avatar_desc: "Klik om foto te wijzigen",
+            click_for_bio: "Klik op foto voor bio",
+            reset_password_sent: "Wachtwoordherstellink verzonden!",
+            error_existing_user: "Gebruiker bestaat al. Log in of gebruik Wachtwoord vergeten.",
+            error_invalid_credentials: "Ongeldig e-mailadres of wachtwoord.",
+            error_email_not_confirmed: "Bevestig eerst je e-mailadres.",
+            error_rate_limit: "Te veel pogingen. Probeer het later opnieuw.",
+            error_generic: "Er is een fout opgetreden tijdens de verificatie.",
+            error_otp_expired: "De inloglink is ongeldig of verlopen. Vraag een nieuwe aan.",
+            profile_updated: "Profiel bijgewerkt!",
+            avatar_updated: "Foto geoptimaliseerd & geüpload!",
+            wait_60s: "Link is al verzonden. Controleer je spammap of wacht 60 seconden.",
+            privacy_policy: "Privacybeleid",
+            community_rules: "Communityregels"
+        },
+        intro: {
+            title: "Welkom bij eFoilMap",
+            text: "De community voor eFoilers. Vind de beste toegangspunten met parkeergelegenheid dicht bij het water, oplaadopties, eten en meer. Deel je ervaring en laten we samen de community laten groeien.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(automatisch vertaald met AI)"
+        }
+    },
+    pl: {
+        meta: {
+            label: "Polski",
+            title: "Społeczność eFoil - Znajdźmy razem najlepsze miejsca do eFoilingu.",
+            description: "Znajdź legalne miejsca e-foil w Twojej okolicy. Interaktywna mapa dla eFoilerów tworzona przez społeczność."
+        },
+        common: {
+            agree: "Akceptuj",
+            reject: "Odrzuć",
+            settings: "Ustawienia",
+            loading: "Ładowanie...",
+            close: "Zamknij",
+            share: "Udostępnij",
+            link_copied: "Skopiowano link!",
+            profile: "Profil",
+            save: "Zapisz",
+            logout: "Wyloguj",
+            success: "Sukces",
+            remove: "Usuń"
+        },
+        consent: {
+            title: "Używamy plików cookies",
+            text: "Używamy plików cookies, aby ułatwić korzystanie z naszego serwisu. Obejmuje to treści zewnętrznych dostawców, takich jak Mapbox.",
+            map_blocked: "Mapa jest wyłączona",
+            map_blocked_text: "Aby zobaczyć mapę, zaakceptuj funkcjonalne pliki cookies.",
+            accept_map: "Włącz Mapę",
+            privacy_link: "Polityka Prywatności",
+            imprint_link: "Nota Prawna",
+            rejected_warning: "Aplikacja nie może załadować mapy bez plików cookies, dlatego nie działa.",
+            leave: "Zabierz mnie stąd"
+        },
+        nav: { imprint: "Nota Prawna", privacy: "Prywatność" },
+        add_spot: "Dodaj Spot",
+        search: { placeholder: "Szukaj miasta lub spotu..." },
+        filters: {
+            title: "Filtruj wszystkie spoty według:",
+            all_spots: "Wszystkie Spoty",
+            allowed_spots: "Dozwolone",
+            tolerated_spots: "Tolerowane",
+            unclear_spots: "Niejasne",
+            parking: "Parking",
+            charging: "Ładowanie",
+            food: "Jedzenie"
+        },
+        hero: {
+            slogan: "Znajdźmy razem najlepsze miejsca do wodowania eFoil."
+        },
+        forms: {
+            name: "Nazwa Spotu",
+            status: "Status",
+            allowed: "Dozwolone",
+            tolerated: "Tolerowane",
+            forbidden: "Zabronione",
+            unclear: "Nieznane",
+            amenities: "Udogodnienia",
+            save: "Zapisz Spot",
+            creating: "Zapisywanie...",
+            update: "Aktualizuj Spot",
+            photo_upload: "Prześlij Zdjęcie",
+            review_title: "Napisz Opinię",
+            review_placeholder: "Podziel się wrażeniami...",
+            post_review: "Opublikuj Opinię",
+            community_reviews: "Opinie Społeczności",
+            no_photos: "Brak zdjęć.",
+            add_photo: "Dodaj Zdjęcie",
+            suggest_edit: "Sugeruj Zmianę",
+            update_review: "Aktualizuj Opinię",
+            description: "Opis",
+            description_placeholder: "Gdzie zaparkować, co warto wiedzieć?",
+            add_website: "Dodaj Witrynę",
+            website: "Witryna"
+        },
+        auth: {
+            sign_in: "Zaloguj się",
+            sign_up: "Zarejestruj się",
+            welcome: "Witaj",
+            email: "E-mail",
+            welcome_back_toast: "Witaj ponownie!",
+            send_login_link: "Wyślij Link do Logowania",
+            magic_link_sent: "Link do logowania wysłany! Sprawdź swoją skrzynkę odbiorczą (i folder ze spamem).",
+            magic_link_desc: "Wyślemy Ci bezpieczny link do logowania. Hasło nie jest wymagane.",
+            magic_hint: "Logując się, akceptujesz nasze wytyczne dla społeczności i warunki prywatności.",
+            one_last_step: "Prawie gotowe!",
+            choose_username_desc: "Wybierz nazwę użytkownika, aby być rozpoznawalnym w społeczności.",
+            username: "Nazwa użytkownika",
+            bio: "O mnie",
+            bio_placeholder: "Napisz coś o sobie...",
+            avatar_desc: "Kliknij, aby zmienić zdjęcie",
+            click_for_bio: "Kliknij na zdjęcie, aby zobaczyć bio",
+            reset_password_sent: "Wysłano link do resetowania hasła!",
+            error_existing_user: "Użytkownik już istnieje. Zaloguj się lub użyj Nie pamiętam hasła.",
+            error_invalid_credentials: "Błędny e-mail lub hasło.",
+            error_email_not_confirmed: "Najpierw potwierdź swój adres e-mail.",
+            error_rate_limit: "Zbyt wiele prób. Spróbuj ponownie później.",
+            error_generic: "Wystąpił błąd podczas uwierzytelniania.",
+            error_otp_expired: "Link do logowania jest nieprawidłowy lub wygasł. Poproś o nowy.",
+            profile_updated: "Profil zaktualizowany!",
+            avatar_updated: "Zdjęcie zoptymalizowane i przesłane!",
+            wait_60s: "Link został już wysłany. Sprawdź spam lub odczekaj 60 sekund.",
+            privacy_policy: "Polityka Prywatności",
+            community_rules: "Zasady Społeczności"
+        },
+        intro: {
+            title: "Witaj w eFoilMap",
+            text: "Społeczność dla eFoilerów. Znajdź najlepsze miejsca z parkingiem blisko wody, możliwościami ładowania, gastronomią i nie tylko. Podziel się swoimi wrażeniami i wspólnie rozwijajmy społeczność.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(przetłumaczone automatycznie przez AI)"
+        }
+    },
+    sv: {
+        meta: {
+            label: "Svenska",
+            title: "eFoil-communityt - Hitta de bästa platserna för eFoiling tillsammans.",
+            description: "Hitta lagliga e-foil-platser nära dig. Interaktiv community-karta för eFoilare."
+        },
+        common: {
+            agree: "Acceptera",
+            reject: "Avvisa",
+            settings: "Inställningar",
+            loading: "Laddar...",
+            close: "Stäng",
+            share: "Dela",
+            link_copied: "Länk kopierad!",
+            profile: "Profil",
+            save: "Spara",
+            logout: "Logga ut",
+            success: "Klart",
+            remove: "Ta bort"
+        },
+        consent: {
+            title: "Vi använder cookies",
+            text: "Vi använder cookies för att förbättra din upplevelse. Detta inkluderar innehåll från tredje part som Mapbox.",
+            map_blocked: "Kartan är inaktiverad",
+            map_blocked_text: "För att se kartan, vänligen acceptera funktionella cookies.",
+            accept_map: "Aktivera Karta",
+            privacy_link: "Integritetspolicy",
+            imprint_link: "Om webbplatsen",
+            rejected_warning: "Applikationen kan inte ladda kartan utan cookies och fungerar därför inte.",
+            leave: "Ta mig härifrån"
+        },
+        nav: { imprint: "Om webbplatsen", privacy: "Integritet" },
+        add_spot: "Lägg till Spot",
+        search: { placeholder: "Sök stad eller plats..." },
+        filters: {
+            title: "Filtrera alla platser efter:",
+            all_spots: "Alla Platser",
+            allowed_spots: "Tillåtna",
+            tolerated_spots: "Tolererade",
+            unclear_spots: "Oklara",
+            parking: "Parkering",
+            charging: "Laddning",
+            food: "Mat"
+        },
+        hero: {
+            slogan: "Hitta de bästa iläggsplatserna för eFoiling tillsammans."
+        },
+        forms: {
+            name: "Platsens Namn",
+            status: "Status",
+            allowed: "Tillåtet",
+            tolerated: "Tolererat",
+            forbidden: "Förbjudet",
+            unclear: "Okänt",
+            amenities: "Bekvämligheter",
+            save: "Spara Plats",
+            creating: "Sparar...",
+            update: "Uppdatera Plats",
+            photo_upload: "Ladda upp Foto",
+            review_title: "Skriv en Recension",
+            review_placeholder: "Dela din upplevelse...",
+            post_review: "Skicka Recension",
+            community_reviews: "Community-recensioner",
+            no_photos: "Inga bilder än.",
+            add_photo: "Lägg till Bild",
+            suggest_edit: "Föreslå Ändring",
+            update_review: "Uppdatera Recension",
+            description: "Beskrivning",
+            description_placeholder: "Var parkerar man, vad behöver man veta?",
+            add_website: "Lägg till Webbplats",
+            website: "Webbplats"
+        },
+        auth: {
+            sign_in: "Logga in",
+            sign_up: "Registrera dig",
+            welcome: "Välkommen",
+            email: "E-post",
+            welcome_back_toast: "Välkommen tillbaka!",
+            send_login_link: "Skicka Inloggningslänk",
+            magic_link_sent: "Inloggningslänk skickad! Kontrollera din inkorg (och eventuellt din skräppost).",
+            magic_link_desc: "Vi skickar en säker inloggningslänk till dig. Inget lösenord behövs.",
+            magic_hint: "Genom att logga in godkänner du våra community-riktlinjer och integritetsvillkor.",
+            one_last_step: "Nästan klar!",
+            choose_username_desc: "Välj ett användarnamn för att kännas igen i communityt.",
+            username: "Användarnamn",
+            bio: "Om mig",
+            bio_placeholder: "Berätta lite om dig själv...",
+            avatar_desc: "Klicka för att ändra foto",
+            click_for_bio: "Klicka på fotot för biografi",
+            reset_password_sent: "Återställningslänk för lösenord skickad!",
+            error_existing_user: "Användaren finns redan. Logga in eller använd Glömt Lösenord.",
+            error_invalid_credentials: "Ogiltig e-post eller lösenord.",
+            error_email_not_confirmed: "Vänligen bekräfta din e-postadress först.",
+            error_rate_limit: "För många försök. Försök igen senare.",
+            error_generic: "Ett fel inträffade under autentiseringen.",
+            error_otp_expired: "Inloggningslänken är ogiltig eller har löpt ut. Begär en ny.",
+            profile_updated: "Profilen uppdaterad!",
+            avatar_updated: "Foto optimerat & uppladdat!",
+            wait_60s: "Länken har redan skickats. Kontrollera skräpposten eller vänta 60s.",
+            privacy_policy: "Integritetspolicy",
+            community_rules: "Community-regler"
+        },
+        intro: {
+            title: "Välkommen till eFoilMap",
+            text: "Communityt för eFoilare. Hitta de bästa platserna med parkering nära vattnet, laddningsmöjligheter, mat och mer. Dela din upplevelse och låt oss växa communityt tillsammans.",
+            cta: "Let's Foil"
+        },
+        ugc: {
+            ai_translated: "(automatiskt översatt med AI)"
+        }
     }
 };
+

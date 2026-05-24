@@ -1,6 +1,6 @@
 import HomeClient from "@/components/HomeClient";
 import { Metadata } from "next";
-import { dictionaries, Locale } from "@/lib/dictionaries";
+import { dictionaries, Locale, SUPPORTED_LOCALES } from "@/lib/dictionaries";
 import { getSpots } from "@/app/actions";
 
 interface PageProps {
@@ -14,7 +14,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const slug = resolvedParams.slug;
   const lang = resolvedSearchParams.lang || "en";
   
-  const locale = ['en', 'de', 'es', 'fr'].includes(lang) ? lang : 'en';
+  const locale = (SUPPORTED_LOCALES as readonly string[]).includes(lang) ? lang as Locale : 'en';
   const dict = dictionaries[locale as Locale];
   
   const spots = await getSpots();
@@ -37,7 +37,19 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       url: `https://www.efoilmap.com/spots/${slug}`,
       siteName: "eFoilMap",
       images: ["https://www.efoilmap.com/teaser.jpg"],
-      locale: locale === 'de' ? 'de_DE' : locale === 'es' ? 'es_ES' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      locale: (() => {
+        const ogLocales: Record<string, string> = {
+          de: 'de_DE',
+          es: 'es_ES',
+          fr: 'fr_FR',
+          it: 'it_IT',
+          pt: 'pt_PT',
+          nl: 'nl_NL',
+          pl: 'pl_PL',
+          sv: 'sv_SE'
+        };
+        return ogLocales[locale] || 'en_US';
+      })(),
       type: "website",
     },
     twitter: {

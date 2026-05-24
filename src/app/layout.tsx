@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/Toast";
-import { dictionaries, Locale } from "@/lib/dictionaries";
+import { dictionaries, Locale, SUPPORTED_LOCALES } from "@/lib/dictionaries";
 import { cookies, headers } from "next/headers";
 
 const geistSans = Geist({
@@ -32,12 +32,12 @@ export async function generateMetadata(): Promise<Metadata> {
     const acceptLanguage = headersList.get('accept-language');
     if (acceptLanguage) {
       const preferred = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
-      if (['en', 'de', 'es', 'fr'].includes(preferred)) {
+      if ((SUPPORTED_LOCALES as readonly string[]).includes(preferred)) {
         locale = preferred;
       }
     }
   }
-  if (!locale || !['en', 'de', 'es', 'fr'].includes(locale)) {
+  if (!locale || !(SUPPORTED_LOCALES as readonly string[]).includes(locale)) {
     locale = 'en';
   }
 
@@ -60,7 +60,19 @@ export async function generateMetadata(): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale: locale === 'de' ? 'de_DE' : locale === 'es' ? 'es_ES' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      locale: (() => {
+        const ogLocales: Record<string, string> = {
+          de: 'de_DE',
+          es: 'es_ES',
+          fr: 'fr_FR',
+          it: 'it_IT',
+          pt: 'pt_PT',
+          nl: 'nl_NL',
+          pl: 'pl_PL',
+          sv: 'sv_SE'
+        };
+        return ogLocales[locale] || 'en_US';
+      })(),
       type: "website",
     },
     icons: {
@@ -89,12 +101,12 @@ export default async function RootLayout({
     const acceptLanguage = headersList.get('accept-language');
     if (acceptLanguage) {
       const preferred = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
-      if (['en', 'de', 'es', 'fr'].includes(preferred)) {
+      if ((SUPPORTED_LOCALES as readonly string[]).includes(preferred)) {
         locale = preferred;
       }
     }
   }
-  if (!locale) {
+  if (!locale || !(SUPPORTED_LOCALES as readonly string[]).includes(locale)) {
     locale = 'en';
   }
 

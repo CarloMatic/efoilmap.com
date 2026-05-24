@@ -55,10 +55,70 @@ export default function CommunityRulesPage() {
                 { title: "Respectez la Vie Privée", text: "Ne téléchargez pas de photos contenant des visages identifiables d'inconnus sans leur consentement." }
             ],
             outro: "La violation de ces règles peut entraîner la suspension de votre compte. Construisons une belle communauté ensemble !"
+        },
+        it: {
+            title: "Linee Guida della Community",
+            intro: "Benvenuto su eFoilMap! Per mantenere questa piattaforma sicura e utile per tutti, ti preghiamo di seguire queste linee guida:",
+            rules: [
+                { title: "Rispetta le Leggi Locali", text: "Aggiungi solo spot in cui l'eFoiling è legalmente consentito o ufficialmente tollerato. Non aggiungere spot in riserve naturali o zone vietate." },
+                { title: "Sii Rispettoso", text: "Tratta tutti i membri della community con rispetto. Non saranno tollerate molestie, incitamento all'odio o linguaggio inappropriato nelle recensioni o nelle biografie." },
+                { title: "Fornisci Informazioni Accurate", text: "Quando aggiungi uno spot o una recensione, sii il più preciso possibile riguardo a parcheggio, punti di ingresso e pericoli locali." },
+                { title: "Una Sola Recensione per Spot", text: "Puoi lasciare solo una recensione per spot per mantenere le valutazioni eque. Puoi aggiornare la tua recensione in qualsiasi momento." },
+                { title: "Rispetta la Privacy", text: "Non caricare foto contenenti volti identificabili di estranei senza il loro consenso." }
+            ],
+            outro: "La violazione di queste regole può comportare la sospensione del tuo account e la rimozione dei tuoi contributi. Costruiamo insieme una grande community!"
+        },
+        pt: {
+            title: "Diretrizes da Comunidade",
+            intro: "Bem-vindo ao eFoilMap! Para manter esta plataforma segura e útil para todos, por favor siga estas diretrizes:",
+            rules: [
+                { title: "Respeite as Leis Locais", text: "Adicione apenas spots onde o eFoiling é legalmente permitido ou oficialmente tolerado. Não adicione spots em reservas naturais ou zonas proibidas." },
+                { title: "Seja Respeitoso", text: "Trate todos os membros da comunidade com respeito. Assédio, discurso de ódio ou linguagem inadequada nas avaliações ou bios não serão tolerados." },
+                { title: "Forneça Informações Precisas", text: "Ao adicionar um spot ou avaliação, seja o mais preciso possível em relação ao estacionamento, pontos de entrada e perigos locais." },
+                { title: "Uma Avaliação por Spot", text: "Apenas pode deixar uma avaliação por spot para manter as classificações justas. Pode atualizar a sua avaliação a qualquer momento." },
+                { title: "Respeite a Privacidade", text: "Não carregue fotos que contenham rostos identificáveis de estranhos sem o consentimento deles." }
+            ],
+            outro: "A violação destas regras pode resultar na suspensão da sua conta e na remoção das suas contribuições. Vamos construir uma grande comunidade juntos!"
+        },
+        nl: {
+            title: "Communityrichtlijnen",
+            intro: "Welkom bij eFoilMap! Om dit platform veilig en nuttig te houden voor iedereen, verzoeken we je deze richtlijnen te volgen:",
+            rules: [
+                { title: "Respecteer lokale wetten", text: "Voeg alleen spots toe waar eFoiling wettelijk is toegestaan of officieel wordt gedoogd. Voeg geen spots toe in natuurgebieden of verboden zones." },
+                { title: "Wees respectvol", text: "Behandel alle communityleden met respect. Intimidatie, haatzaaiende uitlatingen of ongepast taalgebruik in beoordelingen of biografieën worden niet getolereerd." },
+                { title: "Geef nauwkeurige informatie", text: "Wees bij het toevoegen van een spot of beoordeling zo nauwkeurig mogelijk over parkeren, toegangspunten en lokale gevaren." },
+                { title: "Eén beoordeling per spot", text: "Je kunt slechts één beoordeling per spot achterlaten om de beoordelingen eerlijk te houden. Je kunt je beoordeling op elk moment bijwerken." },
+                { title: "Respecteer privacy", text: "Upload geen foto's met herkenbare gezichten van vreemden zonder hun toestemming." }
+            ],
+            outro: "Het schenden van deze regels kan leiden tot opschorting van je account en verwijdering van je bijdragen. Laten we samen een geweldige community opbouwen!"
+        },
+        pl: {
+            title: "Wytyczne dla Społeczności",
+            intro: "Witaj w eFoilMap! Aby ta platforma była bezpieczna i użyteczna dla wszystkich, prosimy o przestrzeganie następujących wytycznych:",
+            rules: [
+                { title: "Przestrzegaj Lokalnych Przepisów", text: "Dodawaj tylko te spoty, w których eFoiling jest prawnie dozwolony lub oficjalnie tolerowany. Nie dodawaj spotów w rezerwatach przyrody ani strefach zakazanych." },
+                { title: "Bądź Pełen Szacunku", text: "Traktuj wszystkich członków społeczności z szacunkiem. Molestowanie, mowa nienawiści lub nieodpowiedni język w opiniach i biogramach nie będą tolerowane." },
+                { title: "Podawaj Dokładne Informacje", text: "Dodając spot lub opinię, podaj jak najdokładniejsze informacje dotyczące parkowania, punktów wodowania i lokalnych zagrożeń." },
+                { title: "Jedna Opinia na Spot", text: "Możesz zostawić tylko jedną opinię na spot, aby oceny były sprawiedliwe. Możesz zaktualizować swoją opinię w dowolnym momencie." },
+                { title: "Szanuj Prywatność", text: "Nie przesyłaj zdjęć zawierających rozpoznawalne twarze obcych osób bez ich zgody." }
+            ],
+            outro: "Naruszenie tych zasad może skutkować zawieszeniem konta i usunięciem Twojego wkładu. Stwórzmy razem wspaniałą społeczność!"
+        },
+        sv: {
+            title: "Community-riktlinjer",
+            intro: "Välkommen till eFoilMap! För att hålla denna plattform säker och användbar för alla, vänligen följ dessa riktlinjer:",
+            rules: [
+                { title: "Respektera Lokala Lagar", text: "Lägg endast till platser där eFoiling är lagligt tillåtet eller officiellt tolererat. Lägg inte till platser i naturreservat eller förbjudna zoner." },
+                { title: "Visa Respekt", text: "Behandla alla community-medlemmar med respekt. Trakasserier, hatpropaganda eller olämpligt språk i recensioner eller bios kommer inte att tolereras." },
+                { title: "Ge Korrekt Information", text: "När du lägger till en plats eller recension, var så exakt som möjligt angående parkering, iläggsplatser och lokala faror." },
+                { title: "En Recension Per Plats", text: "Du kan bara lämna en recension per plats för att hålla betygen rättvisa. Du kan uppdatera din recension när som hest." },
+                { title: "Respektera Integriteten", text: "Ladda inte upp bilder som innehåller identifierbara ansikten på främlingar utan deras samtycke." }
+            ],
+            outro: "Brott mot dessa regler kan leda till att ditt konto stängs av och att dina bidrag tas bort. Låt oss bygga ett fantastiskt community tillsammans!"
         }
     };
 
-    const currentContent = content[locale] || content.en;
+    const currentContent = (content as Record<string, typeof content.en>)[locale] || content.en;
 
     return (
         <div className="h-full overflow-y-auto bg-background text-foreground flex flex-col items-center py-12 px-4 sm:px-6">
