@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Map, { GeolocateControl, NavigationControl, ScaleControl, Marker } from "react-map-gl/mapbox";
 import type { MapRef } from "react-map-gl/mapbox";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { AlertCircle, MapPin } from "lucide-react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { getSpots, Spot } from "@/app/actions";
