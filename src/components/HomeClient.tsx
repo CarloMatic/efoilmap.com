@@ -25,7 +25,12 @@ export default function HomeClient() {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           {/* Logo & Slogan */}
           <div className="flex items-center gap-4">
-            <Logo className="h-8 w-auto" />
+            <div className="flex items-center gap-2">
+              <Logo className="h-8 w-auto" />
+              <span className="px-1.5 py-0.5 text-[9px] font-black tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded uppercase select-none">
+                Beta
+              </span>
+            </div>
             <h1 className="hidden md:inline-block text-sm font-medium text-muted-foreground whitespace-nowrap">
               {t('hero.slogan')}
             </h1>

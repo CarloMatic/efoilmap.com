@@ -31,6 +31,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   return {
     title,
     description,
+    keywords: ["efoil", "electric hydrofoil", "jetboard", "efoil map", "efoil spots", "water sports", "surfboard", "e-surfboard", "hydrofoiling", "jetboarding", "surfing"],
     openGraph: {
       title,
       description,

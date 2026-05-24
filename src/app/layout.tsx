@@ -48,6 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    keywords: ["efoil", "electric hydrofoil", "jetboard", "efoil map", "efoil spots", "water sports", "surfboard", "e-surfboard", "hydrofoiling", "jetboarding", "surfing"],
     openGraph: {
       title,
       description,
@@ -134,7 +135,7 @@ export default async function RootLayout({
                 "price": "0",
                 "priceCurrency": "USD"
               },
-              "description": "Find legal e-foil spots near you. Community driven map.",
+              "description": "Find legal e-foil, electric hydrofoil, and jetboard spots near you. Community-driven interactive map.",
               "aggregateRating": {
                 "@type": "AggregateRating",
                 "ratingValue": "4.8",
