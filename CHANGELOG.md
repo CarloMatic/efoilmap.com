@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.12.0] - 2026-05-25
+
+### Added
+- **Cinematic YouTube Video Modal**: Enabled detection of YouTube links (regular, mobile, shortcodes, and shorts) inside spot descriptions, rendering them as interactive red YouTube badges that open a gorgeous, full-screen aspect-video modal using embedded `<iframe>` elements and dynamic autoplay.
+- **Layers Switcher Repositioning**: Moved the floating map style switcher widget from the bottom-left edge to `left-28`, placing it elegantly directly to the right of the Mapbox ScaleControl indicator for a more balanced layout.
+
 ## [0.11.0] - 2026-05-25
 
 ### Added

@@ -28,13 +28,37 @@ const weekdays: Record<string, string[]> = {
     en: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
 };
 
-function renderTextWithLinks(text: string | undefined): React.ReactNode {
+function getYoutubeId(url: string): string | null {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function renderTextWithLinks(text: string | undefined, onYoutubeClick?: (videoId: string) => void): React.ReactNode {
     if (!text) return null;
     const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
     const parts = text.split(urlRegex);
     return parts.map((part, index) => {
         if (part.match(urlRegex)) {
             const href = part.startsWith("www.") ? `https://${part}` : part;
+            const youtubeId = getYoutubeId(href);
+            
+            if (youtubeId && onYoutubeClick) {
+                return (
+                    <button
+                        key={index}
+                        type="button"
+                        onClick={() => onYoutubeClick(youtubeId)}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-600/10 hover:bg-red-600/20 border border-red-500/20 hover:border-red-500/40 rounded text-red-400 hover:text-red-300 transition-all text-xs font-semibold cursor-pointer align-middle mx-0.5"
+                    >
+                        <svg className="w-3 h-3 fill-current mr-0.5 shrink-0" viewBox="0 0 24 24">
+                            <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                        <span className="underline decoration-red-500/30 underline-offset-2 break-all">{part}</span>
+                    </button>
+                );
+            }
+
             return (
                 <a
                     key={index}
@@ -265,6 +289,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     const isSpotCreator = !!(user && spot && (spot.user_id === user.id || spot.created_by === user.id || isAdmin));
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [lightboxPhoto, setLightboxPhoto] = useState<string | null>(null);
+    const [youtubeVideoId, setYoutubeVideoId] = useState<string | null>(null);
     const { showToast } = useToast();
     const { t, locale } = useLanguage();
     const { translatedText: translatedDescription, isTranslated: isDescriptionTranslated } = useTranslate(spot?.attributes?.description, locale);
@@ -1502,7 +1527,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             {/* Description Section */}
                             {spot.attributes?.description && (
                                 <div className="text-sm text-foreground/90 whitespace-pre-line bg-muted/10 p-3 rounded-lg border border-border/50">
-                                    {renderTextWithLinks(translatedDescription)}
+                                    {renderTextWithLinks(translatedDescription, setYoutubeVideoId)}
                                     {isDescriptionTranslated && (
                                         <p className="text-[10px] text-muted-foreground/60 italic mt-2 border-t border-border/30 pt-1.5">
                                             {t('ugc.ai_translated')}
@@ -1917,6 +1942,35 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             src={lightboxPhoto} 
                             alt="Enlarged preview" 
                             className="max-w-full max-h-[85vh] object-contain"
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* YouTube Video Player Modal */}
+            {youtubeVideoId && (
+                <div 
+                    className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200 pointer-events-auto"
+                    onClick={() => setYoutubeVideoId(null)}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setYoutubeVideoId(null)}
+                        className="absolute top-6 right-6 p-2 text-white/70 hover:text-white rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                    <div 
+                        className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden border border-white/15 shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <iframe
+                            className="w-full h-full"
+                            src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1`}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
                         />
                     </div>
                 </div>
