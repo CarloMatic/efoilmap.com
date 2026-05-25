@@ -123,10 +123,26 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
             items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setNotifications(items);
 
-            // 6. Calculate unread count based on last opened timestamp from DB
-            const { data: lastOpened } = await getLastReadNotifications();
+            // 6. Calculate unread count based on last opened timestamp from DB + LocalStorage fallback
+            let lastOpened = null;
+            try {
+                const res = await getLastReadNotifications();
+                if (res && res.success) {
+                    lastOpened = res.data;
+                }
+            } catch (e) {
+                console.warn("DB getLastReadNotifications failed, using local storage:", e);
+            }
+
+            if (typeof window !== "undefined") {
+                const localLastOpened = localStorage.getItem(`last_read_notifications_at_${user.id}`);
+                if (localLastOpened && (!lastOpened || new Date(localLastOpened).getTime() > new Date(lastOpened).getTime())) {
+                    lastOpened = localLastOpened;
+                }
+            }
+
             if (lastOpened) {
-                const count = items.filter(item => new Date(item.createdAt).getTime() > new Date(lastOpened).getTime()).length;
+                const count = items.filter(item => new Date(item.createdAt).getTime() > new Date(lastOpened!).getTime()).length;
                 setUnreadCount(count);
             } else {
                 setUnreadCount(items.length);
@@ -141,7 +157,10 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
         const nextState = !isOpen;
         setIsOpen(nextState);
         if (nextState && user) {
-            // Update last opened timestamp in DB
+            // Update last opened timestamp in DB & LocalStorage fallbacks
+            if (typeof window !== "undefined") {
+                localStorage.setItem(`last_read_notifications_at_${user.id}`, new Date().toISOString());
+            }
             updateLastReadNotifications();
             setUnreadCount(0);
         }

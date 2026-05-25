@@ -62,6 +62,83 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   };
 }
 
-export default function Page() {
-  return <HomeClient />;
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  
+  let spots: any[] = [];
+  let spot = null;
+  
+  try {
+    spots = await getSpots();
+    spot = spots.find(s => s.slug === slug);
+  } catch (err) {
+    console.error("Error fetching spots for spot page SEO:", err);
+  }
+
+  // Create JSON-LD Place Structured Data
+  const jsonLd = spot ? {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "name": spot.name,
+    "description": spot.attributes?.description || `${spot.name} eFoil spot`,
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": spot.location.coordinates[1],
+      "longitude": spot.location.coordinates[0]
+    },
+    "url": `https://www.efoilmap.com/spots/${slug}`,
+    "additionalProperty": [
+      {
+        "@type": "PropertyValue",
+        "name": "status",
+        "value": spot.status
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "parking",
+        "value": !!spot.attributes?.parking
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "charging",
+        "value": !!spot.attributes?.charging
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "food",
+        "value": !!spot.attributes?.food
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "rental",
+        "value": !!spot.attributes?.rental
+      }
+    ]
+  } : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      
+      <HomeClient />
+      
+      {/* Hidden SEO Link Directory for Search Engine Crawlers */}
+      <div className="sr-only" aria-hidden="true">
+        <h2>eFoil Spots Directory</h2>
+        <ul>
+          {spots.map((s) => (
+            <li key={s.id}>
+              <a href={`/spots/${s.slug || s.id}`}>{s.name}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
 }

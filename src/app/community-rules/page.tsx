@@ -131,8 +131,8 @@ export default function CommunityRulesPage() {
 
     return (
         <div className="h-full overflow-y-auto bg-background text-foreground flex flex-col items-center justify-between py-12 px-4 sm:px-6 relative">
-            <div className="max-w-2xl w-full pb-20">
-                <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
+            <div className="max-w-2xl w-full pb-12 flex-1">
+                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors mb-4 text-sm">
                     <ArrowLeft className="w-4 h-4" />
                     {currentContent.backToMap}
                 </Link>
@@ -159,7 +159,7 @@ export default function CommunityRulesPage() {
                     </p>
                 </div>
             </div>
-            <Footer />
+            <Footer isStatic />
         </div>
     );
 }

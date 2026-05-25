@@ -24,11 +24,20 @@ import { AddSpotDialog } from "@/components/AddSpotDialog";
 import { ProfileSetupDialog } from "@/components/ProfileSetupDialog";
 import { ProfileEditDialog } from "@/components/ProfileEditDialog";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { UserProfileDialog } from "@/components/UserProfileDialog";
 
 export default function EfoilMap() {
     const { user, profile } = useAuth();
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+    const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
+
+    const handleViewProfile = (profileId: string) => {
+        setSelectedProfileId(profileId);
+        setIsUserProfileOpen(true);
+    };
+
     const { t } = useLanguage();
     const { showToast } = useToast();
     const pathname = usePathname();
@@ -429,6 +438,7 @@ export default function EfoilMap() {
                     setIsAddSpotOpen(true);
                     setNewSpotLocation(null);
                 }}
+                onViewProfile={handleViewProfile}
             />
 
             <AddSpotDialog
@@ -474,6 +484,28 @@ export default function EfoilMap() {
             <ProfileEditDialog 
                 open={isProfileOpen} 
                 onClose={() => setIsProfileOpen(false)} 
+                onSelectSpot={(spot) => {
+                    handleSpotSelect(spot);
+                    setIsProfileOpen(false);
+                }}
+            />
+
+            <UserProfileDialog
+                profileId={selectedProfileId}
+                open={isUserProfileOpen}
+                onClose={() => {
+                    setIsUserProfileOpen(false);
+                    setSelectedProfileId(null);
+                }}
+                onSelectSpot={(spot, tab) => {
+                    if (tab === "visits") {
+                        // Deep link to visits tab
+                        const params = new URLSearchParams(window.location.search);
+                        params.set("tab", "visits");
+                        window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+                    }
+                    handleSpotSelect(spot);
+                }}
             />
         </div>
     );

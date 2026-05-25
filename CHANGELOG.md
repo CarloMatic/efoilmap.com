@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2026-05-25
+
+### Added
+- **Spot Liking System**: Interactive heart toggle in spot dialog with live count sync.
+- **Spot Bookmarks (Merkliste)**: Integrated spot saving with a "My Saved Spots" (Merkliste) tab in profile dialog.
+- **Clickable Community Profiles**: Enabled clickable usernames and avatars everywhere to open a user profile dialog detailing contributed spots and planned visits.
+- **Amenities Refactoring**: Reorganized cluttered spot options into a polished 2x2 glassmorphic facts grid.
+- **Search Engine Optimization**: Complete dynamic SEO sitemap support, Place dynamic structured data, and server-side SSR search engine crawler directories.
+
+### Fixed
+- **Creator Username Fallback**: Synchronized database creator mapping columns (`created_by`) to fix fallback placeholder `@efoiler` tag.
+- **Multi-Device Notification Sync**: Integrated server-side read timestamp tracking to keep unread badges synchronized across all devices.
+
 ## [0.4.0] - 2026-05-25
 
 ### Added

@@ -1,8 +1,8 @@
 "use client";
 
-import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store } from "lucide-react";
+import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store, Heart, Bookmark } from "lucide-react";
 import Image from "next/image";
-import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview } from "@/app/actions";
+import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview, toggleLikeSpot, getSpotLikesCount, getSpotLikeStatus, toggleBookmarkSpot } from "@/app/actions";
 import { useSearchParams } from "next/navigation";
 import { Trash2, Edit2, Check } from "lucide-react";
 
@@ -42,9 +42,11 @@ interface SpotDialogProps {
     open: boolean;
     onClose: () => void;
     onEdit: () => void;
+    onViewProfile?: (profileId: string) => void;
 }
 interface Review {
     id: string;
+    user_id: string;
     rating: number;
     comment: string;
     created_at: string;
@@ -91,7 +93,7 @@ interface SpotVisit {
 }
 
 
-export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
+export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotDialogProps) {
     const [verifying, setVerifying] = useState(false);
     const [rating, setRating] = useState<number>(0);
     const [comment, setComment] = useState("");
@@ -100,6 +102,14 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [hasExistingReview, setHasExistingReview] = useState(false);
     const [creatorUsername, setCreatorUsername] = useState<string | null>(null);
+    const [creatorId, setCreatorId] = useState<string | null>(null);
+
+    // Likes & Bookmarks states
+    const [likesCount, setLikesCount] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [likeLoading, setLikeLoading] = useState(false);
+    const [bookmarkLoading, setBookmarkLoading] = useState(false);
 
     // Spot Visit Planning & Comments states
     const [visits, setVisits] = useState<SpotVisit[]>([]);
@@ -439,6 +449,73 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
             }
         }
     };
+    
+    // Fetch likes and bookmark status when opening
+    useEffect(() => {
+        if (open && spot) {
+            getSpotLikesCount(spot.id).then(setLikesCount);
+            if (user) {
+                getSpotLikeStatus(spot.id).then(setIsLiked);
+                supabase.from('spot_bookmarks')
+                    .select('id')
+                    .eq('spot_id', spot.id)
+                    .eq('user_id', user.id)
+                    .maybeSingle()
+                    .then(({ data }) => {
+                        setIsBookmarked(!!data);
+                    });
+            } else {
+                setIsLiked(false);
+                setIsBookmarked(false);
+            }
+        }
+    }, [open, spot, user]);
+
+    const handleLikeToggle = async () => {
+        if (!spot) return;
+        if (!user) {
+            setIsAuthOpen(true);
+            return;
+        }
+        setLikeLoading(true);
+        try {
+            const res = await toggleLikeSpot(spot.id);
+            if (res.success) {
+                setIsLiked(res.action === 'liked');
+                setLikesCount(prev => res.action === 'liked' ? prev + 1 : prev - 1);
+                showToast(res.action === 'liked' ? (locale === 'de' ? 'Gefällt mir!' : 'Liked!') : (locale === 'de' ? 'Gefällt mir nicht mehr' : 'Unliked'), 'success');
+            } else {
+                showToast(res.error || 'Error liking spot', 'error');
+            }
+        } catch (err) {
+            console.error("Toggle like error:", err);
+        } finally {
+            setLikeLoading(false);
+        }
+    };
+
+    const handleBookmarkToggle = async () => {
+        if (!spot) return;
+        if (!user) {
+            setIsAuthOpen(true);
+            return;
+        }
+        setBookmarkLoading(true);
+        try {
+            const res = await toggleBookmarkSpot(spot.id);
+            if (res.success) {
+                setIsBookmarked(res.action === 'bookmarked');
+                showToast(res.action === 'bookmarked' ? (locale === 'de' ? 'Spot gemerkt!' : 'Spot saved!') : (locale === 'de' ? 'Spot-Merkung entfernt' : 'Spot removed from saved'), 'success');
+                window.dispatchEvent(new Event('reload-bookmarks'));
+            } else {
+                showToast(res.error || 'Error saving spot', 'error');
+            }
+        } catch (err) {
+            console.error("Toggle bookmark error:", err);
+        } finally {
+            setBookmarkLoading(false);
+        }
+    };
 
     // Fetch photos and reviews on open
     useEffect(() => {
@@ -455,23 +532,25 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                 });
 
             supabase.from('spots')
-                .select('user_id, profiles(username)')
+                .select('user_id, created_by, profiles(username)')
                 .eq('id', spot.id)
                 .maybeSingle()
                 .then(({ data }) => {
                     if (data) {
-                        const spotData = data as unknown as { user_id: string | null; profiles: { username: string | null } | { username: string | null }[] | null };
+                        const spotData = data as unknown as { user_id: string | null; created_by: string | null; profiles: { username: string | null } | { username: string | null }[] | null };
                         const p = spotData.profiles;
                         const profilesObj = Array.isArray(p) ? p[0] : p;
+                        setCreatorId(spotData.created_by || spotData.user_id);
                         if (profilesObj?.username) {
                             setCreatorUsername(profilesObj.username);
-                        } else if (spotData.user_id) {
+                        } else if (spotData.user_id || spotData.created_by) {
                             setCreatorUsername('eFoiler');
                         } else {
                             setCreatorUsername('eFoilMap');
                         }
                     } else {
                         setCreatorUsername('eFoilMap');
+                        setCreatorId(null);
                     }
                 });
 
@@ -493,6 +572,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                             })
                             .map((d) => ({
                                 id: d.id,
+                                user_id: d.user_id,
                                 rating: d.rating,
                                 comment: d.comment,
                                 created_at: d.created_at,
@@ -535,6 +615,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                 if (comment) {
                     setReviews(prev => [{
                         id: 'temp-' + Date.now(),
+                        user_id: user.id,
                         rating,
                         comment,
                         created_at: new Date().toISOString(),
@@ -710,7 +791,16 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                             {creatorUsername && (
                                 <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
                                     <span>{addedByText[locale] || addedByText.en}:</span>
-                                    <span className="font-semibold text-foreground">@{creatorUsername}</span>
+                                    {creatorId ? (
+                                        <button 
+                                            onClick={() => onViewProfile?.(creatorId)}
+                                            className="font-semibold text-blue-400 hover:text-blue-300 transition-colors border-none bg-transparent p-0 cursor-pointer focus:outline-none text-[10px] hover:underline"
+                                        >
+                                            @{creatorUsername}
+                                        </button>
+                                    ) : (
+                                        <span className="font-semibold text-foreground">@{creatorUsername}</span>
+                                    )}
                                 </p>
                             )}
                         </div>
@@ -732,6 +822,33 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                         >
                             <Share2 className="w-3.5 h-3.5" />
                             {t('common.share') || "Share"}
+                        </button>
+
+                        {/* Like Button */}
+                        <button
+                            onClick={handleLikeToggle}
+                            disabled={likeLoading}
+                            className={cn(
+                                "flex items-center gap-1.5 text-xs transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer",
+                                isLiked ? "text-red-500 hover:text-red-400 font-bold" : "text-muted-foreground hover:text-red-500"
+                            )}
+                            title={isLiked ? "Unlike spot" : "Like spot"}
+                        >
+                            <Heart className={cn("w-3.5 h-3.5", isLiked && "fill-current")} />
+                            <span>{likesCount}</span>
+                        </button>
+
+                        {/* Bookmark Button */}
+                        <button
+                            onClick={handleBookmarkToggle}
+                            disabled={bookmarkLoading}
+                            className={cn(
+                                "flex items-center gap-1.5 text-xs transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer",
+                                isBookmarked ? "text-yellow-500 hover:text-yellow-400" : "text-muted-foreground hover:text-yellow-500"
+                            )}
+                            title={isBookmarked ? "Remove bookmark" : "Bookmark spot"}
+                        >
+                            <Bookmark className={cn("w-3.5 h-3.5", isBookmarked && "fill-current")} />
                         </button>
 
                         {spot.attributes?.website && (
@@ -919,16 +1036,24 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                                             >
                                                                 {/* Visit Header */}
                                                                 <div className="flex items-center gap-3">
-                                                                    <div className="w-8 h-8 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center text-gray-300 overflow-hidden relative shrink-0">
+                                                                    <button 
+                                                                        onClick={() => onViewProfile?.(visit.user_id)}
+                                                                        className="w-8 h-8 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center text-gray-300 overflow-hidden relative shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-500/50 transition-all block focus:outline-none"
+                                                                    >
                                                                         {visit.profiles?.avatar_url ? (
                                                                             <Image src={visit.profiles.avatar_url} alt="Avatar" fill className="object-cover" />
                                                                         ) : (
                                                                             <UserIcon className="w-4 h-4" />
                                                                         )}
-                                                                    </div>
+                                                                    </button>
                                                                     <div className="min-w-0 flex-1">
                                                                         <div className="flex items-center justify-between gap-2">
-                                                                            <span className="text-xs font-black text-white">@{visit.profiles?.username || 'User'}</span>
+                                                                            <button 
+                                                                                onClick={() => onViewProfile?.(visit.user_id)}
+                                                                                className="text-xs font-black text-white hover:text-blue-400 hover:underline transition-colors border-none bg-transparent p-0 cursor-pointer text-left focus:outline-none"
+                                                                            >
+                                                                                @{visit.profiles?.username || 'User'}
+                                                                            </button>
                                                                             <span className="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-400/20 font-black">
                                                                                 ⏰ {visit.visit_time.substring(0, 5)}
                                                                             </span>
@@ -984,17 +1109,18 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                                                         participants.map((p) => {
                                                                             const isCancelled = p.status === 'CANCELLED';
                                                                             return (
-                                                                                <span 
+                                                                                <button 
                                                                                     key={p.id} 
+                                                                                    onClick={() => onViewProfile?.(p.user_id)}
                                                                                     className={cn(
-                                                                                        "px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1",
+                                                                                        "px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1 cursor-pointer hover:bg-blue-500/20 transition-colors focus:outline-none",
                                                                                         isCancelled 
-                                                                                            ? "bg-red-500/5 border-red-500/10 text-gray-500 line-through" 
+                                                                                            ? "bg-red-500/5 border-red-500/10 text-gray-500 line-through hover:bg-red-500/10" 
                                                                                             : "bg-blue-500/10 border-blue-500/20 text-blue-300"
                                                                                     )}
                                                                                 >
                                                                                     @{p.profiles?.username || 'User'} {isCancelled && (locale === 'de' ? '(Abgesagt)' : '(Cancelled)')}
-                                                                                </span>
+                                                                                </button>
                                                                             );
                                                                         })
                                                                     )}
@@ -1022,23 +1148,29 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                                                                             isCommenterCancelled && "opacity-35 bg-black/10 border-red-500/5"
                                                                                         )}
                                                                                     >
-                                                                                        <div className="w-6 h-6 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center text-gray-400 overflow-hidden relative shrink-0">
+                                                                                        <button 
+                                                                                            onClick={() => onViewProfile?.(comm.user_id)}
+                                                                                            className="w-6 h-6 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center text-gray-400 overflow-hidden relative shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-500/50 transition-all block focus:outline-none"
+                                                                                        >
                                                                                             {comm.profiles?.avatar_url ? (
                                                                                                 <Image src={comm.profiles.avatar_url} alt="Avatar" fill className="object-cover" />
                                                                                             ) : (
                                                                                                 <UserIcon className="w-3 h-3" />
                                                                                             )}
-                                                                                        </div>
+                                                                                        </button>
                                                                                         <div className="flex-1 min-w-0">
                                                                                             <div className="flex items-center justify-between gap-2">
-                                                                                                <span className="font-bold text-gray-300">
+                                                                                                <button 
+                                                                                                    onClick={() => onViewProfile?.(comm.user_id)}
+                                                                                                    className="font-bold text-gray-300 hover:text-blue-400 hover:underline transition-colors border-none bg-transparent p-0 cursor-pointer text-left focus:outline-none text-xs"
+                                                                                                >
                                                                                                     @{comm.profiles?.username || 'User'}
-                                                                                                    {isCommenterCancelled && (
-                                                                                                        <span className="text-[9px] font-extrabold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-400/20 ml-1.5 not-italic inline-block">
-                                                                                                            {locale === 'de' ? 'Abgesagt' : 'Cancelled'}
-                                                                                                        </span>
-                                                                                                    )}
-                                                                                                </span>
+                                                                                                </button>
+                                                                                                {isCommenterCancelled && (
+                                                                                                    <span className="text-[9px] font-extrabold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-400/20 ml-1.5 not-italic inline-block">
+                                                                                                        {locale === 'de' ? 'Abgesagt' : 'Cancelled'}
+                                                                                                    </span>
+                                                                                                )}
                                                                                                 <div className="flex items-center gap-2">
                                                                                                     <span className="text-[9px] text-gray-500">{new Date(comm.created_at).toLocaleDateString()}</span>
                                                                                                     {/* Edit / Delete Buttons */}
@@ -1207,30 +1339,81 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                 </div>
                             )}
 
-                            {/* Amenities Section - Plain Text/Icons (No borders) */}
+                            {/* Amenities Section - Premium 2x2 Glassmorphic facts grid */}
                             {(spot.attributes?.parking || spot.attributes?.charging || spot.attributes?.food || spot.attributes?.rental) && (
-                                <div className="flex flex-wrap gap-4 text-sm text-foreground/80">
-                                    {spot.attributes.parking && (
-                                        <span className="flex items-center gap-1.5">
-                                            <Car className="w-4 h-4 text-blue-500" />
-                                            {t('filters.parking')} {spot.attributes.parking_distance ? <span className="text-xs text-muted-foreground">({spot.attributes.parking_distance})</span> : null}
-                                        </span>
-                                    )}
-                                    {spot.attributes.charging && (
-                                        <span className="flex items-center gap-1.5">
-                                            <BatteryCharging className="w-4 h-4 text-green-500" /> {t('filters.charging')}
-                                        </span>
-                                    )}
-                                    {spot.attributes.food && (
-                                        <span className="flex items-center gap-1.5">
-                                            <Utensils className="w-4 h-4 text-orange-500" /> {t('filters.food')}
-                                        </span>
-                                    )}
-                                    {spot.attributes.rental && (
-                                        <span className="flex items-center gap-1.5">
-                                            <Store className="w-4 h-4 text-purple-500" /> {t('filters.rental')}
-                                        </span>
-                                    )}
+                                <div className="space-y-2.5">
+                                    <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">
+                                        {locale === 'de' ? 'Ausstattung & Merkmale' : 'Amenities & Features'}
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {/* Parking Fact Card */}
+                                        <div className={cn(
+                                            "p-3 rounded-2xl border flex items-center gap-3 transition-colors",
+                                            spot.attributes.parking 
+                                                ? "bg-blue-500/5 border-blue-500/20 text-white" 
+                                                : "bg-white/2 border-white/5 text-muted-foreground/40"
+                                        )}>
+                                            <Car className={cn("w-5 h-5 shrink-0", spot.attributes.parking ? "text-blue-400" : "text-muted-foreground/30")} />
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-[11px] font-extrabold truncate">{t('filters.parking')}</span>
+                                                {spot.attributes.parking && spot.attributes.parking_distance ? (
+                                                    <span className="text-[9px] text-muted-foreground truncate">{spot.attributes.parking_distance}</span>
+                                                ) : (
+                                                    <span className="text-[9px] text-muted-foreground/50 truncate">
+                                                        {spot.attributes.parking ? (locale === 'de' ? 'Vorhanden' : 'Available') : (locale === 'de' ? 'Nein' : 'No')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Charging Fact Card */}
+                                        <div className={cn(
+                                            "p-3 rounded-2xl border flex items-center gap-3 transition-colors",
+                                            spot.attributes.charging 
+                                                ? "bg-green-500/5 border-green-500/20 text-white" 
+                                                : "bg-white/2 border-white/5 text-muted-foreground/40"
+                                        )}>
+                                            <BatteryCharging className={cn("w-5 h-5 shrink-0", spot.attributes.charging ? "text-green-400" : "text-muted-foreground/30")} />
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-[11px] font-extrabold truncate">{t('filters.charging')}</span>
+                                                <span className="text-[9px] text-muted-foreground/50 truncate">
+                                                    {spot.attributes.charging ? (locale === 'de' ? 'Vorhanden' : 'Available') : (locale === 'de' ? 'Nein' : 'No')}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Food Fact Card */}
+                                        <div className={cn(
+                                            "p-3 rounded-2xl border flex items-center gap-3 transition-colors",
+                                            spot.attributes.food 
+                                                ? "bg-orange-500/5 border-orange-500/20 text-white" 
+                                                : "bg-white/2 border-white/5 text-muted-foreground/40"
+                                        )}>
+                                            <Utensils className={cn("w-5 h-5 shrink-0", spot.attributes.food ? "text-orange-400" : "text-muted-foreground/30")} />
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-[11px] font-extrabold truncate">{t('filters.food')}</span>
+                                                <span className="text-[9px] text-muted-foreground/50 truncate">
+                                                    {spot.attributes.food ? (locale === 'de' ? 'Vorhanden' : 'Available') : (locale === 'de' ? 'Nein' : 'No')}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Rental Fact Card */}
+                                        <div className={cn(
+                                            "p-3 rounded-2xl border flex items-center gap-3 transition-colors",
+                                            spot.attributes.rental 
+                                                ? "bg-purple-500/5 border-purple-500/20 text-white" 
+                                                : "bg-white/2 border-white/5 text-muted-foreground/40"
+                                        )}>
+                                            <Store className={cn("w-5 h-5 shrink-0", spot.attributes.rental ? "text-purple-400" : "text-muted-foreground/30")} />
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-[11px] font-extrabold truncate">{t('filters.rental')}</span>
+                                                <span className="text-[9px] text-muted-foreground/50 truncate">
+                                                    {spot.attributes.rental ? (locale === 'de' ? 'Verleih' : 'Rental') : (locale === 'de' ? 'Nein' : 'No')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
@@ -1282,6 +1465,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                                 t={t} 
                                                 isAdmin={isAdmin}
                                                 onDelete={() => handleAdminDeleteReview(rev.id)}
+                                                onViewProfile={onViewProfile}
                                             />
                                         ))}
                                     </div>
@@ -1358,9 +1542,10 @@ interface ReviewItemProps {
     t: (key: string) => string;
     isAdmin?: boolean;
     onDelete?: () => void;
+    onViewProfile?: (profileId: string) => void;
 }
 
-function ReviewItem({ review, targetLang, t, isAdmin, onDelete }: ReviewItemProps) {
+function ReviewItem({ review, targetLang, t, isAdmin, onDelete, onViewProfile }: ReviewItemProps) {
     const { translatedText: translatedComment, isTranslated } = useTranslate(review.comment, targetLang);
 
     return (
@@ -1368,8 +1553,9 @@ function ReviewItem({ review, targetLang, t, isAdmin, onDelete }: ReviewItemProp
             <div className="flex items-start gap-3 mb-2">
                 {/* Avatar with Bio Popover */}
                 <div className="relative group/avatar">
-                    <div 
-                        className="w-10 h-10 rounded-full bg-gray-800 border border-border/50 overflow-hidden flex-shrink-0 cursor-help hover:ring-2 hover:ring-blue-500/30 transition-all relative"
+                    <button 
+                        onClick={() => onViewProfile?.(review.user_id)}
+                        className="w-10 h-10 rounded-full bg-gray-800 border border-border/50 overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-500/50 transition-all relative block focus:outline-none"
                     >
                         {review.profiles?.avatar_url ? (
                             <Image 
@@ -1385,7 +1571,7 @@ function ReviewItem({ review, targetLang, t, isAdmin, onDelete }: ReviewItemProp
                                 <UserIcon className="w-5 h-5" />
                             </div>
                         )}
-                    </div>
+                    </button>
 
                     {/* Tooltip */}
                     {review.profiles?.bio && (
@@ -1398,9 +1584,12 @@ function ReviewItem({ review, targetLang, t, isAdmin, onDelete }: ReviewItemProp
 
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-sm font-bold text-foreground truncate">
-                            {review.profiles?.username || 'User'}
-                        </span>
+                        <button 
+                            onClick={() => onViewProfile?.(review.user_id)}
+                            className="text-sm font-bold text-foreground truncate hover:text-blue-400 hover:underline transition-colors border-none bg-transparent p-0 cursor-pointer text-left focus:outline-none"
+                        >
+                            @{review.profiles?.username || 'User'}
+                        </button>
                         <div className="flex items-center gap-2">
                             <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                                 {new Date(review.created_at).toLocaleDateString()}

@@ -176,8 +176,8 @@ export default function Imprint() {
 
     return (
         <div className="h-full overflow-y-auto bg-background text-foreground p-8 relative flex flex-col justify-between">
-            <div className="max-w-2xl mx-auto space-y-8 pb-20 w-full">
-                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:underline font-semibold">
+            <div className="max-w-2xl mx-auto space-y-8 pb-12 w-full flex-1">
+                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors mb-4 text-sm">
                     <ArrowLeft className="w-4 h-4" />
                     {t.backToMap}
                 </Link>
@@ -218,7 +218,7 @@ export default function Imprint() {
                     </div>
                 </section>
             </div>
-            <Footer />
+            <Footer isStatic />
         </div>
     );
 }

@@ -225,7 +225,8 @@ export async function createSpot(spotData: Omit<Spot, "id" | "createdAt">, token
             lat: spotData.location.coordinates[1],
             lng: spotData.location.coordinates[0],
             attributes: spotData.attributes,
-            user_id: user.id
+            user_id: user.id,
+            created_by: user.id
         };
 
         // Try inserting with new columns
@@ -692,3 +693,281 @@ export async function getLastReadNotifications() {
     
     return { success: true, data: data.last_read_notifications_at };
 }
+
+// 5. Spot Likes Server Actions
+export async function toggleLikeSpot(spotId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized: Please sign in to like spots." };
+
+    try {
+        // Check if already liked
+        const { data: existingLike, error: fetchErr } = await supabase
+            .from("spot_likes")
+            .select("id")
+            .eq("spot_id", spotId)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (fetchErr) throw fetchErr;
+
+        if (existingLike) {
+            // Unlike
+            const { error: deleteErr } = await supabase
+                .from("spot_likes")
+                .delete()
+                .eq("id", existingLike.id);
+            if (deleteErr) throw deleteErr;
+            return { success: true, action: "unliked" };
+        } else {
+            // Like
+            const { error: insertErr } = await supabase
+                .from("spot_likes")
+                .insert([{ spot_id: spotId, user_id: user.id }]);
+            if (insertErr) throw insertErr;
+            return { success: true, action: "liked" };
+        }
+    } catch (err) {
+        console.error("Toggle like error:", err);
+        return { success: false, error: err instanceof Error ? err.message : "Unknown database error" };
+    }
+}
+
+export async function getSpotLikesCount(spotId: string): Promise<number> {
+    const supabase = await createClient();
+    try {
+        const { count, error } = await supabase
+            .from("spot_likes")
+            .select("id", { count: "exact", head: true })
+            .eq("spot_id", spotId);
+
+        if (error) throw error;
+        return count || 0;
+    } catch (err) {
+        console.error("Get spot likes count error:", err);
+        return 0;
+    }
+}
+
+export async function getSpotLikeStatus(spotId: string): Promise<boolean> {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    try {
+        const { data, error } = await supabase
+            .from("spot_likes")
+            .select("id")
+            .eq("spot_id", spotId)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+        return !!data;
+    } catch (err) {
+        console.error("Get spot like status error:", err);
+        return false;
+    }
+}
+
+
+// 6. Spot Bookmarks Server Actions (Merkliste)
+export async function toggleBookmarkSpot(spotId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized: Please sign in to save spots." };
+
+    try {
+        // Check if already bookmarked
+        const { data: existingBookmark, error: fetchErr } = await supabase
+            .from("spot_bookmarks")
+            .select("id")
+            .eq("spot_id", spotId)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (fetchErr) throw fetchErr;
+
+        if (existingBookmark) {
+            // Unbookmark
+            const { error: deleteErr } = await supabase
+                .from("spot_bookmarks")
+                .delete()
+                .eq("id", existingBookmark.id);
+            if (deleteErr) throw deleteErr;
+            return { success: true, action: "unbookmarked" };
+        } else {
+            // Bookmark
+            const { error: insertErr } = await supabase
+                .from("spot_bookmarks")
+                .insert([{ spot_id: spotId, user_id: user.id }]);
+            if (insertErr) throw insertErr;
+            return { success: true, action: "bookmarked" };
+        }
+    } catch (err) {
+        console.error("Toggle bookmark error:", err);
+        return { success: false, error: err instanceof Error ? err.message : "Unknown database error" };
+    }
+}
+
+export async function getUserBookmarks(): Promise<Spot[]> {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    try {
+        const { data, error } = await supabase
+            .from("spot_bookmarks")
+            .select(`
+                spot_id,
+                spots(
+                    id, name, status, attributes, created_at, lat, lng,
+                    average_rating, rating_count, source_locale
+                )
+            `)
+            .eq("user_id", user.id);
+
+        if (error) throw error;
+        if (!data) return [];
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        return data
+            .map((item: any) => {
+                const s = item.spots;
+                if (!s) return null;
+                const spot: Spot = {
+                    id: s.id,
+                    name: s.name,
+                    status: s.status,
+                    location: {
+                        type: "Point",
+                        coordinates: [s.lng, s.lat]
+                    },
+                    attributes: s.attributes,
+                    source_locale: s.source_locale,
+                    createdAt: s.created_at,
+                    average_rating: s.average_rating,
+                    rating_count: s.rating_count
+                };
+                spot.slug = generateSlug(spot);
+                return spot;
+            })
+            .filter((s): s is Spot => s !== null);
+    } catch (err) {
+        console.error("Get user bookmarks error:", err);
+        return [];
+    }
+}
+
+
+// 7. Clickable User Profile Server Action
+export interface UserProfileData {
+    profile: {
+        id: string;
+        username: string;
+        avatar_url: string | null;
+        bio: string | null;
+        created_at: string;
+    };
+    spots: Spot[];
+    visits: {
+        id: string;
+        spot_id: string;
+        spot_name: string;
+        visit_date: string;
+        visit_time: string;
+        description: string;
+    }[];
+}
+
+export async function getUserProfileData(profileId: string): Promise<UserProfileData | null> {
+    const supabase = await createClient();
+    try {
+        // 1. Get profile details
+        const { data: profile, error: profileErr } = await supabase
+            .from("profiles")
+            .select("id, username, avatar_url, bio, created_at")
+            .eq("id", profileId)
+            .maybeSingle();
+
+        if (profileErr || !profile) {
+            console.error("Error fetching user profile:", profileErr);
+            return null;
+        }
+
+        // 2. Get spots contributed by this user (check both created_by and user_id fallback)
+        const { data: spotsData, error: spotsErr } = await supabase
+            .from("spots")
+            .select(`
+                id, name, status, attributes, created_at, lat, lng,
+                average_rating, rating_count, source_locale
+            `)
+            .or(`created_by.eq.${profileId},user_id.eq.${profileId}`);
+
+        const spots: Spot[] = [];
+        if (spotsData && !spotsErr) {
+            spotsData.forEach((s: any) => {
+                const spot: Spot = {
+                    id: s.id,
+                    name: s.name,
+                    status: s.status,
+                    location: {
+                        type: "Point",
+                        coordinates: [s.lng, s.lat]
+                    },
+                    attributes: s.attributes,
+                    source_locale: s.source_locale,
+                    createdAt: s.created_at,
+                    average_rating: s.average_rating,
+                    rating_count: s.rating_count
+                };
+                spot.slug = generateSlug(spot);
+                spots.push(spot);
+            });
+        }
+
+        // 3. Get upcoming visits planned by this user
+        const todayStr = new Date().toISOString().split('T')[0];
+        const { data: visitsData, error: visitsErr } = await supabase
+            .from("spot_visits")
+            .select(`
+                id, spot_id, visit_date, visit_time, description,
+                spots(name)
+            `)
+            .eq("user_id", profileId)
+            .gte("visit_date", todayStr)
+            .order("visit_date", { ascending: true });
+
+        const visits = (visitsData || [])
+            .map((v: any) => {
+                const sName = v.spots ? (Array.isArray(v.spots) ? v.spots[0]?.name : v.spots?.name) : "Spot";
+                return {
+                    id: v.id,
+                    spot_id: v.spot_id,
+                    spot_name: sName || "Spot",
+                    visit_date: v.visit_date,
+                    visit_time: v.visit_time,
+                    description: v.description
+                };
+            });
+
+        return {
+            profile: {
+                id: profile.id,
+                username: profile.username || "eFoiler",
+                avatar_url: profile.avatar_url,
+                bio: profile.bio,
+                created_at: profile.created_at
+            },
+            spots,
+            visits
+        };
+    } catch (err) {
+        console.error("getUserProfileData exception:", err);
+        return null;
+    }
+}
+

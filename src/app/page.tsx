@@ -67,6 +67,29 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   };
 }
 
-export default function Page() {
-  return <HomeClient />;
+export default async function Page() {
+  let spots: any[] = [];
+  try {
+    spots = await getSpots();
+  } catch (err) {
+    console.error("Error fetching spots for homepage SEO:", err);
+  }
+
+  return (
+    <>
+      <HomeClient />
+      
+      {/* Hidden SEO Link Directory for Search Engine Crawlers */}
+      <div className="sr-only" aria-hidden="true">
+        <h2>eFoil Spots Directory</h2>
+        <ul>
+          {spots.map((spot) => (
+            <li key={spot.id}>
+              <a href={`/spots/${spot.slug || spot.id}`}>{spot.name}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
 }
