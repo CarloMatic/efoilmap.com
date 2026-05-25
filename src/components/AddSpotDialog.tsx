@@ -8,8 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/AuthDialog";
 import { supabase } from "@/lib/supabase";
 import { compressImage } from "@/lib/image-utils";
+import { cn } from "@/lib/utils";
 
-const GOOGLE_MAPS_TIP: Record<string, string> = {
+export const GOOGLE_MAPS_TIP: Record<string, string> = {
     de: "Tipp: Du findest Breiten- und Längengrad z.B. in der URL von Google Maps (z.B. @50.638,6.385).",
     en: "Tip: You can find latitude & longitude in the URL of Google Maps (e.g. @50.638,6.385).",
     es: "Consejo: Puedes encontrar la latitud y longitud en la URL de Google Maps (por ejemplo, @50.638,6.385).",
@@ -21,15 +22,41 @@ const GOOGLE_MAPS_TIP: Record<string, string> = {
     sv: "Tips: Du hittar latitud och longitud i URL-adressen för Google Maps (t.ex. @50.638,6.385)."
 };
 
+export const MOVE_ON_MAP_BTN: Record<string, string> = {
+    de: "Spot auf Karte verschieben",
+    en: "Move Spot on Map",
+    es: "Mover punto en el mapa",
+    fr: "Déplacer le spot sur la carte",
+    it: "Sposta lo spot sulla mappa",
+    pt: "Mover o spot no mapa",
+    nl: "Spot op kaart verplaatsen",
+    pl: "Przesuń spot na mapie",
+    sv: "Flytta spotten på kartan"
+};
+
+export const MOVE_POSITION_TIP: Record<string, string> = {
+    de: "Tipp: Klicke auf den Button oben und wähle die neue Position direkt durch einen Klick auf der Karte aus.",
+    en: "Tip: Click the button above and select the new position directly by clicking on the map.",
+    es: "Consejo: Haz clic en el botón de arriba y selecciona la nueva posición directamente haciendo clic en el mapa.",
+    fr: "Astuce : Clique sur le bouton ci-dessus et choisis la neue position directement en cliquant sur la carte.",
+    it: "Suggerimento: Clicca sul pulsante sopra e seleziona la nuova posizione direttamente cliccando sulla mappa.",
+    pt: "Dica: Clica no botão acima e seleciona a nova posição diretamente clicando no mapa.",
+    nl: "Tip: Klik op de knop hierboven en kies de neue positie direct door op de kaart te klikken.",
+    pl: "Wskazówka: Kliknij przycisk powyżej i wybierz nową pozycję bezpośrednio klikając na mapie.",
+    sv: "Tips: Klicka på knappen ovan och välj den nya positionen direkt genom kartklick."
+};
+
 interface AddSpotDialogProps {
     open: boolean;
     onClose: () => void;
     location: [number, number] | null;
     initialData?: Spot | null;
     onSuccess: (spot?: Spot) => void;
+    isMovingPosition?: boolean;
+    onInitiateMove?: () => void;
 }
 
-export function AddSpotDialog({ open, onClose, location, initialData, onSuccess }: AddSpotDialogProps) {
+export function AddSpotDialog({ open, onClose, location, initialData, onSuccess, isMovingPosition = false, onInitiateMove }: AddSpotDialogProps) {
     const { user } = useAuth();
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const { t, locale } = useLanguage();
@@ -110,6 +137,13 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
             }
         }
     }, [open, initialData]);
+
+    useEffect(() => {
+        if (open && location) {
+            setLat(location[1].toString());
+            setLng(location[0].toString());
+        }
+    }, [location, open]);
 
     if (!open) return null;
 
@@ -263,7 +297,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className={cn("fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4", isMovingPosition && "hidden")}>
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -297,35 +331,25 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                         {/* Creator Coordinates Editor */}
                         {initialData && isCreator && (
                             <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl space-y-3">
-                                <h3 className="text-xs font-black uppercase text-blue-400 tracking-wider flex items-center gap-1.5">
-                                    <span>📍</span> {locale === 'de' ? 'Position bearbeiten' : 'Edit Position'}
-                                </h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{locale === 'de' ? 'Breitengrad (Lat)' : 'Latitude (Lat)'}</label>
-                                        <input
-                                            type="number"
-                                            step="any"
-                                            required
-                                            value={lat}
-                                            onChange={(e) => setLat(e.target.value)}
-                                            className="w-full px-3 py-1.5 bg-background border border-input rounded-xl text-xs focus:ring-1 focus:ring-blue-500/50 focus:outline-none"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{locale === 'de' ? 'Längengrad (Lng)' : 'Longitude (Lng)'}</label>
-                                        <input
-                                            type="number"
-                                            step="any"
-                                            required
-                                            value={lng}
-                                            onChange={(e) => setLng(e.target.value)}
-                                            className="w-full px-3 py-1.5 bg-background border border-input rounded-xl text-xs focus:ring-1 focus:ring-blue-500/50 focus:outline-none"
-                                        />
-                                    </div>
+                                <div className="flex justify-between items-center">
+                                    <h3 className="text-xs font-black uppercase text-blue-400 tracking-wider flex items-center gap-1.5">
+                                        <span>📍</span> {locale === 'de' ? 'Position' : 'Position'}
+                                    </h3>
+                                    <span className="text-[10px] font-mono text-gray-400">
+                                        {lat ? parseFloat(lat).toFixed(6) : "0.000000"}, {lng ? parseFloat(lng).toFixed(6) : "0.000000"}
+                                    </span>
                                 </div>
-                                <p className="text-[10px] text-blue-300/80 leading-relaxed italic mt-2">
-                                    💡 {GOOGLE_MAPS_TIP[locale] || GOOGLE_MAPS_TIP['en']}
+                                
+                                <button
+                                    type="button"
+                                    onClick={onInitiateMove}
+                                    className="w-full py-2.5 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-xl text-xs font-bold text-blue-300 hover:text-blue-200 transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                                >
+                                    <span>📍</span> {MOVE_ON_MAP_BTN[locale] || MOVE_ON_MAP_BTN['en']}
+                                </button>
+                                
+                                <p className="text-[9px] text-blue-300/60 leading-relaxed italic text-center">
+                                    💡 {MOVE_POSITION_TIP[locale] || MOVE_POSITION_TIP['en']}
                                 </p>
                             </div>
                         )}

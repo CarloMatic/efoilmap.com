@@ -38,7 +38,7 @@ export default function EfoilMap() {
         setIsUserProfileOpen(true);
     };
 
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
     const { showToast } = useToast();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -55,6 +55,7 @@ export default function EfoilMap() {
     const [isAddSpotOpen, setIsAddSpotOpen] = useState(false);
     const [newSpotLocation, setNewSpotLocation] = useState<[number, number] | null>(null);
     const [isSelectingLocation, setIsSelectingLocation] = useState(false);
+    const [isMovingSpotPosition, setIsMovingSpotPosition] = useState(false);
 
     const [filters, setFilters] = useState<FilterState>({
         status: 'all',
@@ -108,6 +109,7 @@ export default function EfoilMap() {
             setIsAuthOpen(false);
             setIsProfileOpen(false);
             setIsSelectingLocation(false);
+            setIsMovingSpotPosition(false);
         };
         window.addEventListener('close-all-overlays', handleCloseAll);
         return () => window.removeEventListener('close-all-overlays', handleCloseAll);
@@ -290,7 +292,7 @@ export default function EfoilMap() {
                     }}
                     mapStyle="mapbox://styles/mapbox/light-v11"
                     attributionControl={false}
-                    cursor={isSelectingLocation ? 'crosshair' : 'auto'}
+                    cursor={(isSelectingLocation || isMovingSpotPosition) ? 'crosshair' : 'auto'}
                     onLoad={(e) => {
                         // Force water to be a visible blue
                         if (e.target.getLayer('water')) {
@@ -302,6 +304,8 @@ export default function EfoilMap() {
                             setNewSpotLocation([e.lngLat.lng, e.lngLat.lat]);
                             setIsSelectingLocation(false);
                             setIsAddSpotOpen(true);
+                        } else if (isMovingSpotPosition) {
+                            setNewSpotLocation([e.lngLat.lng, e.lngLat.lat]);
                         }
                     }}
                 >
@@ -385,47 +389,66 @@ export default function EfoilMap() {
                     </div>
 
                     {/* Spot Markers */}
-                    {filteredSpots.map((spot) => (
+                    {filteredSpots.map((spot) => {
+                        // Hide original marker of the spot we are currently moving
+                        if (isMovingSpotPosition && selectedSpot && spot.id === selectedSpot.id) return null;
+                        
+                        return (
+                            <Marker
+                                key={spot.id}
+                                longitude={spot.location.coordinates[0]}
+                                latitude={spot.location.coordinates[1]}
+                                anchor="bottom"
+                                onClick={(e) => {
+                                    e.originalEvent.stopPropagation();
+                                    handleSpotSelect(spot);
+                                }}
+                            >
+                                <div className="group relative flex flex-col items-center justify-center transition-transform hover:scale-110 cursor-pointer">
+                                    {/* Pin Icon with Dynamic Color */}
+                                    <MapPin
+                                        className={cn(
+                                            "w-8 h-8 fill-current drop-shadow-lg",
+                                            spot.status === "ALLOWED" && "text-[var(--status-allowed)]",
+                                            spot.status === "TOLERATED" && "text-[var(--status-tolerated)]",
+                                            spot.status === "FORBIDDEN" && "text-[var(--status-forbidden)]",
+                                            spot.status === "UNCLEAR" && "text-gray-400"
+                                        )}
+                                        fill="currentColor"
+                                    />
+                                    
+                                    {/* Future Events Count Badge */}
+                                    {(() => {
+                                        const count = (() => {
+                                            if (!spot.spot_visits) return 0;
+                                            const todayStr = new Date().toISOString().split('T')[0];
+                                            return spot.spot_visits.filter(v => v.visit_date >= todayStr).length;
+                                        })();
+                                        if (count === 0) return null;
+                                        return (
+                                            <div className="absolute -top-2.5 -right-2.5 bg-blue-600 border border-white/20 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg shadow-blue-500/20 animate-in zoom-in-50">
+                                                {count}
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </Marker>
+                        );
+                    })}
+
+                    {/* Moving Spot Position Preview Marker */}
+                    {isMovingSpotPosition && (newSpotLocation || selectedSpot) && (
                         <Marker
-                            key={spot.id}
-                            longitude={spot.location.coordinates[0]}
-                            latitude={spot.location.coordinates[1]}
+                            longitude={newSpotLocation ? newSpotLocation[0] : selectedSpot!.location.coordinates[0]}
+                            latitude={newSpotLocation ? newSpotLocation[1] : selectedSpot!.location.coordinates[1]}
                             anchor="bottom"
-                            onClick={(e) => {
-                                e.originalEvent.stopPropagation();
-                                handleSpotSelect(spot);
-                            }}
                         >
-                            <div className="group relative flex flex-col items-center justify-center transition-transform hover:scale-110 cursor-pointer">
-                                {/* Pin Icon with Dynamic Color */}
-                                <MapPin
-                                    className={cn(
-                                        "w-8 h-8 fill-current drop-shadow-lg",
-                                        spot.status === "ALLOWED" && "text-[var(--status-allowed)]",
-                                        spot.status === "TOLERATED" && "text-[var(--status-tolerated)]",
-                                        spot.status === "FORBIDDEN" && "text-[var(--status-forbidden)]",
-                                        spot.status === "UNCLEAR" && "text-gray-400"
-                                    )}
-                                    fill="currentColor"
-                                />
-                                
-                                {/* Future Events Count Badge */}
-                                {(() => {
-                                    const count = (() => {
-                                        if (!spot.spot_visits) return 0;
-                                        const todayStr = new Date().toISOString().split('T')[0];
-                                        return spot.spot_visits.filter(v => v.visit_date >= todayStr).length;
-                                    })();
-                                    if (count === 0) return null;
-                                    return (
-                                        <div className="absolute -top-2.5 -right-2.5 bg-blue-600 border border-white/20 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg shadow-blue-500/20 animate-in zoom-in-50">
-                                            {count}
-                                        </div>
-                                    );
-                                })()}
+                            <div className="relative flex flex-col items-center justify-center scale-110">
+                                <div className="absolute -inset-2 bg-blue-500/30 rounded-full animate-ping pointer-events-none" />
+                                <MapPin className="w-9 h-9 text-blue-500 fill-blue-500/20 drop-shadow-xl animate-bounce" />
                             </div>
                         </Marker>
-                    ))}
+                    )}
                 </Map>
             </ConsentGate>
 
@@ -445,12 +468,14 @@ export default function EfoilMap() {
                 open={isAddSpotOpen}
                 onClose={() => {
                     setIsAddSpotOpen(false);
-                    // Reset selected spot when closing if we were editing? 
-                    // No, allow map to persist state.
-                    if (!isSelectingLocation) setSelectedSpot(null); // Clear selection if done
+                    if (!isSelectingLocation && !isMovingSpotPosition) setSelectedSpot(null); // Clear selection if done
+                }}
+                isMovingPosition={isMovingSpotPosition}
+                onInitiateMove={() => {
+                    setIsMovingSpotPosition(true);
                 }}
                 location={newSpotLocation || (selectedSpot?.location.coordinates as [number, number])}
-                initialData={isAddSpotOpen && selectedSpot && !newSpotLocation ? selectedSpot : null} // Rough logic: if open and spot selected but NO new location set, assume edit.
+                initialData={isAddSpotOpen && selectedSpot && !isSelectingLocation ? selectedSpot : null}
                 onSuccess={(updatedSpot) => {
                     if (updatedSpot) {
                         setSpots(prev => {
@@ -471,8 +496,57 @@ export default function EfoilMap() {
                         window.location.reload();
                     }
                     setIsAddSpotOpen(false);
+                    setNewSpotLocation(null);
                 }}
             />
+
+            {/* Moving Spot Control Overlay Panel */}
+            {isMovingSpotPosition && (
+                <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 w-full max-w-sm px-4 animate-in slide-in-from-bottom-8 duration-300 pointer-events-auto">
+                    <div className="w-full bg-gray-900/90 backdrop-blur-md border border-blue-500/30 rounded-2xl p-4 shadow-2xl flex flex-col items-center gap-3 text-center">
+                        <div className="flex items-center gap-2">
+                            <span className="animate-pulse">📍</span>
+                            <p className="text-xs font-bold text-gray-200">
+                                {locale === 'de' 
+                                    ? "Klicke auf die Karte, um die neue Position festzulegen" 
+                                    : "Click on the map to set the new position"}
+                            </p>
+                        </div>
+                        
+                        {(newSpotLocation || selectedSpot) && (
+                            <p className="text-[10px] font-mono text-blue-400">
+                                {newSpotLocation ? newSpotLocation[1].toFixed(6) : selectedSpot!.location.coordinates[1].toFixed(6)}, {newSpotLocation ? newSpotLocation[0].toFixed(6) : selectedSpot!.location.coordinates[0].toFixed(6)}
+                            </p>
+                        )}
+
+                        <div className="flex gap-2 w-full mt-1">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setNewSpotLocation(null);
+                                    setIsMovingSpotPosition(false);
+                                }}
+                                className="flex-1 py-2 text-xs font-bold text-gray-300 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+                            >
+                                {locale === 'de' ? "Abbrechen" : "Cancel"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsMovingSpotPosition(false);
+                                    showToast(
+                                        locale === 'de' ? "Position temporär aktualisiert! Speichere den Spot, um es dauerhaft zu machen." : "Position temporarily updated! Save the spot to make it permanent.",
+                                        "success"
+                                    );
+                                }}
+                                className="flex-1 py-2 text-xs font-black text-white bg-blue-600 rounded-xl hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                            >
+                                {locale === 'de' ? "Position speichern" : "Save Position"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <AuthDialog 
                 open={isAuthOpen} 
