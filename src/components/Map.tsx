@@ -215,11 +215,9 @@ export default function EfoilMap() {
         });
 
         const params = new URLSearchParams(window.location.search);
-        const lang = params.get('lang');
-        const langQuery = lang ? `?lang=${lang}` : '';
-
         if (spot.slug) {
-            window.history.pushState(null, '', `/spots/${spot.slug}${langQuery}`);
+            const query = params.toString() ? `?${params.toString()}` : '';
+            window.history.pushState(null, '', `/spots/${spot.slug}${query}`);
         } else {
             params.set('spot', spot.id.toString());
             window.history.pushState(null, '', `/?${params.toString()}`);
@@ -316,7 +314,7 @@ export default function EfoilMap() {
                                 {user && (
                                     <NotificationCenter 
                                         user={user} 
-                                        onSelectSpot={setSelectedSpot} 
+                                        onSelectSpot={handleSpotSelect} 
                                     />
                                 )}
                                 {user ? (

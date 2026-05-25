@@ -158,7 +158,8 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                 params.delete("visit");
                 params.delete("tab");
             }
-            router.push(`${pathname}?${params.toString()}`, { scroll: false });
+            // Update URL synchronously so onSelectSpot (which calls pushState) sees the new params
+            window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
 
             // 2. Fetch full spot details
             const { data: spotData } = await supabase
