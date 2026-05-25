@@ -27,6 +27,7 @@ export interface Spot {
     createdAt?: string;
     average_rating?: number;
     rating_count?: number;
+    spot_visits?: { id: string; visit_date: string; visit_time: string; }[];
 }
 
 export interface DbSpot {
@@ -42,18 +43,36 @@ export interface DbSpot {
     rating_count?: number;
 }
 
+interface DbSpotWithVisits extends DbSpot {
+    spot_visits?: { id: string; visit_date: string; visit_time: string; }[];
+}
+
 export async function getSpots(): Promise<Spot[]> {
     const supabase = await createClient();
     try {
-        // Try fetching with source_locale first
-        const fetchRes = await supabase
+        // Try fetching with source_locale and spot_visits first
+        let fetchRes = await supabase
             .from("spots")
             .select(`
                 id, name, status, attributes, created_at, lat, lng,
-                average_rating, rating_count, source_locale
+                average_rating, rating_count, source_locale,
+                spot_visits(id, visit_date, visit_time)
             `);
-        let data = fetchRes.data as DbSpot[] | null;
+        let data = fetchRes.data as DbSpotWithVisits[] | null;
         let error = fetchRes.error;
+
+        // Graceful fallback if spot_visits table does not exist yet
+        if (error && (error.message.includes("spot_visits") || error.message.includes("relation"))) {
+            console.warn("DB Schema fallback: spot_visits table not created yet. Fetching without visits.");
+            fetchRes = await supabase
+                .from("spots")
+                .select(`
+                    id, name, status, attributes, created_at, lat, lng,
+                    average_rating, rating_count, source_locale
+                `);
+            data = fetchRes.data as DbSpotWithVisits[] | null;
+            error = fetchRes.error;
+        }
 
         // If source_locale is missing, try without it
         if (error && error.message.includes("source_locale")) {
@@ -64,7 +83,7 @@ export async function getSpots(): Promise<Spot[]> {
                     id, name, status, attributes, created_at, lat, lng,
                     average_rating, rating_count
                 `);
-            data = basicFetch.data as DbSpot[] | null;
+            data = basicFetch.data as DbSpotWithVisits[] | null;
             error = basicFetch.error;
         }
 
@@ -77,7 +96,10 @@ export async function getSpots(): Promise<Spot[]> {
             return [];
         }
 
-        return (data || []).map((d: DbSpot) => {
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        return (data || []).map((d: DbSpotWithVisits) => {
+            const activeVisits = (d.spot_visits || []).filter(v => v.visit_date >= todayStr);
             const s: Spot = {
                 id: d.id,
                 name: d.name,
@@ -90,7 +112,8 @@ export async function getSpots(): Promise<Spot[]> {
                 source_locale: d.source_locale,
                 createdAt: d.created_at,
                 average_rating: d.average_rating,
-                rating_count: d.rating_count
+                rating_count: d.rating_count,
+                spot_visits: activeVisits
             };
             s.slug = generateSlug(s);
             return s;
@@ -336,4 +359,296 @@ export async function verifySpot(spotId: string, rating?: number, comment?: stri
         console.error("Verify Exception:", error);
         return { success: false, error: "Network error" };
     }
+}
+
+export async function createSpotVisit(visit: {
+    spot_id: string;
+    visit_date: string;
+    visit_time: string;
+    description: string;
+}) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    const { data, error } = await supabase
+        .from("spot_visits")
+        .insert([{
+            spot_id: visit.spot_id,
+            user_id: user.id,
+            visit_date: visit.visit_date,
+            visit_time: visit.visit_time,
+            description: visit.description
+        }])
+        .select()
+        .single();
+        
+    if (error) {
+        console.error("Create Spot Visit Error:", error);
+        return { success: false, error: error.message };
+    }
+    
+    try {
+        await supabase
+            .from("visit_participants")
+            .insert([{
+                visit_id: data.id,
+                user_id: user.id,
+                status: 'JOINED'
+            }]);
+    } catch (partErr) {
+        console.warn("Could not auto-join creator (migration not run yet):", partErr);
+    }
+    
+    return { success: true, data };
+}
+
+export async function addVisitComment(comment: {
+    visit_id: string;
+    comment: string;
+}) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    // 1. Insert the comment
+    const { data: newComment, error } = await supabase
+        .from("visit_comments")
+        .insert([{
+            visit_id: comment.visit_id,
+            user_id: user.id,
+            comment: comment.comment
+        }])
+        .select()
+        .single();
+        
+    if (error) {
+        console.error("Create Visit Comment Error:", error);
+        return { success: false, error: error.message };
+    }
+    
+    try {
+        // 2. Fetch the related visit and spot details
+        const { data: visitData } = await supabase
+            .from("spot_visits")
+            .select(`
+                id, visit_date, visit_time, user_id, spot_id,
+                spots(name)
+            `)
+            .eq("id", comment.visit_id)
+            .single();
+            
+        if (visitData && visitData.user_id !== user.id) {
+            // Check if this is the FIRST comment from another user on this event
+            const { count } = await supabase
+                .from("visit_comments")
+                .select("id", { count: "exact", head: true })
+                .eq("visit_id", comment.visit_id)
+                .neq("user_id", visitData.user_id)
+                .neq("id", newComment.id); // exclude the current one
+                
+            if (count === 0) {
+                // This is the first reply from a third party! Trigger email!
+                // Fetch creator's email via secure database RPC function
+                const { data: creatorEmail } = await supabase
+                    .rpc("get_profile_email", { profile_id: visitData.user_id });
+                
+                // Fetch commenter's username
+                const { data: commenterProfile } = await supabase
+                    .from("profiles")
+                    .select("username")
+                    .eq("id", user.id)
+                    .single();
+                
+                const { sendVisitNotificationEmail } = await import("@/lib/email");
+                
+                await sendVisitNotificationEmail({
+                    creatorEmail: creatorEmail || "carlo@efoilmap.com",
+                    visitorUsername: commenterProfile?.username || "eFoiler",
+                    spotName: (visitData?.spots as unknown as { name: string } | null)?.name || "Spot",
+                    eventDate: visitData.visit_date,
+                    eventTime: visitData.visit_time,
+                    commentText: comment.comment,
+                    spotId: visitData.spot_id || "",
+                    visitId: visitData.id
+                });
+            }
+        }
+    } catch (emailErr) {
+        console.error("Simulated Email notification error:", emailErr);
+    }
+    
+    return { success: true, data: newComment };
+}
+
+export async function joinOrCancelVisit(visitId: string, status: 'JOINED' | 'CANCELLED') {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    const { data: existing, error: checkError } = await supabase
+        .from("visit_participants")
+        .select("id")
+        .eq("visit_id", visitId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+        
+    if (checkError) {
+        console.error("Check participant error:", checkError);
+        return { success: false, error: checkError.message };
+    }
+    
+    if (existing) {
+        const { error: updateError } = await supabase
+            .from("visit_participants")
+            .update({ status })
+            .eq("id", existing.id);
+            
+        if (updateError) {
+            console.error("Update participant error:", updateError);
+            return { success: false, error: updateError.message };
+        }
+    } else {
+        const { error: insertError } = await supabase
+            .from("visit_participants")
+            .insert([{
+                visit_id: visitId,
+                user_id: user.id,
+                status
+            }]);
+            
+        if (insertError) {
+            console.error("Insert participant error:", insertError);
+            return { success: false, error: insertError.message };
+        }
+    }
+    
+    return { success: true };
+}
+
+export async function deleteSpotVisit(visitId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    const { error } = await supabase
+        .from("spot_visits")
+        .delete()
+        .eq("id", visitId)
+        .eq("user_id", user.id);
+        
+    if (error) {
+        console.error("Delete spot visit error:", error);
+        return { success: false, error: error.message };
+    }
+    
+    return { success: true };
+}
+
+export async function updateVisitComment(commentId: string, commentText: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    const { error } = await supabase
+        .from("visit_comments")
+        .update({ comment: commentText })
+        .eq("id", commentId)
+        .eq("user_id", user.id);
+        
+    if (error) {
+        console.error("Update visit comment error:", error);
+        return { success: false, error: error.message };
+    }
+    
+    return { success: true };
+}
+
+export async function deleteVisitComment(commentId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    const isAdmin = user.email === 'callematic@gmail.com';
+    
+    let query = supabase.from("visit_comments").delete().eq("id", commentId);
+    
+    if (!isAdmin) {
+        query = query.eq("user_id", user.id);
+    }
+    
+    const { error } = await query;
+        
+    if (error) {
+        console.error("Delete visit comment error:", error);
+        return { success: false, error: error.message };
+    }
+    
+    return { success: true };
+}
+
+export async function updateSpotReview(reviewId: string, rating: number, comment: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    const { error } = await supabase
+        .from("spot_verifications")
+        .update({ rating, comment })
+        .eq("id", reviewId)
+        .eq("user_id", user.id);
+        
+    if (error) {
+        console.error("Update spot review error:", error);
+        return { success: false, error: error.message };
+    }
+    
+    return { success: true };
+}
+
+export async function deleteSpotReview(reviewId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+    
+    const isAdmin = user.email === 'callematic@gmail.com';
+    
+    let query = supabase.from("spot_verifications").delete().eq("id", reviewId);
+    
+    if (!isAdmin) {
+        query = query.eq("user_id", user.id);
+    }
+    
+    const { error } = await query;
+        
+    if (error) {
+        console.error("Delete spot review error:", error);
+        return { success: false, error: error.message };
+    }
+    
+    return { success: true };
 }

@@ -5,13 +5,13 @@ import { ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { Footer } from "@/components/Footer";
 
-// We define localized content for the Privacy Policy. 
-// For maximum legal precision and user experience, we translate the core headers and sections into all 9 languages.
+// We define localized content for the Privacy Policy.
 const content = {
     en: {
         title: "Privacy Policy",
-        lastUpdated: "Last updated: May 24, 2026",
+        lastUpdated: "As of: May 25, 2026",
         backToMap: "Back to Map",
+        intro: "This privacy policy explains what personal data we process on efoilmap.com, for what purposes, on what legal basis, and what rights you have.",
         sections: {
             controller: {
                 title: "1. Data Controller",
@@ -22,340 +22,380 @@ const content = {
                 represented: "Represented by: Carlo Matic"
             },
             collection: {
-                title: "2. Collection and Processing of Personal Data",
-                desc: "We collect and process personal data only to the extent necessary to provide a functioning community platform. This includes:",
+                title: "2. Processing of Personal Data (Purposes, Data Categories, Legal Bases)",
+                desc: "We process personal data only to the extent necessary to provide the community platform and the interactive map. This includes:",
                 items: [
                     {
-                        bold: "Authentication & Account Data: ",
-                        text: "When you register or sign in via our passwordless magic links, we collect and store your email address. If you set up a profile, we store your self-selected username, bio, and custom avatar photo.",
-                        basis: "Legal Basis: Art. 6 para. 1 lit. b GDPR (performance of a contract)."
+                        bold: "2.1 User Account and Registration (Magic Link)",
+                        text: "Processed data: Email address; profile details if applicable (username, bio); avatar image uploaded by you if applicable. Purposes: Registration/Login, account management, provision of community functions.",
+                        basis: "Legal Basis: Art. 6 para. 1 lit. b GDPR (Contract/terms of use relationship)."
                     },
                     {
-                        bold: "User Generated Content (UGC): ",
-                        text: "Spot coordinates, descriptions, amenities, and community reviews/ratings you post are saved in our database to compile the interactive community map.",
-                        basis: "Legal Basis: Art. 6 para. 1 lit. b GDPR (contractual fulfillment) and Art. 6 para. 1 lit. f GDPR (legitimate interest)."
+                        bold: "2.2 User Generated Content (Spots, Reviews, Content)",
+                        text: "Processed data: Content submitted by you such as spot coordinates, descriptions, amenities, reviews/ratings, photos if applicable, scheduled visits (including date, time, and optional description), coordination comments, and RSVP/attendance statuses. Purposes: Display and maintenance of the interactive community map, sharing and meetups in the community.",
+                        basis: "Legal Bases: Art. 6 para. 1 lit. b GDPR (Provision of platform functions) and Art. 6 para. 1 lit. f GDPR (legitimate interest in the operation, quality, and integrity of community data)."
                     },
                     {
-                        bold: "Technical Log Files: ",
-                        text: "When accessing the site, your browser automatically transmits connection metadata (such as IP address, date/time, browser type, referrer URL) to our hosting servers for security analysis and spam prevention.",
-                        basis: "Legal Basis: Art. 6 para. 1 lit. f GDPR (legitimate interest in security)."
+                        bold: "2.3 Technical Logfiles",
+                        text: "Processed data: Connection/access data (e.g. IP address, date/time, browser type, referrer URL). Purposes: Ensuring security and stability, error analysis, abuse/spam prevention.",
+                        basis: "Legal Basis: Art. 6 para. 1 lit. f GDPR (legitimate interest in secure operation)."
                     }
                 ]
             },
             processors: {
-                title: "3. Third-Party Processors & Data Transfer",
-                desc: "To operate this platform, we rely on trusted infrastructure providers with whom we have signed Data Processing Agreements (DPA) in compliance with Art. 28 GDPR:",
+                title: "3. Recipients / Data Processors and Third-Country Transfers",
+                desc: "We use service providers who process personal data on our behalf (processors). Data processing agreements in accordance with Art. 28 GDPR have been concluded with them:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Database & Auth): ",
-                        text: "User credentials, profiles, spot logs, reviews, and uploaded photos are hosted securely on Supabase databases and storage buckets (hosted on EU-compliant infrastructure). Supabase manages our PKCE passwordless secure login."
+                        bold: "3.1 Supabase (Database, Auth, Storage): ",
+                        text: "We use Supabase for our database, authentication (including passwordless login via Magic Links/PKCE), and storage (e.g. for uploaded pictures). Account data, profile information, spots, reviews, comments, scheduled visits, RSVP statuses, and other uploads are stored/processed there."
                     },
                     {
-                        bold: "Mapbox, Inc. (Interactive Map): ",
-                        text: "We use Mapbox to render geographical tiles. To prevent tracking, Mapbox is fully blocked by default until you explicitly give cookie consent. If you accept functional cookies, your IP address is sent to Mapbox to fetch maps.",
-                        basis: "Legal Basis: Art. 6 para. 1 lit. a GDPR (explicit consent via the cookie banner)."
+                        bold: "3.2 Mapbox (Map Tiles): ",
+                        text: "We use Mapbox to display the interactive map. Mapbox is blocked by default and only loaded after your consent; upon consent, your IP address, among other data, is transmitted to Mapbox to fetch map content.",
+                        basis: "Legal Basis: Art. 6 para. 1 lit. a GDPR (Consent via cookie banner)."
                     },
                     {
-                        bold: "Google Translate API (Translations): ",
-                        text: "We integrate Google Translate client-side to dynamically translate reviews and descriptions. This service is loaded lazily only when a user triggers translations of user-generated content."
+                        bold: "3.3 Google Translate (Translations): ",
+                        text: "We integrate Google Translate on the client side to dynamically translate content (e.g. reviews/descriptions). The service is loaded only after user action (trigger)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookies and Local Storage",
-                desc: "We use local storage strictly to save your operational preferences. This includes:",
+                title: "4. Cookies / Local Storage",
+                desc: "We exclusively store functional settings in Local Storage:",
                 items: [
-                    "efoilmap-consent: Stores your cookie banner choice (true/false).",
-                    "efoilmap-lang: Remembers your selected language route.",
-                    "efoilmap-intro-dismissed: Remembers if you have read the onboarding message."
+                    "efoilmap-consent: Stores cookie banner choice",
+                    "efoilmap-lang: Stores language selection",
+                    "efoilmap-intro-dismissed: Flag indicating whether onboarding has been read"
                 ],
-                outro: "No third-party tracking pixels or behavioral advertising scripts are active on this website."
+                outro: "No third-party tracking pixels or behavior-based advertising scripts are active on this website."
             },
             deletion: {
-                title: "5. Account Deletion and Data Retention",
-                desc: "Your personal account data is kept as long as your profile exists. If you decide to delete your profile, we immediately trigger a cascading database command:",
+                title: "5. Data Retention / Deletion",
+                desc: "We generally store personal account data as long as your profile exists. If you decide to delete your profile, the following is triggered:",
                 items: [
-                    "All profile fields, avatar photos, and reviews are permanently destroyed.",
-                    "Spot listings you contributed are anonymized (authorship is set to null). This ensures that coordinate entries remain plotted to safeguard community integrity, while all links to your personal identity are completely severed."
+                    "Profile fields, avatar images, reviews, coordination comments, scheduled visits, and participation/RSVP states are permanently and cascadingly deleted.",
+                    "Spot entries you created remain intact but are anonymized (authorship is set to 'null') so that the community map remains functional."
                 ]
             },
             rights: {
-                title: "6. Your Rights as a Data Subject",
-                desc: "Under the GDPR, you have the following rights regarding your personal data:",
+                title: "6. Rights of Data Subjects",
+                desc: "Under the GDPR, you have the following rights in particular:",
                 items: [
-                    "Art. 15 GDPR (Right of Access): Right to obtain confirmation and a copy of your stored data.",
-                    "Art. 16 GDPR (Right to Rectification): Right to correct inaccurate data.",
-                    "Art. 17 GDPR (Right to Erasure): Right to have your account and personal history deleted.",
-                    "Art. 18 & 21 GDPR (Restriction & Objection): Right to restrict or object to processing.",
-                    "Art. 20 GDPR (Data Portability): Right to export your personal data in a structured format.",
-                    "Art. 77 GDPR (Complaint): Right to lodge a complaint with a competent data protection supervisory authority."
+                    "Art. 15 GDPR: Right of access",
+                    "Art. 16 GDPR: Right to rectification",
+                    "Art. 17 GDPR: Right to erasure",
+                    "Art. 18 GDPR: Right to restriction of processing",
+                    "Art. 21 GDPR: Right to object",
+                    "Art. 20 GDPR: Right to data portability",
+                    "Art. 77 GDPR: Right to lodge a complaint with a supervisory authority"
                 ],
-                outro: "To exercise any of these rights, please email us directly at hi@efoilmap.com."
+                outro: "To exercise your rights, please contact us by email (see above)."
+            },
+            supervisory: {
+                title: "7. Right to Lodge a Complaint with a Supervisory Authority",
+                desc: "You can lodge a complaint with a data protection supervisory authority. Generally, the supervisory authority of your usual place of residence, workplace, or place of the alleged infringement is competent (Art. 77 GDPR)."
+            },
+            changes: {
+                title: "8. Changes to this Privacy Policy",
+                desc: "This privacy policy may be adjusted as the platform develops. The version currently published on the website applies (see date above)."
             }
         }
     },
     de: {
-        title: "Datenschutzerklärung",
-        lastUpdated: "Zuletzt aktualisiert: 24. Mai 2026",
+        title: "Datenschutzerklärung (efoilmap.com)",
+        lastUpdated: "Stand: 25. Mai 2026",
         backToMap: "Zurück zur Karte",
+        intro: "Diese Datenschutzerklärung erläutert, welche personenbezogenen Daten wir auf efoilmap.com verarbeiten, zu welchen Zwecken, auf welcher Rechtsgrundlage und welche Rechte du hast.",
         sections: {
             controller: {
                 title: "1. Verantwortlicher",
-                desc: "Die für die Datenverarbeitung auf dieser Website verantwortliche Stelle im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:",
+                desc: "Verantwortlich für die Datenverarbeitung auf dieser Website ist:",
                 company: "Angelpower UG (haftungsbeschränkt)",
                 address: "Belvedereallee 5, 52070 Aachen, Deutschland",
                 email: "E-Mail: hi@efoilmap.com",
                 represented: "Vertreten durch: Carlo Matic"
             },
             collection: {
-                title: "2. Erhebung und Verarbeitung personenbezogener Daten",
-                desc: "Wir erheben und verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung einer funktionsfähigen Community-Plattform erforderlich ist. Dies umfasst:",
+                title: "2. Verarbeitung personenbezogener Daten (Zwecke, Datenkategorien, Rechtsgrundlagen)",
+                desc: "Wir verarbeiten personenbezogene Daten nur, soweit dies erforderlich ist, um die Community-Plattform und die interaktive Karte bereitzustellen. Dies umfasst:",
                 items: [
                     {
-                        bold: "Authentifizierung & Kontodaten: ",
-                        text: "Wenn Sie sich über unsere passwortlosen Magic-Links registrieren oder anmelden, erheben und speichern wir Ihre E-Mail-Adresse. Wenn Sie ein Profil einrichten, speichern wir Ihren selbst gewählten Benutzernamen, Ihre Biografie und Ihr Profilbild.",
-                        basis: "Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung)."
+                        bold: "2.1 Nutzerkonto und Anmeldung (Magic Link)",
+                        text: "Verarbeitete Daten: E-Mail-Adresse; ggf. Profilangaben (Username, Bio); ggf. von dir hochgeladenes Avatarbild. Zwecke: Registrierung/Anmeldung, Kontoverwaltung, Bereitstellung der Community-Funktionen.",
+                        basis: "Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertrag/ Nutzungsverhältnis)."
                     },
                     {
-                        bold: "Nutzergenerierte Inhalte (UGC): ",
-                        text: "Die von Ihnen geposteten Spot-Koordinaten, Beschreibungen, Ausstattungsmerkmale und Bewertungen werden in unserer Datenbank gespeichert, um die interaktive Community-Karte zu erstellen.",
-                        basis: "Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (vertragliche Erfüllung) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse)."
+                        bold: "2.2 User Generated Content (Spots, Bewertungen, Inhalte)",
+                        text: "Verarbeitete Daten: von dir eingestellte Inhalte wie Spot-Koordinaten, Beschreibungen, Ausstattung/“Amenities”, Bewertungen/Ratings, Fotos, geplante Termine/Verabredungen (einschließlich Datum, Uhrzeit und optionaler Beschreibung), Koordinationskommentare sowie Zusagen/Absagen (Teilnahmestatus). Zwecke: Darstellung und Pflege der interaktiven Community-Karte, Austausch und Verabredungen in der Community.",
+                        basis: "Rechtsgrundlagen: Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung der Plattformfunktionen) sowie Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Betrieb, Qualität und Integrität der Community-Daten)."
                     },
                     {
-                        bold: "Technische Logdateien: ",
-                        text: "Beim Zugriff auf die Website übermittelt Ihr Browser automatisch Verbindungsmetadaten (wie IP-Adresse, Datum/Uhrzeit, Browsertyp, Referrer-URL) an unsere Server zur Sicherheitsanalyse und Spam-Prävention.",
-                        basis: "Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Systemsicherheit)."
+                        bold: "2.3 Technische Logfiles",
+                        text: "Verarbeitete Daten: Verbindungs-/Zugriffsdaten (z.B. IP-Adresse, Datum/Uhrzeit, Browsertyp, Referrer-URL). Zwecke: Gewährleistung von Sicherheit und Stabilität, Fehleranalyse, Missbrauchs-/Spamprävention.",
+                        basis: "Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an sicherem Betrieb)."
                     }
                 ]
             },
             processors: {
-                title: "3. Drittanbieter & Datenübertragung",
-                desc: "Für den Betrieb dieser Plattform nutzen wir vertrauenswürdige Infrastrukturanbieter, mit denen wir Verträge zur Auftragsverarbeitung (AVV) gemäß Art. 28 DSGVO abgeschlossen haben:",
+                title: "3. Empfänger / Auftragsverarbeiter und Drittlandtransfers",
+                desc: "Wir setzen Dienstleister ein, die in unserem Auftrag personenbezogene Daten verarbeiten (Auftragsverarbeiter). Mit diesen bestehen Auftragsverarbeitungsverträge nach Art. 28 DSGVO:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Datenbank & Auth): ",
-                        text: "Benutzerdaten, Profile, Spots und hochgeladene Fotos werden sicher in den Datenbanken und Storage-Buckets von Supabase gehostet (auf EU-konformer Infrastruktur). Supabase verwaltet unser sicheres, passwortloses Login."
+                        bold: "3.1 Supabase (Datenbank, Auth, Storage)",
+                        text: "Wir nutzen Supabase für Datenbank, Authentifizierung (u.a. Passwortlos-Login via Magic Links/PKCE) und Speicher (z.B. für hochgeladene Bilder). Dort werden u.a. Kontodaten, Profilinformationen, Spots, Reviews, Kommentare, Termine, RSVP-Stati und sonstige Uploads gespeichert/verarbeitet."
                     },
                     {
-                        bold: "Mapbox, Inc. (Interaktive Karte): ",
-                        text: "Wir nutzen Mapbox zur Darstellung geografischer Karten. Um Tracking zu verhindern, ist Mapbox standardmäßig vollständig blockiert, bis Sie Ihre Einwilligung erteilen. Bei Einwilligung wird Ihre IP-Adresse an Mapbox übertragen.",
-                        basis: "Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (ausdrückliche Einwilligung über den Cookie-Banner)."
+                        bold: "3.2 Mapbox (Kartenkacheln)",
+                        text: "Wir nutzen Mapbox zur Darstellung der interaktiven Karte. Mapbox ist standardmäßig blockiert und wird erst nach deiner Einwilligung geladen; bei Einwilligung wird u.a. deine IP-Adresse an Mapbox übermittelt, um Karteninhalte abzurufen.",
+                        basis: "Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung über Cookie-Banner)."
                     },
                     {
-                        bold: "Google Translate API (Übersetzungen): ",
-                        text: "Wir binden Google Translate clientseitig ein, um Bewertungen und Beschreibungen dynamisch zu übersetzen. Dieser Dienst wird nur geladen, wenn ein Nutzer eine Übersetzung anfordert."
+                        bold: "3.3 Google Translate (Übersetzungen)",
+                        text: "Wir binden Google Translate clientseitig ein, um Inhalte (z.B. Reviews/Beschreibungen) dynamisch zu übersetzen. Der Dienst wird erst nach deiner Nutzeraktion (Trigger) nachgeladen."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookies und lokaler Speicher (Local Storage)",
-                desc: "Wir nutzen Local Storage ausschließlich zur Speicherung Ihrer Präferenzen. Dies umfasst:",
+                title: "4. Cookies / Local Storage",
+                desc: "Wir speichern ausschließlich funktionale Einstellungen in Local Storage:",
                 items: [
-                    "efoilmap-consent: Speichert Ihre Cookie-Entscheidung (true/false).",
-                    "efoilmap-lang: Merkt sich Ihre ausgewählte Sprache.",
-                    "efoilmap-intro-dismissed: Speichert, ob Sie die Onboarding-Nachricht gelesen haben."
+                    "efoilmap-consent: Speicherung der Cookie-Banner-Auswahl",
+                    "efoilmap-lang: Speicherung der Sprachauswahl",
+                    "efoilmap-intro-dismissed: Merker, ob Onboarding gelesen wurde"
                 ],
                 outro: "Auf dieser Website sind keine Tracking-Pixel von Drittanbietern oder verhaltensbasierte Werbeskripte aktiv."
             },
             deletion: {
-                title: "5. Löschung von Konten und Datenspeicherung",
-                desc: "Ihre persönlichen Kontodaten werden so lange aufbewahrt, wie Ihr Profil existiert. Wenn Sie sich entscheiden, Ihr Profil zu löschen, führen wir sofort einen kaskadierenden Löschbefehl aus:",
+                title: "5. Speicherdauer / Löschung",
+                desc: "Wir speichern personenbezogene Kontodaten grundsätzlich, solange dein Profil besteht. Wenn du dein Profil löschst, wird Folgendes ausgelöst:",
                 items: [
-                    "Alle Profilfelder, Avatar-Fotos und Bewertungen werden dauerhaft vernichtet.",
-                    "Von Ihnen erstellte Spot-Einträge werden anonymisiert (Autorenschaft wird auf null gesetzt). Dies stellt sicher, dass Koordinateneinträge erhalten bleiben, um die Integrität der Karte zu schützen, während alle Verbindungen zu Ihrer Identität getrennt werden."
+                    "Profilfelder, Avatarbilder, Reviews, Koordinationskommentare, geplante Termine/Verabredungen sowie Zusagen/Absagen (Teilnahmestatus) werden dauerhaft und kaskadierend gelöscht.",
+                    "Von dir erstellte Spot-Einträge bleiben erhalten, werden aber anonymisiert (Autorschaft wird auf „null“ gesetzt), damit die Community-Karte funktionsfähig bleibt."
                 ]
             },
             rights: {
-                title: "6. Ihre Rechte als betroffene Person",
-                desc: "Nach der DSGVO haben Sie folgende Rechte bezüglich Ihrer personenbezogenen Daten:",
+                title: "6. Rechte der betroffenen Personen",
+                desc: "Du hast nach DSGVO insbesondere folgende Rechte:",
                 items: [
-                    "Art. 15 DSGVO (Auskunftsrecht): Recht auf Bestätigung und eine Kopie Ihrer gespeicherten Daten.",
-                    "Art. 16 DSGVO (Recht auf Berichtigung): Recht auf Berichtigung unrichtiger Daten.",
-                    "Art. 17 DSGVO (Recht auf Löschung): Recht auf dauerhafte Löschung Ihres Kontos.",
-                    "Art. 18 & 21 DSGVO (Einschränkung & Widerspruch): Recht auf Einschränkung der Verarbeitung oder Widerspruch.",
-                    "Art. 20 DSGVO (Recht auf Datenübertragbarkeit): Recht auf Export Ihrer Daten in einem strukturierten Format.",
-                    "Art. 77 DSGVO (Beschwerderecht): Recht auf Beschwerde bei einer zuständigen Datenschutzbehörde."
+                    "Art. 15 DSGVO: Auskunft",
+                    "Art. 16 DSGVO: Berichtigung",
+                    "Art. 17 DSGVO: Löschung",
+                    "Art. 18 DSGVO: Einschränkung der Verarbeitung",
+                    "Art. 21 DSGVO: Widerspruch",
+                    "Art. 20 DSGVO: Datenübertragbarkeit",
+                    "Art. 77 DSGVO: Beschwerde bei einer Aufsichtsbehörde"
                 ],
-                outro: "Um eines dieser Rechte auszuüben, schreiben Sie uns direkt an hi@efoilmap.com."
+                outro: "Zur Ausübung deiner Rechte kontaktiere uns bitte per E-Mail (siehe oben)."
+            },
+            supervisory: {
+                title: "7. Beschwerderecht bei der Aufsichtsbehörde",
+                desc: "Du kannst dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Zuständig ist in der Regel die Aufsichtsbehörde deines Aufenthaltsorts, deines Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes (Art. 77 DSGVO)."
+            },
+            changes: {
+                title: "8. Änderungen dieser Datenschutzerklärung",
+                desc: "Diese Datenschutzerklärung kann bei Weiterentwicklung der Plattform angepasst werden. Es gilt die jeweils auf der Website veröffentlichte Version (Stand-Datum siehe oben)."
             }
         }
     },
     es: {
-        title: "Política de Privacidad",
-        lastUpdated: "Última actualización: 24 de mayo de 2026",
+        title: "Política de Privacidad (efoilmap.com)",
+        lastUpdated: "Última actualización: 25 de mayo de 2026",
         backToMap: "Volver al Mapa",
+        intro: "Esta política de privacidad explica qué datos personales procesamos en efoilmap.com, para qué fines, sobre qué base legal y qué derechos tiene usted.",
         sections: {
             controller: {
-                title: "1. Responsable del Tratamiento de Datos",
-                desc: "La entidad responsable del tratamiento de datos en este sitio web de acuerdo con el Reglamento General de Protección de Datos (RGPD) es:",
+                title: "1. Responsable del Tratamiento",
+                desc: "El responsable del tratamiento de datos en este sitio web en conformidad con el Reglamento General de Protección de Datos (RGPD) es:",
                 company: "Angelpower UG (responsabilidad limitada)",
                 address: "Belvedereallee 5, 52070 Aquisgrán, Alemania",
-                email: "Email: hi@efoilmap.com",
+                email: "Correo electrónico: hi@efoilmap.com",
                 represented: "Representado por: Carlo Matic"
             },
             collection: {
-                title: "2. Recogida y Tratamiento de Datos Personales",
-                desc: "Recogemos y tratamos datos personales únicamente en la medida necesaria para proporcionar una plataforma comunitaria en funcionamiento. Esto incluye:",
+                title: "2. Tratamiento de Datos Personales (Fines, Categorías de Datos, Bases Legales)",
+                desc: "Procesamos datos personales solo en la medida necesaria para proporcionar la plataforma comunitaria y el mapa interactivo. Esto incluye:",
                 items: [
                     {
-                        bold: "Datos de cuenta y autenticación: ",
-                        text: "Cuando te registras o inicias sesión a través de nuestros enlaces mágicos sin contraseña, recopilamos tu dirección de correo electrónico. Si configuras un perfil, guardamos tu nombre de usuario, biografía y foto de perfil.",
-                        basis: "Base legal: Art. 6, párr. 1, letra b del RGPD (ejecución de un contrato)."
+                        bold: "2.1 Cuenta de Usuario y Registro (Magic Link)",
+                        text: "Datos procesados: Dirección de correo electrónico; detalles del perfil si corresponde (nombre de usuario, biografía); imagen de avatar subida por usted si corresponde. Fines: Registro/Inicio de sesión, gestión de cuentas, prestación de funciones comunitarias.",
+                        basis: "Base legal: Art. 6 párr. 1 letra b del RGPD (Relación de contrato/condiciones de uso)."
                     },
                     {
-                        bold: "Contenido generado por el usuario (UGC): ",
-                        text: "Las coordenadas de los spots, descripciones y reseñas que publicas se guardan en nuestra base de datos para compilar el mapa interactivo de la comunidad.",
-                        basis: "Base legal: Art. 6, párr. 1, letra b del RGPD (cumplimiento de contrato) y letra f (interés legítimo)."
+                        bold: "2.2 Contenido Generado por el Usuario (Spots, Reseñas, Contenido)",
+                        text: "Datos procesados: Contenido enviado por usted, como coordenadas de spots, descripciones, características, reseñas/calificaciones, fotos si corresponde, visitas programadas (incluyendo fecha, hora y descripción opcional), comentarios de coordinación y estados de asistencia/RSVP. Fines: Visualización y mantenimiento del mapa comunitario interactivo, intercambio y encuentros en la comunidad.",
+                        basis: "Bases legales: Art. 6 párr. 1 letra b del RGPD (Prestación de funciones de la plataforma) y Art. 6 párr. 1 letra f del RGPD (interés legítimo en la operación, calidad e integridad de los datos de la comunidad)."
                     },
                     {
-                        bold: "Archivos de registro técnico: ",
-                        text: "Al acceder al sitio, tu navegador transmite automáticamente metadatos de conexión a nuestros servidores con fines de seguridad y prevención de spam.",
-                        basis: "Base legal: Art. 6, párr. 1, letra f del RGPD (interés legítimo en la seguridad)."
+                        bold: "2.3 Archivos de Registro Técnico",
+                        text: "Datos procesados: Datos de conexión/acceso (por ejemplo, dirección IP, fecha/hora, tipo de navegador, URL de referencia). Fines: Garantizar la seguridad y estabilidad, análisis de errores, prevención de abusos/spam.",
+                        basis: "Base legal: Art. 6 párr. 1 letra f del RGPD (interés legítimo en el funcionamiento seguro)."
                     }
                 ]
             },
             processors: {
-                title: "3. Proveedores de Servicios Externos y Transferencia de Datos",
-                desc: "Para operar esta plataforma, contamos con proveedores de infraestructura de confianza con los que hemos firmado acuerdos de encargo de tratamiento (DPA) según el Art. 28 del RGPD:",
+                title: "3. Destinatarios / Encargados del Tratamiento y Transferencias a Terceros Países",
+                desc: "Utilizamos proveedores de servicios que procesan datos personales en nuestro nombre (encargados). Se han firmado acuerdos de encargo de tratamiento con ellos según el Art. 28 del RGPD:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Base de datos y autenticación): ",
-                        text: "Los datos de usuario, perfiles y fotos se alojan de forma segura en las bases de datos de Supabase (infraestructura compatible con la UE)."
+                        bold: "3.1 Supabase (Base de datos, Auth, Almacenamiento)",
+                        text: "Utilizamos Supabase para la base de datos, autenticación (incluido inicio de sesión sin contraseña a través de Magic Links/PKCE) y almacenamiento (por ejemplo, para imágenes subidas). Los datos de la cuenta, perfil, spots, reseñas, comentarios, visitas programadas, estados de RSVP y otras subidas se procesan/almacenan allí."
                     },
                     {
-                        bold: "Mapbox, Inc. (Mapa interactivo): ",
-                        text: "Usamos Mapbox para mostrar mapas. Mapbox está bloqueado por defecto hasta que das tu consentimiento. Al aceptar las cookies, tu dirección IP se envía a Mapbox para cargar mapas.",
-                        basis: "Base legal: Art. 6, párr. 1, letra a del RGPD (consentimiento explícito)."
+                        bold: "3.2 Mapbox (Mapas)",
+                        text: "Utilizamos Mapbox para mostrar el mapa interactivo. Mapbox está bloqueado por defecto y solo se carga tras su consentimiento; al aceptar, su dirección IP se transmite a Mapbox para recuperar contenido del mapa.",
+                        basis: "Base legal: Art. 6 párr. 1 letra a del RGPD (Consentimiento a través del banner de cookies)."
                     },
                     {
-                        bold: "Google Translate API (Traducciones): ",
-                        text: "Traducimos reseñas client-side de forma dinámica. Solo se activa bajo demanda del usuario."
+                        bold: "3.3 Google Translate (Traducciones)",
+                        text: "Integramos Google Translate en el cliente para traducir contenido de forma dinámica (por ejemplo, reseñas/descripciones). El servicio se carga solo tras la acción del usuario (activación)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookies y Almacenamiento Local",
-                desc: "Utilizamos el almacenamiento local estrictamente para guardar tus preferencias operativas:",
+                title: "4. Cookies / Almacenamiento Local",
+                desc: "Almacenamos exclusivamente configuraciones funcionales en el almacenamiento local:",
                 items: [
-                    "efoilmap-consent: Guarda tu elección del banner de cookies.",
-                    "efoilmap-lang: Recuerda tu idioma seleccionado.",
-                    "efoilmap-intro-dismissed: Recuerda si has leído el mensaje de bienvenida."
+                    "efoilmap-consent: Guarda la elección del banner de cookies",
+                    "efoilmap-lang: Guarda la selección del idioma",
+                    "efoilmap-intro-dismissed: Marca que indica si se ha leído la bienvenida"
                 ],
                 outro: "No hay scripts publicitarios o de seguimiento de terceros activos en este sitio."
             },
             deletion: {
-                title: "5. Eliminación de Cuentas y Retención de Datos",
-                desc: "Tus datos personales se conservan mientras exista tu perfil. Si decides eliminar tu cuenta:",
+                title: "5. Período de Retención / Eliminación",
+                desc: "Por lo general, almacenamos los datos de la cuenta personal mientras exista su perfil. Si decide eliminar su cuenta, se activa lo siguiente:",
                 items: [
-                    "Todos los datos de perfil, fotos de avatar y reseñas se destruyen permanentemente.",
-                    "Las contribuciones de spots se vuelven anónimas para proteger la integridad del mapa, eliminando cualquier enlace con tu identidad personal."
+                    "Los datos de perfil, fotos de avatar, reseñas, comentarios de coordinación, visitas programadas y estados de RSVP/asistencia se destruyen de forma permanente y en cascada.",
+                    "Las contribuciones de spots permanecen intactas pero se anonimizan (la autoría se establece en 'null') para que el mapa de la comunidad siga siendo funcional."
                 ]
             },
             rights: {
-                title: "6. Tus Derechos como Interesado",
-                desc: "De acuerdo con el RGPD, tienes los siguientes derechos:",
+                title: "6. Derechos de los Interesados",
+                desc: "De acuerdo con el RGPD, tiene los siguientes derechos en particular:",
                 items: [
-                    "Art. 15 RGPD (Derecho de acceso): Derecho a obtener confirmación y copia de tus datos.",
-                    "Art. 16 RGPD (Derecho de rectificación): Derecho a corregir datos incorrectos.",
-                    "Art. 17 RGPD (Derecho de supresión): Derecho a borrar tu cuenta y datos personales.",
-                    "Art. 18 y 21 RGPD (Limitación y Oposición): Derecho a limitar u oponerse al tratamiento.",
-                    "Art. 20 RGPD (Portabilidad de datos): Derecho a exportar tus datos en un formato estructurado.",
-                    "Art. 77 RGPD (Derecho a presentar una reclamación): Derecho a reclamar ante una autoridad de control."
+                    "Art. 15 RGPD: Derecho de acceso",
+                    "Art. 16 RGPD: Derecho de rectificación",
+                    "Art. 17 RGPD: Derecho de supresión",
+                    "Art. 18 RGPD: Derecho a la limitación del tratamiento",
+                    "Art. 21 RGPD: Derecho de oposición",
+                    "Art. 20 RGPD: Derecho a la portabilidad de datos",
+                    "Art. 77 RGPD: Derecho a presentar una reclamación ante una autoridad de control"
                 ],
-                outro: "Para ejercer cualquiera de estos derechos, contáctanos en hi@efoilmap.com."
+                outro: "Para ejercer sus derechos, póngase en contacto con nosotros por correo electrónico (ver arriba)."
+            },
+            supervisory: {
+                title: "7. Derecho a Presentar una Reclamación ante una Autoridad de Control",
+                desc: "Puede presentar una reclamación ante una autoridad de control de protección de datos. Por lo general, es competente la autoridad de su lugar de residencia, lugar de trabajo o lugar de la supuesta infracción (Art. 77 del RGPD)."
+            },
+            changes: {
+                title: "8. Cambios a esta Política de Privacidad",
+                desc: "Esta política de privacidad puede adaptarse a medida que se desarrolle la plataforma. Se aplica la versión actualmente publicada en el sitio (ver fecha arriba)."
             }
         }
     },
     fr: {
-        title: "Politique de Confidentialité",
-        lastUpdated: "Dernière mise à jour : 24 mai 2026",
+        title: "Politique de Confidentialité (efoilmap.com)",
+        lastUpdated: "Dernière mise à jour : 25 mai 2026",
         backToMap: "Retour à la Carte",
+        intro: "Cette politique de confidentialité explique quelles données personnelles nous traitons sur efoilmap.com, à quelles fins, sur quelle base juridique et quels droits vous avez.",
         sections: {
             controller: {
                 title: "1. Responsable du Traitement",
                 desc: "L'entité responsable du traitement des données sur ce site conformément au Règlement Général sur la Protection des Données (RGPD) est :",
                 company: "Angelpower UG (responsabilité limitée)",
                 address: "Belvedereallee 5, 52070 Aix-la-Chapelle, Allemagne",
-                email: "Email : hi@efoilmap.com",
+                email: "E-mail : hi@efoilmap.com",
                 represented: "Représenté par : Carlo Matic"
             },
             collection: {
-                title: "2. Collecte et Traitement des Données Personnelles",
-                desc: "Nous ne collectons et ne traitons les données personnelles que dans la mesure nécessaire pour assurer le bon fonctionnement de la plateforme. Cela comprend :",
+                title: "2. Traitement des Données Personnelles (Fins, Catégories de Données, Bases Juridiques)",
+                desc: "Nous ne traitons les données personnelles que dans la mesure nécessaire pour assurer le bon fonctionnement de la plateforme et de la carte interactive. Cela comprend :",
                 items: [
                     {
-                        bold: "Données de compte et d'authentification : ",
-                        text: "Lorsque vous vous inscrivez ou vous connectez via nos liens magiques sans mot de passe, nous collectons votre adresse e-mail. Si vous configurez un profil, nous stockons votre nom d'utilisateur, votre biographie et votre photo de profil.",
-                        basis: "Base légale : Art. 6 par. 1 lit. b du RGPD (exécution d'un contrat)."
+                        bold: "2.1 Compte Utilisateur et Inscription (Magic Link)",
+                        text: "Données traitées : Adresse e-mail ; détails du profil le cas échéant (nom d'utilisateur, biographie) ; image d'avatar téléchargée par vous le cas échéant. Fins : Inscription/Connexion, gestion de compte, fourniture de fonctions communautaires.",
+                        basis: "Base juridique : Art. 6 par. 1 lit. b du RGPD (Contrat/conditions d'utilisation)."
                     },
                     {
-                        bold: "Contenu généré par l'utilisateur (UGC) : ",
-                        text: "Les coordonnées des spots, descriptions et avis que vous publiez sont enregistrés dans notre base de données afin de compiler la carte communautaire interactive.",
-                        basis: "Base légale : Art. 6 par. 1 lit. b du RGPD (exécution contractuelle) et lit. f (intérêt légitime)."
+                        bold: "2.2 Contenu Généré par l'Utilisateur (Spots, Avis, Contenu)",
+                        text: "Données traitées : Contenu soumis par vous tel que les coordonnées de spots, descriptions, équipements, avis/évaluations, photos le cas échéant, visites planifiées (y compris date, heure et description facultative), commentaires de coordination et statuts de présence/RSVP. Fins : Affichage et maintenance de la carte interactive de la communauté, partage et rencontres.",
+                        basis: "Bases juridiques : Art. 6 par. 1 lit. b du RGPD (Fourniture de fonctions de la plateforme) et Art. 6 par. 1 lit. f du RGPD (intérêt légitime dans le fonctionnement, la qualité et l'intégrité des données)."
                     },
                     {
-                        bold: "Fichiers journaux techniques : ",
-                        text: "Lors de l'accès au site, votre navigateur transmet automatiquement des métadonnées de connexion à nos serveurs pour des raisons de sécurité et de prévention du spam.",
-                        basis: "Base légale : Art. 6 par. 1 lit. f du RGPD (intérêt légitime pour la sécurité des systèmes)."
+                        bold: "2.3 Fichiers Journaux Techniques",
+                        text: "Données traitées : Données de connexion/accès (par exemple, adresse IP, date/heure, type de navigateur, URL de référence). Fins : Assurer la sécurité et la stabilité, analyse des erreurs, prévention des abus/spam.",
+                        basis: "Base juridique : Art. 6 par. 1 lit. f du RGPD (intérêt légitime pour la sécurité)."
                     }
                 ]
             },
             processors: {
-                title: "3. Sous-traitants tiers et Transfert de Données",
-                desc: "Pour faire fonctionner cette plateforme, nous nous appuyons sur des prestataires d'infrastructure de confiance avec lesquels nous avons signé des contrats de sous-traitance (DPA) conformément à l'Art. 28 du RGPD :",
+                title: "3. Destinataires / Sous-Traitants et Transferts vers des Pays Tiers",
+                desc: "Nous faisons appel à des prestataires de services qui traitent des données personnelles pour notre compte (sous-traitants). Des contrats de sous-traitance conformes à l'Art. 28 du RGPD ont été conclus avec eux :",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Base de données & Authentification) : ",
-                        text: "Les identifiants, profils et photos des utilisateurs sont hébergés en toute sécurité sur les bases de données Supabase (infrastructure conforme à l'UE)."
+                        bold: "3.1 Supabase (Base de données, Auth, Stockage)",
+                        text: "Nous utilisons Supabase pour la base de données, l'authentification (y compris connexion sans mot de passe via Magic Links/PKCE) et le stockage (par exemple, pour les images téléchargées). Les données de compte, profils, spots, avis, commentaires, visites planifiées, statuts de présence/RSVP et autres téléchargements y sont stockés/traités."
                     },
                     {
-                        bold: "Mapbox, Inc. (Carte interactive) : ",
-                        text: "Nous utilisons Mapbox pour afficher des cartes. Mapbox est bloqué par défaut jusqu'à ce que vous donniez votre consentement. Si vous acceptez, votre adresse IP est envoyée à Mapbox pour charger les cartes.",
-                        basis: "Base légale : Art. 6 par. 1 lit. a du RGPD (consentement explicite)."
+                        bold: "3.2 Mapbox (Cartes)",
+                        text: "Nous utilisons Mapbox pour afficher la carte interactive. Mapbox est bloqué par défaut et chargé uniquement après votre consentement ; avec votre consentement, votre adresse IP est transmise à Mapbox pour récupérer le contenu de la carte.",
+                        basis: "Base juridique : Art. 6 par. 1 lit. a du RGPD (Consentement via le bandeau cookies)."
                     },
                     {
-                        bold: "Google Translate API (Traductions) : ",
-                        text: "Nous intégrons Google Translate client-side pour traduire dynamiquement les avis. Ce service n'est activé qu'à la demande de l'utilisateur."
+                        bold: "3.3 Google Translate (Traductions)",
+                        text: "Nous intégrons Google Translate sur le client pour traduire dynamiquement le contenu (par exemple, avis/descriptions). Le service n'est chargé qu'après l'action de l'utilisateur (activation)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookies et Stockage Local",
-                desc: "Nous utilisons le stockage local strictement pour enregistrer vos préférences opérationnelles :",
+                title: "4. Cookies / Stockage Local",
+                desc: "Nous utilisons le stockage local strictement pour enregistrer les préférences opérationnelles :",
                 items: [
-                    "efoilmap-consent : Stocke votre choix pour les cookies.",
-                    "efoilmap-lang : Se souvient de votre langue sélectionnée.",
-                    "efoilmap-intro-dismissed : Se souvient si vous avez lu le message de bienvenue."
+                    "efoilmap-consent : Enregistre le choix pour le bandeau de cookies",
+                    "efoilmap-lang : Enregistre le choix de la langue",
+                    "efoilmap-intro-dismissed : Indique si le message de bienvenue a été lu"
                 ],
                 outro: "Aucun pixel de suivi tiers ou script publicitaire n'est actif sur ce site."
             },
             deletion: {
-                title: "5. Suppression de Compte et Rétention des Données",
-                desc: "Vos données personnelles sont conservées tant que votre profil existe. Si vous décidez de supprimer votre profil :",
+                title: "5. Durée de Conservation / Suppression",
+                desc: "Nous conservons généralement les données de compte tant que votre profil existe. Si vous décidez de supprimer votre profil, ce qui suit est déclenché :",
                 items: [
-                    "Toutes les données de profil, photos d'avatar et avis sont détruites de manière permanente.",
-                    "Les contributions de spots sont anonymisées afin de protéger l'intégrité de la carte, supprimant tout lien avec votre identité personnelle."
+                    "Toutes les données de profil, photos d'avatar, avis, commentaires de coordination, visites planifiées et statuts de présence/RSVP sont détruits de manière permanente et en cascade.",
+                    "Les contributions de spots restent intactes mais sont anonymisées (l'auteur est défini sur 'null') pour que la carte reste opérationnelle."
                 ]
             },
             rights: {
-                title: "6. Vos Droits en tant que Personne Concernée",
-                desc: "Conformément au RGPD, vous disposez des droits suivants concernant vos données personnelles :",
+                title: "6. Droits des Personnes Concernées",
+                desc: "Conformément au RGPD, vous disposez notamment des droits suivants :",
                 items: [
-                    "Art. 15 RGPD (Droit d'accès) : Droit d'obtenir confirmation et copie de vos données.",
-                    "Art. 16 RGPD (Droit de rectification) : Droit de corriger des données inexactes.",
-                    "Art. 17 RGPD (Droit à l'effacement) : Droit de faire supprimer votre compte et votre historique.",
-                    "Art. 18 & 21 RGPD (Limitation & Opposition) : Droit de limiter ou de s'opposer au traitement.",
-                    "Art. 20 RGPD (Portabilité des données) : Droit d'exporter vos données dans un format structuré.",
-                    "Art. 77 RGPD (Droit de réclamation) : Droit de déposer une plainte auprès d'une autorité de contrôle."
+                    "Art. 15 RGPD : Droit d'accès",
+                    "Art. 16 RGPD : Droit de rectification",
+                    "Art. 17 RGPD : Droit à l'effacement",
+                    "Art. 18 RGPD : Droit à la limitation du traitement",
+                    "Art. 21 RGPD : Droit d'opposition",
+                    "Art. 20 RGPD : Droit à la portabilité des données",
+                    "Art. 77 RGPD : Droit de déposer une plainte auprès d'une autorité de contrôle"
                 ],
-                outro: "Pour exercer l'un de ces droits, veuillez nous contacter à hi@efoilmap.com."
+                outro: "Pour exercer vos droits, veuillez nous contacter par e-mail (voir ci-dessus)."
+            },
+            supervisory: {
+                title: "7. Droit de Déposer une Plainte auprès d'une Autorité de Contrôle",
+                desc: "Vous pouvez déposer une plainte auprès d'une autorité de contrôle de la protection des données. En règle générale, l'autorité de votre lieu de résidence, de votre lieu de travail ou du lieu de l'infraction présumée est compétente (Art. 77 du RGPD)."
+            },
+            changes: {
+                title: "8. Modifications de cette Politique de Confidentialité",
+                desc: "Cette politique de confidentialité peut être adaptée au fil de l'évolution de la plateforme. La version actuellement publiée s'applique (voir date ci-dessus)."
             }
         }
     },
     it: {
-        title: "Informativa sulla Privacy",
-        lastUpdated: "Ultimo aggiornamento: 24 maggio 2026",
+        title: "Informativa sulla Privacy (efoilmap.com)",
+        lastUpdated: "Ultimo aggiornamento: 25 maggio 2026",
         backToMap: "Torna alla Mappa",
+        intro: "Questa informativa sulla privacy spiega quali dati personali trattiamo su efoilmap.com, per quali scopi, su quale base giuridica e quali diritti hai.",
         sections: {
             controller: {
                 title: "1. Titolare del Trattamento",
@@ -366,85 +406,95 @@ const content = {
                 represented: "Rappresentato da: Carlo Matic"
             },
             collection: {
-                title: "2. Raccolta e Trattamento dei Dati Personali",
-                desc: "Raccogliamo e trattiamo i dati personali solo nella misura necessaria per fornire una piattaforma comunitaria funzionante. Ciò include:",
+                title: "2. Trattamento dei Dati Personali (Scopi, Categorie di Dati, Basi Giuridiche)",
+                desc: "Trattiamo i dati personali solo nella misura necessaria per fornire la piattaforma comunitaria e la mappa interattiva. Ciò include:",
                 items: [
                     {
-                        bold: "Dati di autenticazione e account: ",
-                        text: "Quando ti registri o accedi tramite i nostri link magici senza password, raccogliamo il tuo indirizzo email. Se configuri un profilo, memorizziamo il nome utente scelto, la biografia e la foto del profilo.",
-                        basis: "Base giuridica: Art. 6 par. 1 lett. b GDPR (esecuzione di un contratto)."
+                        bold: "2.1 Account Utente e Registrazione (Magic Link)",
+                        text: "Dati trattati: Indirizzo e-mail; dettagli del profilo se applicabile (nome utente, biografia); immagine del profilo caricata da te se applicabile. Scopi: Registrazione/Accesso, gestione dell'account, fornitura di funzioni comunitarie.",
+                        basis: "Base giuridica: Art. 6 par. 1 lett. b GDPR (Rapporto di contratto/condizioni d'uso)."
                     },
                     {
-                        bold: "Contenuto generato dall'utente (UGC): ",
-                        text: "Le coordinate degli spot, le descrizioni e le recensioni che pubblichi vengono salvate nel nostro database per compilare la mappa interattiva.",
-                        basis: "Base giuridica: Art. 6 par. 1 lett. b GDPR (adempimento contrattuale) e lett. f (legittimo interesse)."
+                        bold: "2.2 Contenuto Generato dall'Utente (Spots, Recensioni, Contenuto)",
+                        text: "Dati trattati: Contenuto inviato da te come coordinate di spot, descrizioni, servizi, recensioni/valutazioni, foto se applicabile, visite programmate (inclusi data, ora e descrizione opzionale), commenti di coordinamento e stato di RSVP/partecipazione. Scopi: Visualizzazione e manutenzione della mappa interattiva della comunità, condivisione e incontri nella comunità.",
+                        basis: "Basi giuridiche: Art. 6 par. 1 lett. b GDPR (Fornitura di funzioni della piattaforma) e Art. 6 par. 1 lett. f GDPR (legittimo interesse al funzionamento, alla qualità e all'integrità dei dati della comunità)."
                     },
                     {
-                        bold: "File di registro tecnici: ",
-                        text: "Durante l'accesso al sito, il tuo browser trasmette automaticamente i metadati di connessione ai nostri server per analisi di sicurezza e prevenzione dello spam.",
-                        basis: "Base giuridica: Art. 6 par. 1 lett. f GDPR (legittimo interesse per la sicurezza dei sistemi)."
+                        bold: "2.3 File di Registro Tecnici",
+                        text: "Dati trattati: Dati di connessione/accesso (ad esempio indirizzo IP, data/ora, tipo di browser, URL di riferimento). Scopi: Garantire la sicurezza e la stabilità, analisi degli errori, prevenzione di abusi/spam.",
+                        basis: "Base giuridica: Art. 6 par. 1 lett. f GDPR (legittimo interesse per la sicurezza)."
                     }
                 ]
             },
             processors: {
-                title: "3. Responsabili Esterni e Trasferimento dei Dati",
-                desc: "Per far funzionare questa piattaforma, ci affidiamo a fornitori di infrastrutture di fiducia con i quali abbiamo firmato contratti di trattamento dati (DPA) in conformità con l'Art. 28 GDPR:",
+                title: "3. Destinatari / Responsabili Esterni e Trasferimenti verso Paesi Terzi",
+                desc: "Utilizziamo fornitori di servizi che trattano dati personali per nostro conto (responsabili). Con questi sono stati stipulati contratti di trattamento conformi all'Art. 28 GDPR:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Database & Auth): ",
-                        text: "Le credenziali, i profili e le foto degli utenti sono ospitati in modo sicuro sui database Supabase (infrastruttura conforme all'UE)."
+                        bold: "3.1 Supabase (Database, Auth, Storage)",
+                        text: "Utilizziamo Supabase per database, autenticazione (incluso accesso senza password tramite Magic Links/PKCE) e archiviazione (ad esempio per foto caricate). I dati dell'account, percorsi di profilo, spot, recensioni, commenti, visite pianificate, RSVP e altri caricamenti sono memorizzati/trattati lì."
                     },
                     {
-                        bold: "Mapbox, Inc. (Mappa interattiva): ",
-                        text: "Usiamo Mapbox per mostrare le mappe. Mapbox è bloccato per impostazione predefinita finché non viene fornito il consenso. In caso di consenso, l'indirizzo IP viene inviato a Mapbox per caricare le mappe.",
-                        basis: "Base giuridica: Art. 6 par. 1 lett. a GDPR (consenso esplicito)."
+                        bold: "3.2 Mapbox (Mappe)",
+                        text: "Utilizziamo Mapbox per visualizzare la mappa interattiva. Mapbox è bloccato per impostazione predefinita e viene caricato solo previo consenso; in caso di consenso, l'indirizzo IP viene inviato a Mapbox per caricare le mappe.",
+                        basis: "Base giuridica: Art. 6 par. 1 lett. a GDPR (Consenso tramite banner dei cookie)."
                     },
                     {
-                        bold: "Google Translate API (Traduzioni): ",
-                        text: "Integriamo Google Translate client-side per tradurre le recensioni. Si attiva solo su richiesta dell'utente."
+                        bold: "3.3 Google Translate (Traduzioni)",
+                        text: "Integriamo Google Translate sul client per tradurre in modo dinamico i contenuti (ad esempio recensioni/descrizioni). Il servizio viene caricato solo a seguito dell'azione dell'utente (attivazione)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookie e Memoria Locale",
-                desc: "Utilizziamo la memoria locale esclusivamente per salvare le tue preferenze operative:",
+                title: "4. Cookie / Memoria Locale",
+                desc: "Utilizziamo la memoria locale esclusivamente per salvare le preferenze operative:",
                 items: [
-                    "efoilmap-consent: Memorizza la scelta del banner dei cookie.",
-                    "efoilmap-lang: Ricorda la lingua selezionata.",
-                    "efoilmap-intro-dismissed: Ricorda se hai letto il messaggio di benvenuto."
+                    "efoilmap-consent: Memorizza la scelta del banner dei cookie",
+                    "efoilmap-lang: Memorizza la lingua selezionata",
+                    "efoilmap-intro-dismissed: Ricorda se hai letto il messaggio di benvenuto"
                 ],
                 outro: "Su questo sito non sono attivi cookie di tracciamento di terze parti o script pubblicitari."
             },
             deletion: {
-                title: "5. Cancellazione dell'Account e Conservazione dei Dati",
-                desc: "I tuoi dati personali vengono conservati finché esiste il tuo profilo. Se decidi di cancellare il tuo profilo:",
+                title: "5. Conservazione dei Dati / Cancellazione",
+                desc: "I tuoi dati personali vengono conservati finché esiste il tuo profilo. Se decidi di cancellare il tuo profilo, si attiva quanto segue:",
                 items: [
-                    "Tutti i dati del profilo, le foto e le recensioni vengono distrutti in modo permanente.",
-                    "I contributi degli spot vengono resi anonimi per proteggere l'integrität della mappa, eliminando qualsiasi collegamento con la tua identità."
+                    "Tutti i dati del profilo, le foto d'avatar, le recensioni, i commenti di coordinamento, le visite programmate e lo stato di RSVP/partecipazione vengono distrutti in modo permanente e a cascata.",
+                    "I contributi degli spot rimangono intatti ma vengono resi anonimi (l'autore viene impostato su 'null') per garantire la funzionalità della mappa."
                 ]
             },
             rights: {
-                title: "6. I Tuoi Diritti in quanto Interessato",
-                desc: "Ai sensi del GDPR, disponi dei seguenti diritti:",
+                title: "6. Diritti degli Interessati",
+                desc: "Ai sensi del GDPR, disponi in particolare dei seguenti diritti:",
                 items: [
-                    "Art. 15 GDPR (Diritto di accesso): Diritto di ottenere conferma e copia dei propri dati.",
-                    "Art. 16 GDPR (Diritto di rettifica): Diritto di correggere dati inesatti.",
-                    "Art. 17 GDPR (Diritto alla cancellazione): Diritto di far cancellare il proprio account e i dati personali.",
-                    "Art. 18 & 21 GDPR (Limitazione e Opposizione): Diritto di limitare o opporsi al trattamento.",
-                    "Art. 20 GDPR (Portabilità dei dati): Diritto di esportare i propri dati in un formato strutturato.",
-                    "Art. 77 GDPR (Diritto di reclamo): Diritto di proporre reclamo a un'autorità di controllo."
+                    "Art. 15 GDPR: Diritto di accesso",
+                    "Art. 16 GDPR: Diritto di rettifica",
+                    "Art. 17 GDPR: Diritto alla cancellazione",
+                    "Art. 18 GDPR: Diritto alla limitazione del trattamento",
+                    "Art. 21 GDPR: Diritto di opposizione",
+                    "Art. 20 GDPR: Diritto alla portabilità dei dati",
+                    "Art. 77 GDPR: Diritto di proporre reclamo a un'autorità di controllo"
                 ],
-                outro: "Per esercitare uno di questi diritti, scrivici direttamente a hi@efoilmap.com."
+                outro: "Per esercitare i tuoi diritti, ti preghiamo di contattarci via e-mail (vedi sopra)."
+            },
+            supervisory: {
+                title: "7. Diritto di Proporre Reclamo a un'Autorità di Controllo",
+                desc: "Puoi proporre reclamo a un'autorità di controllo della protezione dei dati. In genere, è competente l'autorità del tuo luogo di residenza, luogo di lavoro o del luogo della presunta violazione (Art. 77 GDPR)."
+            },
+            changes: {
+                title: "8. Modifiche a questa Informativa sulla Privacy",
+                desc: "Questa informativa sulla privacy può essere modificata con lo sviluppo della piattaforma. Si applica la versione attualmente pubblicata (vedi data sopra)."
             }
         }
     },
     pt: {
-        title: "Política de Privacidade",
-        lastUpdated: "Última atualização: 24 de maio de 2026",
+        title: "Política de Privacidade (efoilmap.com)",
+        lastUpdated: "Última atualização: 25 de maio de 2026",
         backToMap: "Volver al Mapa",
+        intro: "Esta política de privacidade explica que dados pessoais processamos em efoilmap.com, para que fins, sobre que base legal e que direitos você tem.",
         sections: {
             controller: {
-                title: "1. Responsável pelo Tratamento de Dados",
+                title: "1. Responsável pelo Tratamento",
                 desc: "A entidade responsável pelo tratamento de dados neste site em conformidade com o Regulamento Geral sobre a Proteção de Dados (RGPD) é:",
                 company: "Angelpower UG (responsabilidade limitada)",
                 address: "Belvedereallee 5, 52070 Aachen, Alemanha",
@@ -452,82 +502,92 @@ const content = {
                 represented: "Representado por: Carlo Matic"
             },
             collection: {
-                title: "2. Recolha e Tratamento de Dados Pessoais",
-                desc: "Recolhemos e tratamos dados pessoais apenas na medida necessária para fornecer uma plataforma comunitária em funcionamento. Isto inclui:",
+                title: "2. Tratamento de Dados Pessoais (Fins, Categorias de Dados, Bases Legais)",
+                desc: "Tratamos dados pessoais apenas na medida do necessário para fornecer a plataforma comunitária e o mapa interativo. Isto inclui:",
                 items: [
                     {
-                        bold: "Dados de conta e autenticação: ",
-                        text: "Quando se regista ou inicia sessão através dos nossos links mágicos sem palavra-passe, recolhemos o seu endereço de e-mail. Se configurar um perfil, guardamos o seu nome de utilizador, biografia e foto de perfil.",
-                        basis: "Base legal: Art. 6º, par. 1, alínea b do RGPD (execução de um contrato)."
+                        bold: "2.1 Conta de Utilizador e Registo (Magic Link)",
+                        text: "Dados processados: Endereço de e-mail; detalhes do perfil se aplicável (nome de utilizador, biografia); imagem de avatar carregada por si se aplicável. Fins: Registo/Login, gestão da conta, prestação de funções comunitárias.",
+                        basis: "Base legal: Art. 6º, par. 1, alínea b do RGPD (Relação de contrato/termos de utilização)."
                     },
                     {
-                        bold: "Conteúdo gerado pelo utilizador (UGC): ",
-                        text: "As coordenadas dos spots, descrições e avaliações que publica são guardadas na nossa base de dados para compilar o mapa comunitário interativo.",
-                        basis: "Base legal: Art. 6º, par. 1, alínea b do RGPD (cumprimento de contrato) e alínea f (interesse legítimo)."
+                        bold: "2.2 Conteúdo Gerado pelo Utilizador (Spots, Avaliações, Conteúdo)",
+                        text: "Dados processados: Conteúdo enviado por si, como coordenadas de spots, descrições, comodidades, avaliações/classificações, fotos se aplicável, visitas programadas (incluindo data, hora e descrição opcional), comentários de coordenação e estados de RSVP/presença. Fins: Exibição e manutenção do mapa comunitário interativo, partilha e encontros na comunidade.",
+                        basis: "Bases legais: Art. 6º, par. 1, alínea b do RGPD (Prestação de funções da plataforma) e Art. 6º, par. 1, alínea f do RGPD (interesse legítimo no funcionamento, qualidade e integridade dos dados da comunidade)."
                     },
                     {
-                        bold: "Ficheiros de registo técnico: ",
-                        text: "Ao aceder ao site, o seu navegador transmite automaticamente metadados de ligação aos nossos servidores com fins de segurança e prevenção de spam.",
-                        basis: "Base legal: Art. 6º, par. 1, alínea f do RGPD (interesse legítimo na segurança dos sistemas)."
+                        bold: "2.3 Ficheiros de Registo Técnico",
+                        text: "Dados processados: Dados de ligação/acesso (por exemplo, endereço IP, data/hora, tipo de navegador, URL de referência). Fins: Garantir a segurança e estabilidade, análise de erros, prevenção de abusos/spam.",
+                        basis: "Base legal: Art. 6º, par. 1, alínea f do RGPD (interesse legítimo na segurança)."
                     }
                 ]
             },
             processors: {
-                title: "3. Prestadores de Serviços Externos e Transferência de Dados",
-                desc: "Para operar esta plataforma, contamos com prestadores de infraestrutura de confiança com os quais assinámos contratos de subcontratação (DPA) nos termos do Art. 28º do RGPD:",
+                title: "3. Destinatários / Subcontratantes e Transferências para Terceiros Países",
+                desc: "Utilizamos prestadores de serviços que processam dados pessoais em nosso nome (subcontratantes). Foram celebrados contratos de subcontratação nos termos do Art. 28º do RGPD com eles:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Base de dados e autenticação): ",
-                        text: "Os dados de utilizador, perfis e fotos são alojados de forma segura nas bases de dados da Supabase (infraestrutura em conformidade com a UE)."
+                        bold: "3.1 Supabase (Base de dados, Auth, Armazenamento)",
+                        text: "Utilizamos Supabase para base de dados, autenticação (incluindo início de sessão sem palavra-passe através de Magic Links/PKCE) e armazenamento (por exemplo, para imagens carregadas). Os dados de conta, perfis, spots, avaliações, comentários, visitas programadas, RSVP e outros carregamentos são processados/armazenados lá."
                     },
                     {
-                        bold: "Mapbox, Inc. (Mapa interativo): ",
-                        text: "Utilizamos o Mapbox para mostrar mapas. O Mapbox está bloqueado por defeito até que dê o seu consentimento. Ao aceitar, o seu endereço IP é enviado ao Mapbox para carregar os mapas.",
-                        basis: "Base legal: Art. 6º, par. 1, alínea a do RGPD (consentimento explícito)."
+                        bold: "3.2 Mapbox (Mapas)",
+                        text: "Utilizamos Mapbox para mostrar o mapa interativo. O Mapbox está bloqueado por defeito e só é carregado após o seu consentimento; ao aceitar, o seu endereço IP é enviado ao Mapbox para carregar os mapas.",
+                        basis: "Base legal: Art. 6º, par. 1, alínea a do RGPD (Consentimento através do banner de cookies)."
                     },
                     {
-                        bold: "Google Translate API (Traduções): ",
-                        text: "Integramos o Google Translate client-side para traduzir avaliações de forma dinâmica. Apenas se ativa a pedido do utilizador."
+                        bold: "3.3 Google Translate (Traduções)",
+                        text: "Integramos o Google Translate client-side para traduzir avaliações de forma dinâmica. O serviço só se ativa após a ação do utilizador (ativação)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookies e Armazenamento Local",
-                desc: "Utilizamos o armazenamento local estritamente para guardar as suas preferências operacionais:",
+                title: "4. Cookies / Armazenamento Local",
+                desc: "Utilizamos o armazenamento local estritamente para guardar preferências operacionais:",
                 items: [
-                    "efoilmap-consent: Guarda a sua escolha no banner de cookies.",
-                    "efoilmap-lang: Lembra o seu idioma selecionado.",
-                    "efoilmap-intro-dismissed: Lembra se leu a mensagem de boas-vindas."
+                    "efoilmap-consent: Guarda a escolha no banner de cookies",
+                    "efoilmap-lang: Guarda a seleção do idioma",
+                    "efoilmap-intro-dismissed: Indica se a mensagem de boas-vindas foi lida"
                 ],
                 outro: "Não há scripts de publicidade ou monitorização de terceiros ativos neste site."
             },
             deletion: {
-                title: "5. Eliminação de Contas e Retenção de Dados",
-                desc: "Os seus dados pessoais são conservados enquanto o seu perfil existir. Se decidir eliminar a sua conta:",
+                title: "5. Retenção de Dados / Eliminação",
+                desc: "Por norma, guardamos os dados da conta pessoal enquanto o seu perfil existir. Se decidir eliminar a sua conta, é ativado o seguinte:",
                 items: [
-                    "Todos os dados do perfil, fotos e avaliações são permanentemente destruídos.",
-                    "As contribuições dos spots são anonimizadas para proteger a integridade do mapa, eliminando qualquer ligação à sua identidade pessoal."
+                    "Todos os dados do perfil, fotos de avatar, avaliações, comentários de coordenação, visitas programadas e estados de RSVP/presença são permanente e kaskadierend destruídos.",
+                    "As contribuições dos spots permanecem intactas mas são anonimizadas (a autoria é definida como 'null') para proteger a integridade do mapa."
                 ]
             },
             rights: {
-                title: "6. Os Seus Direitos como Titular dos Dados",
-                desc: "Nos termos do RGPD, dispõe dos seguintes direitos:",
+                title: "6. Direitos dos Titulares dos Dados",
+                desc: "Nos termos do RGPD, dispõe dos seguintes direitos em particular:",
                 items: [
-                    "Art. 15º RGPD (Direito de acesso): Direito a obter confirmação e cópia dos seus dados.",
-                    "Art. 16º RGPD (Direito de retificação): Direito a corrigir dados incorretos.",
-                    "Art. 17º RGPD (Direito ao apagamento): Direito a apagar a sua conta e dados pessoais.",
-                    "Art. 18º & 21º RGPD (Limitação e Oposição): Direito a limitar ou opor-se ao tratamento.",
-                    "Art. 20º RGPD (Portabilidade dos dados): Direito a exportar os seus dados num formato estruturado.",
-                    "Art. 77º RGPD (Direito de reclamação): Direito a apresentar queixa junto de uma autoridade de controlo."
+                    "Art. 15º RGPD: Direito de acesso",
+                    "Art. 16º RGPD: Direito de retificação",
+                    "Art. 17º RGPD: Direito ao apagamento",
+                    "Art. 18º RGPD: Droit à la limitation du traitement",
+                    "Art. 21º RGPD: Direito de oposição",
+                    "Art. 20º RGPD: Direito de portabilidade dos dados",
+                    "Art. 77º RGPD: Direito a apresentar queixa junto de uma autoridade de controlo"
                 ],
-                outro: "Para exercer qualquer um destes direitos, contacte-nos através de hi@efoilmap.com."
+                outro: "Para exercer os seus direitos, contacte-nos através de e-mail (ver acima)."
+            },
+            supervisory: {
+                title: "7. Direito a Apresentar Queixa junto de uma Autoridade de Controlo",
+                desc: "Pode apresentar reclamação junto de uma autoridade de controlo de proteção de dados. Por norma, é competente a autoridade do seu local de residência, local de trabalho ou local da alegada infração (Art. 77º do RGPD)."
+            },
+            changes: {
+                title: "8. Alterações a esta Política de Privacidade",
+                desc: "Esta política de privacidade pode ser adaptada conforme a plataforma se desenvolva. Aplica-se a versão atualmente publicada no site (ver data acima)."
             }
         }
     },
     nl: {
-        title: "Privacybeleid",
-        lastUpdated: "Laatst bijgewerkt: 24 mei 2026",
+        title: "Privacybeleid (efoilmap.com)",
+        lastUpdated: "Laatst bijgewerkt: 25 mei 2026",
         backToMap: "Terug naar Kaart",
+        intro: "Dit privacybeleid legt uit welke persoonsgegevens we op efoilmap.com verwerken, voor welke doeleinden, op welke wettelijke basis en welke rechten je hebt.",
         sections: {
             controller: {
                 title: "1. Verwerkingsverantwoordelijke",
@@ -538,168 +598,188 @@ const content = {
                 represented: "Vertegenwoordigd door: Carlo Matic"
             },
             collection: {
-                title: "2. Verzameling en Verwerking van Persoonsgegevens",
-                desc: "Wij verzamelen en verwerken persoonsgegevens alleen voor zover dat nodig is om een werkend community-platform te bieden. Dit omvat:",
+                title: "2. Verwerking van Persoonsgegevens (Doeleinden, Gegevenscategorieën, Rechtsgronden)",
+                desc: "Wij verzamelen en verwerken persoonsgegevens alleen voor zover dat nodig is om het community-platform en de interactieve kaart te bieden. Dit omvat:",
                 items: [
                     {
-                        bold: "Authenticatie- & accountgegevens: ",
-                        text: "Wanneer je je registreert of inlogt via onze wachtwoordloze magic links, verzamelen en bewaren we je e-mailadres. Als je een profiel aanmaakt, bewaren we je gebruikersnaam, bio en profielfoto.",
-                        basis: "Wettelijke grondslag: Art. 6 lid 1 sub b AVG (uitvoering van een overeenkomst)."
+                        bold: "2.1 Gebruikersaccount en Registratie (Magic Link)",
+                        text: "Verwerkte gegevens: E-mailadres; profielgegevens indien van toepassing (gebruikersnaam, bio); door jou geüploade profielfoto indien van toepassing. Doeleinden: Registratie/Login, accountbeheer, levering van communityfuncties.",
+                        basis: "Wettelijke grondslag: Art. 6 lid 1 sub b AVG (Overeenkomst/gebruikersvoorwaarden)."
                     },
                     {
-                        bold: "User Generated Content (UGC): ",
-                        text: "Mede door jou geposte spotcoördinaten, beschrijvingen en beoordelingen worden opgeslagen in onze database om de interactieve communitykaart samen te stellen.",
-                        basis: "Wettelijke grondslag: Art. 6 lid 1 sub b AVG (contractuele nakoming) en sub f (gerechtvaardigd belang)."
+                        bold: "2.2 User Generated Content (Spots, Beoordelingen, Inhoud)",
+                        text: "Verwerkte gegevens: Door jou ingediende inhoud zoals spotcoördinaten, beschrijvingen, voorzieningen, beoordelingen/ratings, foto's indien van toepassing, geplande bezoeken (inclusief datum, tijd en optionele beschrijving), coördinatie-opmerkingen en RSVP/aanwezigheidsstatussen. Doeleinden: Weergave en onderhoud van de interactieve communitykaart, delen en ontmoetingen in de community.",
+                        basis: "Wettelijke grondslagen: Art. 6 lid 1 sub b AVG (Levering van platformfuncties) en Art. 6 lid 1 sub f AVG (gerechtvaardigd belang bij de exploitatie, kwaliteit en integriteit van communitygegevens)."
                     },
                     {
-                        bold: "Technische logbestanden: ",
-                        text: "Bij het bezoeken van de site verzendt je browser automatisch verbindingsmetadata naar onze servers voor veiligheidsanalyse en spampreventie.",
-                        basis: "Wettelijke grondslag: Art. 6 lid 1 sub f AVG (gerechtvaardigd belang bij systeembeveiliging)."
+                        bold: "2.3 Technische Logbestanden",
+                        text: "Verwerkte gegevens: Verbindings-/toegangsgegevens (bijv. IP-adres, datum/tijd, browsertype, referrer-URL). Doeleinden: Zorgen voor veiligheid en stabiliteit, foutanalyse, misbruik-/spampreventie.",
+                        basis: "Wettelijke grondslag: Art. 6 lid 1 sub f AVG (gerechtvaardigd belang bij veilige exploitatie)."
                     }
                 ]
             },
             processors: {
-                title: "3. Externe Verwerkers & Gegevensoverdracht",
-                desc: "Om dit platform te exploiteren, vertrouwen we op vertrouwde infrastructuurproviders waarmee we verwerkersovereenkomsten (DPA) hebben gesloten in overeenstemming met Art. 28 AVG:",
+                title: "3. Ontvangers / Verwerkers en Doorgifte naar Derde Landen",
+                desc: "Wij maken gebruik van dienstverleners die namens ons persoonsgegevens verwerken (verwerkers). Met hen zijn verwerkersovereenkomsten gesloten in overeenstemming met Art. 28 AVG:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Database & Auth): ",
-                        text: "Gebruikersgegevens, profielen en foto's worden veilig gehost op Supabase-databases (gehost op EU-conforme infrastructuur)."
+                        bold: "3.1 Supabase (Database, Auth, Storage)",
+                        text: "We gebruiken Supabase voor onze database, authenticatie (inclusief wachtwoordloos inloggen via Magic Links/PKCE) en opslag (bijv. voor geüploade foto's). Accountgegevens, profielen, spots, beoordelingen, opmerkingen, geplande bezoeken, RSVP-statussen en andere uploads worden daar verwerkt/opgeslagen."
                     },
                     {
-                        bold: "Mapbox, Inc. (Interactieve kaart): ",
-                        text: "We gebruiken Mapbox om kaarten weer te geven. Mapbox is standaard geblokkeerd tot je toestemming geeft. Bij toestemming wordt je IP-adres naar Mapbox verzonden om kaarten te laden.",
-                        basis: "Wettelijke grondslag: Art. 6 lid 1 sub a AVG (expliciete toestemming via de cookiebanner)."
+                        bold: "3.2 Mapbox (Kaarttegels)",
+                        text: "We gebruiken Mapbox om de interactieve kaart weer te geven. Mapbox is standaard geblokkeerd en wordt pas geladen na jouw toestemming; bij toestemming wordt je IP-adres naar Mapbox verzonden om kaarten te laden.",
+                        basis: "Wettelijke grondslag: Art. 6 lid 1 sub a AVG (Toestemming via de cookiebanner)."
                     },
                     {
-                        bold: "Google Translate API (Vertalingen): ",
-                        text: "We integreren Google Translate client-side om beoordelingen dynamisch te vertalen. Dit wordt alleen geactiveerd op verzoek van de gebruiker."
+                        bold: "3.3 Google Translate (Vertalingen)",
+                        text: "We integreren Google Translate client-side om beoordelingen dynamisch te vertalen. Dit wordt alleen geactiveerd op verzoek van de gebruiker (trigger)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookies en Lokale Opslag",
-                desc: "We gebruiken lokale opslag uitsluitend om je operationele voorkeuren op te slaan:",
+                title: "4. Cookies / Lokale Opslag",
+                desc: "We gebruiken lokale opslag uitsluitend om operationele voorkeuren op te slaan:",
                 items: [
-                    "efoilmap-consent: Slaat je keuze voor de cookiebanner op.",
-                    "efoilmap-lang: Onthoudt je geselecteerde taal.",
-                    "efoilmap-intro-dismissed: Onthoudt of je het welkomstbericht hebt gelezen."
+                    "efoilmap-consent: Slaat de keuze voor de cookiebanner op",
+                    "efoilmap-lang: Slaat de taalselectie op",
+                    "efoilmap-intro-dismissed: Geeft aan of het onboarding-bericht is gelezen"
                 ],
                 outro: "Er zijn geen trackingspixels van derden of advertentiescripts actief op deze website."
             },
             deletion: {
-                title: "5. Accountverwijdering en Gegevensbewaring",
-                desc: "Je persoonlijke accountgegevens worden bewaard zolang je profiel bestaat. Als je besluit je profiel te verwijderen:",
+                title: "5. Bewaartermijn / Verwijdering",
+                desc: "We bewaren persoonlijke accountgegevens in principe zolang je profiel bestaat. Als je besluit je profiel te verwijderen, wordt het volgende geactiveerd:",
                 items: [
-                    "Alle profielvelden, profielfoto's en beoordelingen worden definitief vernietigd.",
-                    "Spotbijdragen worden geanonimiseerd om de integriteit van de kaart te beschermen, waardoor elke link met je identiteit wordt verbroken."
+                    "Alle profielvelden, profielfoto's, beoordelingen, coördinatie-opmerkingen, geplande bezoeken en RSVP/aanwezigheidsstatussen worden definitief en trapsgewijs (cascading) verwijderd.",
+                    "Spotbijdragen blijven intact maar worden geanonimiseerd (het auteurschap wordt ingesteld op 'null') zodat de communitykaart functioneel blijft."
                 ]
             },
             rights: {
-                title: "6. Jouw Rechten als Betrokkene",
-                desc: "Onder de AVG heb je de volgende rechten:",
+                title: "6. Rechten van Betrokkene",
+                desc: "Onder de AVG heb je in het bijzonder de volgende rechten:",
                 items: [
-                    "Art. 15 AVG (Recht op inzage): Recht op bevestiging en een kopie van je gegevens.",
-                    "Art. 16 AVG (Recht op rectificatie): Recht om onjuiste gegevens te corrigeren.",
-                    "Art. 17 AVG (Recht op gegevenswissing): Recht om je account en geschiedenis te laten verwijderen.",
-                    "Art. 18 & 21 AVG (Beperking & Bezwaar): Recht om de verwerking te beperken of daartegen bezwaar te maken.",
-                    "Art. 20 AVG (Recht op gegevensoverdraagbaarheid): Recht om je gegevens in een gestructureerd formaat te exporteren.",
-                    "Art. 77 AVG (Recht om een klacht in te dienen): Recht om een klacht in te dienen bij een toezichthoudende autoriteit."
+                    "Art. 15 AVG: Recht op inzage",
+                    "Art. 16 AVG: Recht op rectificatie",
+                    "Art. 17 AVG: Recht op gegevenswissing",
+                    "Art. 18 AVG: Recht op beperking van de verwerking",
+                    "Art. 21 AVG: Recht op bezwaar",
+                    "Art. 20 AVG: Recht op gegevensoverdraagbaarheid",
+                    "Art. 77 AVG: Recht om een klacht in te dienen bij een toezichthoudende autoriteit"
                 ],
-                outro: "Om een van deze rechten uit te oefenen, kun je ons rechtstreeks mailen op hi@efoilmap.com."
+                outro: "Om je rechten uit te oefenen, kun je contact met ons opnemen via e-mail (zie hierboven)."
+            },
+            supervisory: {
+                title: "7. Recht om een Klacht in te dienen bij een Toezichthoudende Autoriteit",
+                desc: "Je kunt een klacht indienen bij een toezichthoudende autoriteit voor gegevensbescherming. In de regel is de toezichthoudende autoriteit van je gewone verblijfplaats, werkplek of plaats van de vermeende inbreuk bevoegd (Art. 77 AVG)."
+            },
+            changes: {
+                title: "8. Wijzigingen in dit Privacybeleid",
+                desc: "Dit privacybeleid kan worden aangepast naarmate het platform zich ontwikkelt. De versie die momenteel op de website is gepubliceerd is van toepassing (zie datum hierboven)."
             }
         }
     },
     pl: {
-        title: "Polityka Prywatności",
-        lastUpdated: "Ostatnia aktualizacja: 24 maja 2026",
+        title: "Polityka Prywatności (efoilmap.com)",
+        lastUpdated: "Ostatnia aktualizacja: 25 maja 2026",
         backToMap: "Powrót do Mapy",
+        intro: "Niniejsza polityka prywatności wyjaśnia, jakie dane osobowe przetwarzamy na efoilmap.com, w jakich celach, na jakiej podstawie prawnej i jakie prawa Ci przysługują.",
         sections: {
             controller: {
                 title: "1. Administrator Danych Osobowych",
-                desc: "Podmiotem odpowiedzialnym za przetwarzanie danych na tej stronie internetowej zgodnie z Ogólnym Rozporządzeniem o Ochronie Danych (RODO) jest:",
+                desc: "Podmiotem odpowiedzialnym za przetwarzanie danych na tej stronie internetowej w rozumieniu RODO jest:",
                 company: "Angelpower UG (z ograniczoną odpowiedzialnością)",
                 address: "Belvedereallee 5, 52070 Akwizgran, Niemcy",
                 email: "Email: hi@efoilmap.com",
                 represented: "Reprezentowany przez: Carlo Matic"
             },
             collection: {
-                title: "2. Gromadzenie i Przetwarzanie Danych Osobowych",
-                desc: "Gromadzimy i przetwarzamy dane osobowe wyłącznie w zakresie niezbędnym do zapewnienia funkcjonowania platformy społecznościowej. Obejmuje to:",
+                title: "2. Przetwarzanie Danych Osobowych (Cele, Kategorie Danych, Podstawy Prawne)",
+                desc: "Przetwarzamy dane osobowe wyłącznie w zakresie niezbędnym do zapewnienia funkcjonowania platformy społecznościowej i interaktywnej mapy. Obejmuje to:",
                 items: [
                     {
-                        bold: "Dane uwierzytelniające i konto: ",
-                        text: "Kiedy rejestrujesz się lub logujesz za pomocą naszych linków bez hasła, gromadzimy Twój adres e-mail. Jeśli skonfigurujesz profil, zapisujemy Twoją nazwę użytkownika, biogram i zdjęcie profilowe.",
-                        basis: "Podstawa prawna: Art. 6 ust. 1 lit. b RODO (wykonanie umowy)."
+                        bold: "2.1 Konto Użytkownika i Rejestracja (Magic Link)",
+                        text: "Przetwarzane dane: Adres e-mail; szczegóły profilu w stosownych przypadkach (nazwa użytkownika, biogram); przesłane zdjęcie profilowe w stosownych przypadkach. Cele: Rejestracja/Logowanie, zarządzanie kontem, dostarczanie funkcji społecznościowych.",
+                        basis: "Podstawa prawna: Art. 6 ust. 1 lit. b RODO (Umowa/warunki korzystania)."
                     },
                     {
-                        bold: "Treści generowane przez użytkowników (UGC): ",
-                        text: "Współrzędne spotów, opisy i recenzje, które publikujesz, są zapisywane w naszej bazie danych w celu skompilowania interaktywnej mapy.",
-                        basis: "Podstawa prawna: Art. 6 ust. 1 lit. b RODO (realizacja umowy) i lit. f (uzasadniony interes)."
+                        bold: "2.2 Treści Generowane przez Użytkowników (Spoty, Recenzje, Treści)",
+                        text: "Przetwarzane dane: Treści przesłane przez Ciebie, takie jak współrzędne spotów, opisy, udogodnienia, opinie społeczności, zaplanowane wizyty (w tym data, godzina i opcjonalny opis), komentarze koordynacyjne oraz statusy obecności/RSVP. Cele: Wyświetlanie i utrzymanie interaktywnej mapy, wymiana informacji i spotkania w społeczności.",
+                        basis: "Podstawy prawne: Art. 6 ust. 1 lit. b RODO (Dostarczanie funkcji platformy) i Art. 6 ust. 1 lit. f RODO (uzasadniony interes w prowadzeniu, jakości i integralności danych społeczności)."
                     },
                     {
-                        bold: "Techniczne pliki dziennika: ",
-                        text: "Podczas dostępu do strony Twoja przeglądarka automatycznie przesyła metadane połączenia do naszych serwerów w celach bezpieczeństwa i zapobiegania spamowi.",
-                        basis: "Podstawa prawna: Art. 6 ust. 1 lit. f RODO (uzasadniony interes w zakresie bezpieczeństwa systemów)."
+                        bold: "2.3 Techniczne Pliki Dziennika",
+                        text: "Przetwarzane dane: Dane o połączeniu/dostępie (np. adres IP, data/godzina, typ przeglądarki, URL strony odsyłającej). Cele: Zapewnienie bezpieczeństwa i stabilności, analiza błędów, zapobieganie nadużyciom/spamowi.",
+                        basis: "Podstawa prawna: Art. 6 ust. 1 lit. f RODO (uzasadniony interes w bezpiecznym prowadzeniu)."
                     }
                 ]
             },
             processors: {
-                title: "3. Zewnętrzni Dostawcy Usług i Transfer Danych",
-                desc: "W celu prowadzenia tej platformy korzystamy z zaufanych dostawców infrastruktury, z którymi podpisaliśmy umowy powierzenia przetwarzania danych (DPA) zgodnie z Art. 28 RODO:",
+                title: "3. Odbiorcy / Podmioty Przetwarzające i Transfery do Państw Trzecich",
+                desc: "Korzystamy z usług dostawców, którzy przetwarzają dane osobowe w naszym imieniu (podmioty przetwarzające). Zostały z nimi podpisane umowy powierzenia przetwarzania danych zgodnie z Art. 28 RODO:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Baza danych i autoryzacja): ",
-                        text: "Dane użytkowników, profile i zdjęcia są bezpiecznie hostowane w bazach danych Supabase (infrastruktura zgodna z UE)."
+                        bold: "3.1 Supabase (Baza danych, Auth, Przechowywanie)",
+                        text: "Używamy Supabase do bazy danych, uwierzytelniania (w tym logowania bez hasła przez Magic Links/PKCE) oraz przechowywania plików (np. przesłanych zdjęć). Dane konta, profile, spoty, recenzje, komentarze, zaplanowane wizyty, statusy RSVP i inne przesłane pliki są tam przetwarzane/przechowywane."
                     },
                     {
-                        bold: "Mapbox, Inc. (Interaktywna mapa): ",
-                        text: "Używamy Mapbox do wyświetlania map. Mapbox jest domyślnie zablokowany, dopóki nie wyrazisz zgody. Po wyrażeniu zgody Twój adres IP jest wysyłany do Mapbox w celu załadowania map.",
-                        basis: "Podstawa prawna: Art. 6 ust. 1 lit. a RODO (wyraźna zgoda za pośrednictwem baneru cookies)."
+                        bold: "3.2 Mapbox (Mapy)",
+                        text: "Używamy Mapbox do wyświetlania mapy. Mapbox jest domyślnie zablokowany i ładowany dopiero po wyrażeniu zgody; po jej wyrażeniu Twój adres IP jest wysyłany do Mapbox w celu pobrania zawartości mapy.",
+                        basis: "Podstawa prawna: Art. 6 ust. 1 lit. a RODO (Zgoda za pośrednictwem baneru cookies)."
                     },
                     {
-                        bold: "Google Translate API (Tłumaczenia): ",
-                        text: "Dynamicznie tłumaczymy recenzje client-side. Usługa ta jest aktywowana wyłącznie na żądanie użytkownika."
+                        bold: "3.3 Google Translate (Tłumaczenia)",
+                        text: "Dynamicznie tłumaczymy opinie client-side przy użyciu Google Translate. Usługa ta jest aktywowana wyłącznie na żądanie użytkownika (trigger)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Pliki Cookies i Pamięć Lokalna",
+                title: "4. Pliki Cookies / Pamięć Lokalna",
                 desc: "Używamy pamięci lokalnej wyłącznie do zapisywania preferencji operacyjnych:",
                 items: [
-                    "efoilmap-consent: Zapisuje Twój wybór w banerze cookies.",
-                    "efoilmap-lang: Zapamiętuje wybrany język.",
-                    "efoilmap-intro-dismissed: Zapamiętuje, czy przeczytałeś wiadomość powitalną."
+                    "efoilmap-consent: Zapisuje wybór w banerze cookies",
+                    "efoilmap-lang: Zapisuje wybrany język",
+                    "efoilmap-intro-dismissed: Zapamiętuje, czy przeczytano onboarding"
                 ],
                 outro: "Na tej stronie nie są aktywne żadne pliki cookie śledzące stron trzecich ani skrypty reklamowe."
             },
             deletion: {
-                title: "5. Usuwanie Konta i Przechowywanie Danych",
-                desc: "Twoje dane osobowe są przechowywane tak długo, jak długo istnieje Twój profil. Jeśli zdecydujesz się usunąć konto:",
+                title: "5. Okres Przechowywania / Usuwanie",
+                desc: "Zasada jest taka, że dane konta osobistego przechowujemy tak długo, jak długo istnieje Twój profil. Jeśli zdecydujesz się usunąć konto, nastąpi:",
                 items: [
-                    "Wszystkie dane profilu, zdjęcia i recenzje zostaną trwale zniszczone.",
-                    "Wpisy dotyczące spotów zostaną zanonimizowane w celu ochrony integralności mapy, usuwając wszelkie powiązania z Twoją tożsamością."
+                    "Wszystkie dane profilu, zdjęcia profilowe, opinie, komentarze koordynacyjne, zaplanowane wizyty i statusy RSVP/obecności zostaną trwale i kaskadowo usunięte.",
+                    "Wpisy dotyczące spotów pozostają nienaruszone, ale zostają zanonimizowane (autorsko ustawione na 'null'), aby mapa społeczności pozostała funkcjonalna."
                 ]
             },
             rights: {
-                title: "6. Twoje Prawa jako Osoby, Której Dane Dotyczą",
-                desc: "Zgodnie z RODO przysługują Ci następujące prawa:",
+                title: "6. Prawa Osób, Których Dane Dotyczą",
+                desc: "Zgodnie z RODO przysługują Ci w szczególności następujące prawa:",
                 items: [
-                    "Art. 15 RODO (Prawo dostępu): Prawo do uzyskania potwierdzenia i kopii danych.",
-                    "Art. 16 RODO (Prawo do sprostowania): Prawo do poprawiania nieprawidłowych danych.",
-                    "Art. 17 RODO (Prawo do usunięcia danych): Prawo do usunięcia konta i historii.",
-                    "Art. 18 i 21 RODO (Ograniczenie i sprzeciw): Prawo do ograniczenia lub wniesienia sprzeciwu wobec przetwarzania.",
-                    "Art. 20 RODO (Przenoszenie danych): Prawo do eksportu danych w ustrukturyzowanym formacie.",
-                    "Art. 77 RODO (Prawo do wniesienia skargi): Prawo do wniesienia skargi do organu nadzorczego."
+                    "Art. 15 RODO: Prawo dostępu do danych",
+                    "Art. 16 RODO: Prawo do sprostowania danych",
+                    "Art. 17 RODO: Prawo do usunięcia danych",
+                    "Art. 18 RODO: Prawo do ograniczenia przetwarzania",
+                    "Art. 21 RODO: Prawo do sprzeciwu",
+                    "Art. 20 RODO: Prawo do przenoszenia danych",
+                    "Art. 77 RODO: Prawo do wniesienia skargi do organu nadzorczego"
                 ],
-                outro: "Aby skorzystać z któregokolwiek z tych praw, napisz do nas na hi@efoilmap.com."
+                outro: "Aby skorzystać ze swoich praw, skontaktuj się z nami poprzez e-mail (patrz wyżej)."
+            },
+            supervisory: {
+                title: "7. Prawo do Wniesienia Skargi do Organu Nadzorczego",
+                desc: "Możesz wnieść skargę do organu nadzorczego ochrony danych. Zazwyczaj właściwy jest organ w Twoim stałym miejscu zamieszkania, miejscu pracy lub miejscu popełnienia domniemanego naruszenia (Art. 77 RODO)."
+            },
+            changes: {
+                title: "8. Zmiany w niniejszej Polityce Prywatności",
+                desc: "Polityka prywatności może być dostosowywana w miarę rozwoju platformy. Obowiązuje wersja aktualnie opublikowana na stronie (patrz data powy)."
             }
         }
     },
     sv: {
-        title: "Integritetspolicy",
-        lastUpdated: "Senast uppdaterad: 24 maj 2026",
+        title: "Integritetspolicy (efoilmap.com)",
+        lastUpdated: "Senast uppdaterad: 25 maj 2026",
         backToMap: "Tillbaka till Kartan",
+        intro: "Denna integritetspolicy förklarar vilka personuppgifter vi behandlar på efoilmap.com, för vilka ändamål, på vilken rättslig grund och vilka rättigheter du har.",
         sections: {
             controller: {
                 title: "1. Personuppgiftsansvarig",
@@ -710,75 +790,84 @@ const content = {
                 represented: "Representeras av: Carlo Matic"
             },
             collection: {
-                title: "2. Insamling och Behandling av Personuppgifter",
-                desc: "Vi samlar in och behandlar personuppgifter endast i den utsträckning det är nödvändigt för att tillhandahålla en fungerande community-plattform. Detta inkluderar:",
+                title: "2. Behandling av Personuppgifter (Ändamål, Kategorier av Uppgifter, Rättsliga Grunder)",
+                desc: "Vi samlar in och behandlar personuppgifter endast i den utsträckning det är nödvändigt för att tillhandahålla community-plattformen och den interaktiva kartan. Detta inkluderar:",
                 items: [
                     {
-                        bold: "Autentisering & kontouppgifter: ",
-                        text: "När du registrerar dig eller loggar in via våra lösenordsfria magic-länkar samlar vi in din e-postadress. Om du skapar en profil sparar vi ditt valda användarnamn, biografi och profilbild.",
-                        basis: "Rättslig grund: Art. 6 para. 1 lit. b GDPR (fullgörande av ett avtal)."
+                        bold: "2.1 Användarkonto och Registrering (Magic Link)",
+                        text: "Behandlade uppgifter: E-postadress; profiluppgifter om tillämpligt (användarnamn, biografi); profilbild uppladdad av dig om tillämpligt. Ändamål: Registrering/Login, kontoadministration, tillhandahållande av community-funktioner.",
+                        basis: "Rättslig grund: Art. 6 para. 1 lit. b GDPR (Avtal/användningsförhållande)."
                     },
                     {
-                        bold: "Användargenererat innehåll (UGC): ",
-                        text: "Platskoordinater, beskrivningar och recensioner du publicerar sparas i vår databas för att sammanställa den interaktiva community-kartan.",
-                        basis: "Rättslig grund: Art. 6 para. 1 lit. b GDPR (kontraktuell uppfyllelse) och lit. f (berättigat intresse)."
+                        bold: "2.2 Användargenererat Innehåll (Spots, Recensioner, Innehåll)",
+                        text: "Behandlade uppgifter: Innehåll som du publicerar, t.ex. platskoordinater, beskrivningar, bekvämligheter, community-recensioner, planerade besök (inklusive datum, tid och valfri beskrivning), samordningskommentarer och RSVP/närvarostatus. Ändamål: Visning och underhåll av den interaktiva community-kartan, samarbete och möten.",
+                        basis: "Rättsliga grunder: Art. 6 para. 1 lit. b GDPR (Tillhandahållande av plattformsfunktioner) och Art. 6 para. 1 lit. f GDPR (berättigat intresse av plattformens drift, kvalitet och integritet)."
                     },
                     {
-                        bold: "Tekniska loggfiler: ",
-                        text: "När du besöker webbplatsen överför din webbläsare automatiskt anslutningsmetadata till våra servrar för säkerhetsanalys och spambekämpning.",
-                        basis: "Rättslig grund: Art. 6 para. 1 lit. f GDPR (berättigat intresse av systemsäkerhet)."
+                        bold: "2.3 Tekniska Loggfiler",
+                        text: "Behandlade uppgifter: Anslutnings-/åtkomstdata (t.ex. IP-adress, datum/tid, webbläsartyp, hänvisnings-URL). Ändamål: Säkerställa säkerhet och stabilitet, felanalys, spambekämpning.",
+                        basis: "Rättslig grund: Art. 6 para. 1 lit. f GDPR (berättigat intresse av säker drift)."
                     }
                 ]
             },
             processors: {
-                title: "3. Tredjepartstjänster och Dataöverföring",
-                desc: "För att driva denna plattform förlitar vi oss på betrodda infrastrukturleverantörer med vilka vi har tecknat personuppgiftsbiträdesavtal (DPA) i enlighet med Art. 28 GDPR:",
+                title: "3. Mottagare / Personuppgiftsbiträden och Överföringar till Tredje Land",
+                desc: "Vi använder tjänsteleverantörer som behandlar personuppgifter för vår räkning (biträden). Biträdesavtal i enlighet med Art. 28 GDPR har tecknats med dem:",
                 items: [
                     {
-                        bold: "Supabase, Inc. (Databas & Auth): ",
-                        text: "Användaruppgifter, profiler och bilder lagras säkert på Supabase-databaser (infrastruktur godkänd inom EU)."
+                        bold: "3.1 Supabase (Databas, Auth, Storage)",
+                        text: "Vi använder Supabase för databas, autentisering (inklusive lösenordslös inloggning via Magic Links/PKCE) och lagring (t.ex. för uppladdade bilder). Kontouppgifter, profilinformation, spots, recensioner, kommentarer, planerade besök, RSVP-statuser och övriga uppladdningar sparas/behandlas där."
                     },
                     {
-                        bold: "Mapbox, Inc. (Interaktiv karta): ",
-                        text: "Vi använder Mapbox för att visa kartor. Mapbox är blockerad som standard tills du ger ditt samtycke. Vid samtycke skickas din IP-adress till Mapbox för att ladda kartor.",
-                        basis: "Rättslig grund: Art. 6 para. 1 lit. a GDPR (uttryckligt samtycke via cookie-banderollen)."
+                        bold: "3.2 Mapbox (Kartan)",
+                        text: "Vi använder Mapbox för att visa kartan. Mapbox är blockerad som standard och laddas först efter ditt samtycke; vid samtycke skickas din IP-adress till Mapbox för att ladda kartor.",
+                        basis: "Rättslig grund: Art. 6 para. 1 lit. a GDPR (Samtycke via cookie-banderollen)."
                     },
                     {
-                        bold: "Google Translate API (Översättningar): ",
-                        text: "Vi integrerar Google Translate client-side för att dynamiskt översätta recensioner. Detta aktiveras endast på begäran av användaren."
+                        bold: "3.3 Google Translate (Översättningar)",
+                        text: "Vi integrerar Google Translate client-side för att dynamiskt översätta innehåll (t.ex. recensioner/beskrivningar). Tjänsten aktiveras endast på begäran av användaren (trigger)."
                     }
                 ]
             },
             cookies: {
-                title: "4. Cookies och Lokal Lagring",
-                desc: "Vi använder lokal lagring uteslutande för att spara dina driftsinställningar:",
+                title: "4. Cookies / Lokal Lagring",
+                desc: "Vi använder lokal lagring uteslutande för att spara driftsinställningar:",
                 items: [
-                    "efoilmap-consent: Lagrar ditt val i cookie-banderollen.",
-                    "efoilmap-lang: Kommer ihåg ditt valda språk.",
-                    "efoilmap-intro-dismissed: Kommer ihåg om du har läst välkomstmeddelandet."
+                    "efoilmap-consent: Lagrar valet i cookie-banderollen",
+                    "efoilmap-lang: Lagrar språkvalet",
+                    "efoilmap-intro-dismissed: Kommer ihåg om välkomstmeddelandet har lästs"
                 ],
                 outro: "Inga spårningspixlar eller annonsskript från tredje part är aktiva på denna webbplats."
             },
             deletion: {
-                title: "5. Radering av Konto och Datalagring",
-                desc: "Dina personuppgifter lagras så länge din profil finns kvar. Om du väljer att radera din profil:",
+                title: "5. Datalagring / Radering",
+                desc: "Vi lagrar personuppgifter i princip så länge din profil finns kvar. Om du väljer att radera din profil händer följande:",
                 items: [
-                    "Alla profilfält, profilbilder och recensioner raderas permanent.",
-                    "Spot-bidrag anonymiseras för att skydda kartans integritet, vilket tar bort alla kopplingar till din personliga identitet."
+                    "Alla profilfält, profilbilder, recensioner, samordningskommentarer, planerade besök och RSVP/närvarostatusar raderas permanent och kaskadartat.",
+                    "Spot-bidrag anonymiseras (författarskapet sätts till 'null') så att community-kartan förblir funktionell."
                 ]
             },
             rights: {
                 title: "6. Dina Rättigheter som Registrerad",
-                desc: "Enligt GDPR har du följande rättigheter:",
+                desc: "Enligt GDPR har du följande rättigheter i synnerhet:",
                 items: [
-                    "Art. 15 GDPR (Rätt till tillgång): Rätt att få bekräftelse och en kopia av dina uppgifter.",
-                    "Art. 16 GDPR (Rätt till rättelse): Rätt att korrigera felaktiga uppgifter.",
-                    "Art. 17 GDPR (Rätt till radering): Rätt att få ditt konto och historik raderad.",
-                    "Art. 18 & 21 GDPR (Begränsning & Invändning): Rätt att begränsa eller invända mot behandling.",
-                    "Art. 20 GDPR (Dataportabilitet): Rätt att exportera dina uppgifter i ett strukturerat format.",
-                    "Art. 77 GDPR (Rätt att klaga): Rätt att lämna in ett klagomål till en tillsynsmyndighet."
+                    "Art. 15 GDPR: Rätt till tillgång",
+                    "Art. 16 GDPR: Rätt till rättelse",
+                    "Art. 17 GDPR: Rätt till radering",
+                    "Art. 18 GDPR: Rätt till begränsning",
+                    "Art. 21 GDPR: Rätt att invända",
+                    "Art. 20 GDPR: Rätt till dataportabilitet",
+                    "Art. 77 GDPR: Rätt att klaga hos en tillsynsmyndighet"
                 ],
-                outro: "För att utöva någon av dessa rättigheter, maila oss direkt på hi@efoilmap.com."
+                outro: "För att utöva dina rättigheter, maila oss direkt på e-postadressen ovan."
+            },
+            supervisory: {
+                title: "7. Rätt att Klaga hos en Tillsynsmyndighet",
+                desc: "Du kan lämna in ett klagomål till en tillsynsmyndighet. Vanligtvis är tillsynsmyndigheten på din bosättningsort, arbetsplats eller platsen för det påstådda intrånget behörig (Art. 77 GDPR)."
+            },
+            changes: {
+                title: "8. Ändringar i denna Integritetspolicy",
+                desc: "Denna integritetspolicy kan justeras när plattformen utvecklas. Den version som för närvarande är publicerad på webbplatsen gäller (se datum ovan)."
             }
         }
     }
@@ -790,8 +879,8 @@ export default function Privacy() {
 
     return (
         <div className="h-full overflow-y-auto bg-background text-foreground p-8 leading-relaxed relative flex flex-col justify-between">
-            <div className="max-w-3xl mx-auto space-y-8 pb-20">
-                <Link href="/" className="flex items-center gap-2 text-primary hover:underline font-semibold">
+            <div className="max-w-3xl mx-auto space-y-8 pb-20 w-full">
+                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:underline font-semibold">
                     <ArrowLeft className="w-4 h-4" />
                     {t.backToMap}
                 </Link>
@@ -801,23 +890,27 @@ export default function Privacy() {
                     <p className="text-xs text-muted-foreground">{t.lastUpdated}</p>
                 </div>
 
+                <p className="text-muted-foreground text-sm leading-relaxed bg-card border border-border p-4 rounded-xl">
+                    {t.intro}
+                </p>
+
                 <section className="space-y-8 text-sm">
                     {/* 1. Controller */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
                         <h2 className="text-xl font-bold text-foreground">{t.sections.controller.title}</h2>
                         <p className="text-muted-foreground">
                             {t.sections.controller.desc}
                         </p>
-                        <div className="bg-card border border-border p-4 rounded-xl space-y-1 text-muted-foreground">
+                        <div className="bg-muted/50 p-4 rounded-lg space-y-1 text-muted-foreground text-xs leading-normal">
                             <p className="font-semibold text-foreground">{t.sections.controller.company}</p>
                             <p>{t.sections.controller.address}</p>
-                            <p>{t.sections.controller.email}</p>
                             <p>{t.sections.controller.represented}</p>
+                            <p>{t.sections.controller.email}</p>
                         </div>
                     </div>
 
                     {/* 2. Collection & Processing of Personal Data */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
                         <h2 className="text-xl font-bold text-foreground">{t.sections.collection.title}</h2>
                         <p className="text-muted-foreground">
                             {t.sections.collection.desc}
@@ -826,12 +919,11 @@ export default function Privacy() {
                             {t.sections.collection.items.map((item, idx) => (
                                 <li key={idx}>
                                     <strong className="text-foreground">{item.bold}</strong>
-                                    {item.text}
+                                    <p className="mt-1 text-sm leading-relaxed">{item.text}</p>
                                     {item.basis && (
-                                        <>
-                                            <br />
-                                            <span className="text-xs italic">{item.basis}</span>
-                                        </>
+                                        <span className="block text-xs italic text-muted-foreground mt-1">
+                                            {item.basis}
+                                        </span>
                                     )}
                                 </li>
                             ))}
@@ -839,7 +931,7 @@ export default function Privacy() {
                     </div>
 
                     {/* 3. Third-Party Services */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
                         <h2 className="text-xl font-bold text-foreground">{t.sections.processors.title}</h2>
                         <p className="text-muted-foreground">
                             {t.sections.processors.desc}
@@ -848,12 +940,11 @@ export default function Privacy() {
                             {t.sections.processors.items.map((item, idx) => (
                                 <li key={idx}>
                                     <strong className="text-foreground">{item.bold}</strong>
-                                    {item.text}
+                                    <p className="mt-1 text-sm leading-relaxed">{item.text}</p>
                                     {item.basis && (
-                                        <>
-                                            <br />
-                                            <span className="text-xs italic">{item.basis}</span>
-                                        </>
+                                        <span className="block text-xs italic text-muted-foreground mt-1">
+                                            {item.basis}
+                                        </span>
                                     )}
                                 </li>
                             ))}
@@ -861,55 +952,71 @@ export default function Privacy() {
                     </div>
 
                     {/* 4. Cookies & LocalStorage */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
                         <h2 className="text-xl font-bold text-foreground">{t.sections.cookies.title}</h2>
                         <p className="text-muted-foreground">
                             {t.sections.cookies.desc}
                         </p>
-                        <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                        <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                             {t.sections.cookies.items.map((item, idx) => (
-                                <li key={idx}>
-                                    <code className="text-xs text-foreground bg-muted px-1 py-0.5 rounded">
+                                <li key={idx} className="text-sm">
+                                    <code className="text-xs text-foreground bg-muted px-1.5 py-0.5 rounded font-mono border border-border">
                                         {item.split(":")[0]}
                                     </code>
-                                    :{item.split(":")[1]}
+                                    : {item.split(":")[1]}
                                 </li>
                             ))}
                         </ul>
-                        <p className="text-xs text-muted-foreground italic mt-2">
+                        <p className="text-xs text-muted-foreground italic mt-3 pt-3 border-t border-border">
                             {t.sections.cookies.outro}
                         </p>
                     </div>
 
                     {/* 5. Account Deletion & Data Retention */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
                         <h2 className="text-xl font-bold text-foreground">{t.sections.deletion.title}</h2>
                         <p className="text-muted-foreground">
                             {t.sections.deletion.desc}
                         </p>
                         <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                             {t.sections.deletion.items.map((item, idx) => (
-                                <li key={idx}>{item}</li>
+                                <li key={idx} className="text-sm leading-relaxed">{item}</li>
                             ))}
                         </ul>
                     </div>
 
                     {/* 6. Your Legal Rights */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
                         <h2 className="text-xl font-bold text-foreground">{t.sections.rights.title}</h2>
                         <p className="text-muted-foreground">
                             {t.sections.rights.desc}
                         </p>
-                        <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                        <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                             {t.sections.rights.items.map((item, idx) => (
-                                <li key={idx}>
+                                <li key={idx} className="text-sm">
                                     <strong className="text-foreground">{item.split(":")[0]}</strong>
                                     {item.split(":")[1] ? `:${item.split(":")[1]}` : ""}
                                 </li>
                             ))}
                         </ul>
-                        <p className="text-muted-foreground mt-2">
+                        <p className="text-muted-foreground text-xs mt-3 pt-3 border-t border-border">
                             {t.sections.rights.outro}
+                        </p>
+                    </div>
+
+                    {/* 7. Right to lodge a complaint with a supervisory authority */}
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
+                        <h2 className="text-xl font-bold text-foreground">{t.sections.supervisory.title}</h2>
+                        <p className="text-muted-foreground leading-relaxed">
+                            {t.sections.supervisory.desc}
+                        </p>
+                    </div>
+
+                    {/* 8. Changes to this Privacy Policy */}
+                    <div className="space-y-3 bg-card border border-border p-6 rounded-xl">
+                        <h2 className="text-xl font-bold text-foreground">{t.sections.changes.title}</h2>
+                        <p className="text-muted-foreground leading-relaxed">
+                            {t.sections.changes.desc}
                         </p>
                     </div>
                 </section>

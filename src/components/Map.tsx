@@ -23,6 +23,7 @@ import { AddSpotButton } from "@/components/AddSpotButton";
 import { AddSpotDialog } from "@/components/AddSpotDialog";
 import { ProfileSetupDialog } from "@/components/ProfileSetupDialog";
 import { ProfileEditDialog } from "@/components/ProfileEditDialog";
+import { NotificationCenter } from "@/components/NotificationCenter";
 
 export default function EfoilMap() {
     const { user, profile } = useAuth();
@@ -61,11 +62,29 @@ export default function EfoilMap() {
     const filteredSpots = useMemo(() => {
         let res = spots;
         if (filters.status !== 'all') {
-            res = res.filter(s => s.status === filters.status.toUpperCase());
+            if (filters.status === 'not_forbidden') {
+                res = res.filter(s => s.status !== 'FORBIDDEN');
+            } else {
+                res = res.filter(s => s.status === filters.status.toUpperCase());
+            }
         }
         if (filters.parking) res = res.filter(s => s.attributes?.parking);
         if (filters.charging) res = res.filter(s => s.attributes?.charging);
         if (filters.food) res = res.filter(s => s.attributes?.food);
+        
+        // Date Range Filtering
+        if (filters.startDate || filters.endDate) {
+            res = res.filter(s => {
+                const visits = s.spot_visits || [];
+                return visits.some(v => {
+                    const vDate = v.visit_date; // YYYY-MM-DD format
+                    if (filters.startDate && vDate < filters.startDate) return false;
+                    if (filters.endDate && vDate > filters.endDate) return false;
+                    return true;
+                });
+            });
+        }
+        
         return res;
     }, [spots, filters]);
 
@@ -83,7 +102,7 @@ export default function EfoilMap() {
         return () => window.removeEventListener('close-all-overlays', handleCloseAll);
     }, []);
 
-    // Load Spots on Mount
+    // Load Spots on Mount & custom reload event
     useEffect(() => {
         async function loadSpots() {
             try {
@@ -94,6 +113,8 @@ export default function EfoilMap() {
             }
         }
         loadSpots();
+        window.addEventListener('reload-spots', loadSpots);
+        return () => window.removeEventListener('reload-spots', loadSpots);
     }, []);
 
     // Intercept hash fragment authentication errors (e.g., otp_expired)
@@ -289,7 +310,13 @@ export default function EfoilMap() {
                             <SearchBox spots={spots} onSelectSpot={handleSpotSelect} />
 
                             {/* Auth / Profile - Right */}
-                            <div className="flex-1 flex justify-end shrink-0">
+                            <div className="flex-1 flex justify-end shrink-0 gap-3">
+                                {user && (
+                                    <NotificationCenter 
+                                        user={user} 
+                                        onSelectSpot={setSelectedSpot} 
+                                    />
+                                )}
                                 {user ? (
                                     <button 
                                         onClick={() => setIsProfileOpen(true)}
@@ -372,6 +399,21 @@ export default function EfoilMap() {
                                     )}
                                     fill="currentColor"
                                 />
+                                
+                                {/* Future Events Count Badge */}
+                                {(() => {
+                                    const count = (() => {
+                                        if (!spot.spot_visits) return 0;
+                                        const todayStr = new Date().toISOString().split('T')[0];
+                                        return spot.spot_visits.filter(v => v.visit_date >= todayStr).length;
+                                    })();
+                                    if (count === 0) return null;
+                                    return (
+                                        <div className="absolute -top-2.5 -right-2.5 bg-blue-600 border border-white/20 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg shadow-blue-500/20 animate-in zoom-in-50">
+                                            {count}
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </Marker>
                     ))}

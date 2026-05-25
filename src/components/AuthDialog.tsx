@@ -43,7 +43,7 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
                 email,
                 options: {
                     shouldCreateUser: true,
-                    emailRedirectTo: `${window.location.origin}/auth/callback`,
+                    emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname + window.location.search)}`,
                     data: { locale }
                 }
             });

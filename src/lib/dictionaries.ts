@@ -42,6 +42,7 @@ export const dictionaries = {
             allowed_spots: "Allowed",
             tolerated_spots: "Tolerated",
             unclear_spots: "Unclear",
+            not_forbidden_spots: "Not Forbidden",
             parking: "Parking",
             charging: "Charging",
             food: "Food"
@@ -153,6 +154,7 @@ export const dictionaries = {
             allowed_spots: "Erlaubte",
             tolerated_spots: "Geduldete",
             unclear_spots: "Unklare",
+            not_forbidden_spots: "Nicht verbotene",
             parking: "Parken",
             charging: "Laden",
             food: "Essen"
@@ -264,6 +266,7 @@ export const dictionaries = {
             allowed_spots: "Permitidos",
             tolerated_spots: "Tolerados",
             unclear_spots: "Desconocidos",
+            not_forbidden_spots: "No Prohibidos",
             parking: "Parking",
             charging: "Carga",
             food: "Comida"
@@ -375,6 +378,7 @@ export const dictionaries = {
             allowed_spots: "Autorisés",
             tolerated_spots: "Tolérés",
             unclear_spots: "Inconnus",
+            not_forbidden_spots: "Non Interdits",
             parking: "Parking",
             charging: "Recharge",
             food: "Restauration"
@@ -486,6 +490,7 @@ export const dictionaries = {
             allowed_spots: "Consentiti",
             tolerated_spots: "Tollerati",
             unclear_spots: "Non chiari",
+            not_forbidden_spots: "Non Vietati",
             parking: "Parcheggio",
             charging: "Ricarica",
             food: "Cibo"
@@ -597,6 +602,7 @@ export const dictionaries = {
             allowed_spots: "Permitidos",
             tolerated_spots: "Tolerados",
             unclear_spots: "Pouco Claros",
+            not_forbidden_spots: "Não Proibidos",
             parking: "Estacionamento",
             charging: "Carregamento",
             food: "Alimentação"
@@ -708,6 +714,7 @@ export const dictionaries = {
             allowed_spots: "Toegestaan",
             tolerated_spots: "Gedoogd",
             unclear_spots: "Onduidelijk",
+            not_forbidden_spots: "Niet Verboden",
             parking: "Parkeren",
             charging: "Opladen",
             food: "Eten"
@@ -819,6 +826,7 @@ export const dictionaries = {
             allowed_spots: "Dozwolone",
             tolerated_spots: "Tolerowane",
             unclear_spots: "Niejasne",
+            not_forbidden_spots: "Niezabronione",
             parking: "Parking",
             charging: "Ładowanie",
             food: "Jedzenie"
@@ -930,6 +938,7 @@ export const dictionaries = {
             allowed_spots: "Tillåtna",
             tolerated_spots: "Tolererade",
             unclear_spots: "Oklara",
+            not_forbidden_spots: "Inte Förbjudna",
             parking: "Parkering",
             charging: "Laddning",
             food: "Mat"

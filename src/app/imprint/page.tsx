@@ -8,147 +8,165 @@ import { Footer } from "@/components/Footer";
 const content = {
     en: {
         title: "Imprint",
+        disclaimer: "Information according to § 5 TMG",
         legalForm: "Angelpower UG (limited liability)",
         address: "Belvedereallee 5, 52070 Aachen, Germany",
-        register: "Register Court: District Court Aachen",
+        registerHeading: "Register Entry",
+        registerCourt: "Register Court: District Court Aachen",
         registerNumber: "Register Number: HRB 16897",
-        contact: "Contact",
+        contactHeading: "Contact",
         email: "Email: hi@efoilmap.com",
         phone: "Phone: +49 241 91880 1",
-        representedBy: "Represented By",
+        representedBy: "Represented by",
         director: "Carlo Matic (Managing Director)",
-        responsible: "Responsible for Content (§ 55 Abs. 2 RStV)",
+        responsibleHeading: "Responsible for Content according to § 55 Abs. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Back to Map",
-        disclaimer: "Information according to § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aachen, Germany",
+        backToMap: "Back to Map"
     },
     de: {
         title: "Impressum",
+        disclaimer: "Angaben gemäß § 5 TMG",
         legalForm: "Angelpower UG (haftungsbeschränkt)",
-        address: "Belvedereallee 5, 52070 Aachen",
-        register: "Registergericht: Amtsgericht Aachen",
+        address: "Belvedereallee 5, 52070 Aachen, Deutschland",
+        registerHeading: "Registereintrag",
+        registerCourt: "Registergericht: Amtsgericht Aachen",
         registerNumber: "Registernummer: HRB 16897",
-        contact: "Kontakt",
+        contactHeading: "Kontakt",
         email: "E-Mail: hi@efoilmap.com",
         phone: "Telefon: +49 241 91880 1",
         representedBy: "Vertreten durch",
         director: "Carlo Matic (Geschäftsführer)",
-        responsible: "Verantwortlich für den Inhalt (§ 55 Abs. 2 RStV)",
+        responsibleHeading: "Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Zurück zur Karte",
-        disclaimer: "Angaben gemäß § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aachen, Deutschland",
+        backToMap: "Zurück zur Karte"
     },
     es: {
         title: "Aviso Legal",
+        disclaimer: "Información según § 5 TMG",
         legalForm: "Angelpower UG (responsabilidad limitada)",
         address: "Belvedereallee 5, 52070 Aquisgrán, Alemania",
-        register: "Tribunal de Registro: Tribunal de Distrito de Aquisgrán",
+        registerHeading: "Registro",
+        registerCourt: "Tribunal de Registro: Tribunal de Distrito de Aquisgrán",
         registerNumber: "Número de Registro: HRB 16897",
-        contact: "Contacto",
+        contactHeading: "Contacto",
         email: "Correo electrónico: hi@efoilmap.com",
         phone: "Teléfono: +49 241 91880 1",
         representedBy: "Representado por",
         director: "Carlo Matic (Director Gerente)",
-        responsible: "Responsable del contenido (§ 55 Abs. 2 RStV)",
+        responsibleHeading: "Responsable del contenido según § 55 Abs. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Volver al Mapa",
-        disclaimer: "Información según § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aquisgrán, Alemania",
+        backToMap: "Volver al Mapa"
     },
     fr: {
         title: "Mentions Légales",
+        disclaimer: "Informations conformes à l'article 5 de la TMG",
         legalForm: "Angelpower UG (responsabilité limitée)",
         address: "Belvedereallee 5, 52070 Aix-la-Chapelle, Allemagne",
-        register: "Tribunal d'enregistrement : Tribunal d'instance d'Aix-la-Chapelle",
+        registerHeading: "Enregistrement",
+        registerCourt: "Tribunal d'enregistrement : Tribunal d'instance d'Aix-la-Chapelle",
         registerNumber: "Numéro d'enregistrement : HRB 16897",
-        contact: "Contact",
+        contactHeading: "Contact",
         email: "E-mail : hi@efoilmap.com",
         phone: "Téléphone : +49 241 91880 1",
         representedBy: "Représenté par",
         director: "Carlo Matic (Directeur Général)",
-        responsible: "Responsable du contenu (§ 55 Abs. 2 RStV)",
+        responsibleHeading: "Responsable du contenu selon § 55 Abs. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Retour à la Carte",
-        disclaimer: "Informations conformes à l'article 5 de la TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aix-la-Chapelle, Allemagne",
+        backToMap: "Retour à la Carte"
     },
     it: {
         title: "Note Legali",
+        disclaimer: "Informazioni ai sensi del § 5 TMG",
         legalForm: "Angelpower UG (responsabilità limitata)",
         address: "Belvedereallee 5, 52070 Aquisgrana, Germania",
-        register: "Ufficio del registro: Tribunale di Aquisgrana",
+        registerHeading: "Registrazione",
+        registerCourt: "Ufficio del registro: Tribunale di Aquisgrana",
         registerNumber: "Numero di registro: HRB 16897",
-        contact: "Contatti",
+        contactHeading: "Contatti",
         email: "Email: hi@efoilmap.com",
         phone: "Telefono: +49 241 91880 1",
         representedBy: "Rappresentato da",
         director: "Carlo Matic (Amministratore Delegato)",
-        responsible: "Responsabile del contenuto (§ 55 Abs. 2 RStV)",
+        responsibleHeading: "Responsabile del contenuto ai sensi del § 55 Abs. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Torna alla Mappa",
-        disclaimer: "Informazioni ai sensi del § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aquisgrana, Germania",
+        backToMap: "Torna alla Mappa"
     },
     pt: {
         title: "Aviso Legal",
+        disclaimer: "Informações de acordo com o § 5 TMG",
         legalForm: "Angelpower UG (responsabilidade limitada)",
         address: "Belvedereallee 5, 52070 Aachen, Alemanha",
-        register: "Tribunal de Registo: Tribunal de Comarca de Aachen",
+        registerHeading: "Registro",
+        registerCourt: "Tribunal de Registo: Tribunal de Comarca de Aachen",
         registerNumber: "Número de Registo: HRB 16897",
-        contact: "Contacto",
+        contactHeading: "Contacto",
         email: "E-mail: hi@efoilmap.com",
         phone: "Telefone: +49 241 91880 1",
         representedBy: "Representado por",
         director: "Carlo Matic (Diretor Executivo)",
-        responsible: "Responsável pelo conteúdo (§ 55 Abs. 2 RStV)",
+        responsibleHeading: "Responsável pelo conteúdo de acordo com o § 55 Abs. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Voltar ao Mapa",
-        disclaimer: "Informações de acordo com o § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aachen, Alemanha",
+        backToMap: "Voltar ao Mapa"
     },
     nl: {
         title: "Colofon",
+        disclaimer: "Informatie volgens § 5 TMG",
         legalForm: "Angelpower UG (beperkte aansprakelijkheid)",
         address: "Belvedereallee 5, 52070 Aken, Duitsland",
-        register: "Registratiekamer: Kantongerecht Aken",
+        registerHeading: "Registratie",
+        registerCourt: "Registratiekamer: Kantongerecht Aken",
         registerNumber: "Registratienummer: HRB 16897",
-        contact: "Contact",
+        contactHeading: "Contact",
         email: "E-mail: hi@efoilmap.com",
         phone: "Telefoon: +49 241 91880 1",
         representedBy: "Vertegenwoordigd door",
         director: "Carlo Matic (Algemeen Directeur)",
-        responsible: "Verantwoordelijk voor de inhoud (§ 55 lid 2 RStV)",
+        responsibleHeading: "Verantwoordelijk voor de inhoud volgens § 55 lid 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Terug naar Kaart",
-        disclaimer: "Informatie volgens § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aken, Duitsland",
+        backToMap: "Terug naar Kaart"
     },
     pl: {
         title: "Nota Prawna",
+        disclaimer: "Informacje zgodnie z § 5 TMG",
         legalForm: "Angelpower UG (z ograniczoną odpowiedzialnością)",
         address: "Belvedereallee 5, 52070 Akwizgran, Niemcy",
-        register: "Sąd rejestrowy: Sąd Rejonowy w Akwizgranie",
+        registerHeading: "Wpis do rejestru",
+        registerCourt: "Sąd rejestrowy: Sąd Rejonowy w Akwizgranie",
         registerNumber: "Numer rejestru: HRB 16897",
-        contact: "Kontakt",
+        contactHeading: "Kontakt",
         email: "E-mail: hi@efoilmap.com",
         phone: "Telefon: +49 241 91880 1",
         representedBy: "Reprezentowany przez",
         director: "Carlo Matic (Dyrektor Zarządzający)",
-        responsible: "Odpowiedzialny za treść (§ 55 ust. 2 RStV)",
+        responsibleHeading: "Odpowiedzialny za treść zgodnie z § 55 ust. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Powrót do Mapy",
-        disclaimer: "Informacje zgodnie z § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Akwizgran, Niemcy",
+        backToMap: "Powrót do Mapy"
     },
     sv: {
         title: "Om webbplatsen (Impressum)",
+        disclaimer: "Information enligt § 5 TMG",
         legalForm: "Angelpower UG (med begränsat ansvar)",
         address: "Belvedereallee 5, 52070 Aachen, Tyskland",
-        register: "Registreringsdomstol: Tingsrätten i Aachen",
+        registerHeading: "Registeruppgifter",
+        registerCourt: "Registreringsdomstol: Tingsrätten i Aachen",
         registerNumber: "Registreringsnummer: HRB 16897",
-        contact: "Kontakt",
+        contactHeading: "Kontakt",
         email: "E-post: hi@efoilmap.com",
         phone: "Telefon: +49 241 91880 1",
         representedBy: "Representeras av",
         director: "Carlo Matic (Verkställande Direktör)",
-        responsible: "Ansvarig för innehåll (§ 55 Abs. 2 RStV)",
+        responsibleHeading: "Ansvarig för innehåll enligt § 55 Abs. 2 RStV",
         responsiblePerson: "Carlo Matic",
-        backToMap: "Tillbaka till Kartan",
-        disclaimer: "Information enligt § 5 TMG"
+        responsibleAddress: "Belvedereallee 5, 52070 Aachen, Tyskland",
+        backToMap: "Tillbaka till Kartan"
     }
 };
 
@@ -158,40 +176,45 @@ export default function Imprint() {
 
     return (
         <div className="h-full overflow-y-auto bg-background text-foreground p-8 relative flex flex-col justify-between">
-            <div className="max-w-2xl mx-auto space-y-8 pb-20">
-                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:underline">
+            <div className="max-w-2xl mx-auto space-y-8 pb-20 w-full">
+                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:underline font-semibold">
                     <ArrowLeft className="w-4 h-4" />
                     {t.backToMap}
                 </Link>
 
-                <h1 className="text-3xl font-bold">{t.title}</h1>
+                <h1 className="text-3xl font-black tracking-tight">{t.title}</h1>
 
-                <section className="space-y-4">
-                    <p className="text-sm text-muted-foreground">{t.disclaimer}</p>
+                <section className="space-y-4 text-sm leading-relaxed">
+                    <p className="text-muted-foreground">{t.disclaimer}</p>
 
-                    <div className="bg-card border border-border p-6 rounded-lg space-y-2">
-                        <p className="font-bold">{t.legalForm}</p>
-                        <p>{t.address}</p>
-                        <p className="text-xs text-muted-foreground mt-4">
-                            {t.register}<br />
-                            {t.registerNumber}
-                        </p>
+                    <div className="bg-card border border-border p-6 rounded-xl space-y-2">
+                        <p className="font-bold text-foreground">{t.legalForm}</p>
+                        <p className="text-muted-foreground">{t.address}</p>
+                        
+                        <div className="mt-4 pt-4 border-t border-border space-y-1">
+                            <h3 className="font-semibold text-foreground">{t.registerHeading}</h3>
+                            <p className="text-muted-foreground text-xs leading-normal">
+                                {t.registerCourt}<br />
+                                {t.registerNumber}
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <h2 className="text-xl font-semibold">{t.contact}</h2>
-                        <p>{t.email}</p>
-                        <p>{t.phone}</p>
+                    <div className="space-y-2 bg-card border border-border p-6 rounded-xl">
+                        <h2 className="text-lg font-bold text-foreground">{t.contactHeading}</h2>
+                        <p className="text-muted-foreground">{t.email}</p>
+                        <p className="text-muted-foreground">{t.phone}</p>
                     </div>
 
-                    <div className="space-y-2">
-                        <h2 className="text-xl font-semibold">{t.representedBy}</h2>
-                        <p>{t.director}</p>
+                    <div className="space-y-2 bg-card border border-border p-6 rounded-xl">
+                        <h2 className="text-lg font-bold text-foreground">{t.representedBy}</h2>
+                        <p className="text-muted-foreground">{t.director}</p>
                     </div>
 
-                    <div className="space-y-2">
-                        <h2 className="text-xl font-semibold">{t.responsible}</h2>
-                        <p>{t.responsiblePerson}</p>
+                    <div className="space-y-2 bg-card border border-border p-6 rounded-xl">
+                        <h2 className="text-lg font-bold text-foreground leading-normal">{t.responsibleHeading}</h2>
+                        <p className="font-semibold text-foreground">{t.responsiblePerson}</p>
+                        <p className="text-muted-foreground">{t.responsibleAddress}</p>
                     </div>
                 </section>
             </div>
