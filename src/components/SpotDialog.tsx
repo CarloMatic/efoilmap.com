@@ -2,7 +2,7 @@
 
 import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store, Heart, Bookmark } from "lucide-react";
 import Image from "next/image";
-import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview, toggleLikeSpot, getSpotLikesCount, getSpotLikeStatus, toggleBookmarkSpot } from "@/app/actions";
+import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview, toggleLikeSpot, getSpotLikesCount, getSpotLikeStatus, toggleBookmarkSpot, getSpotQuestionsAndAnswers, createSpotQuestion, createSpotAnswer, SpotQuestion, SpotAnswer } from "@/app/actions";
 import { useSearchParams } from "next/navigation";
 import { Trash2, Edit2, Check } from "lucide-react";
 
@@ -129,6 +129,14 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     const [editingVisitCommentId, setEditingVisitCommentId] = useState<string | null>(null);
     const [editingVisitCommentText, setEditingVisitCommentText] = useState("");
     const [isDeletingReview, setIsDeletingReview] = useState(false);
+
+    // Spot Q&A states
+    const [questions, setQuestions] = useState<SpotQuestion[]>([]);
+    const [newQuestion, setNewQuestion] = useState("");
+    const [submittingQuestion, setSubmittingQuestion] = useState(false);
+    const [activeReplyBoxId, setActiveReplyBoxId] = useState<string | null>(null);
+    const [newAnswerText, setNewAnswerText] = useState("");
+    const [submittingAnswer, setSubmittingAnswer] = useState(false);
 
     const searchParams = useSearchParams();
 
@@ -520,6 +528,10 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     // Fetch photos and reviews on open
     useEffect(() => {
         if (open && spot) {
+            getSpotQuestionsAndAnswers(spot.id).then((res) => {
+                setQuestions(res);
+            });
+
             supabase.from('spot_photos')
                 .select('url')
                 .eq('spot_id', spot.id)
@@ -591,6 +603,51 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, spot?.id, user?.id]);
+
+    const handleQuestionSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user || !spot || !newQuestion.trim()) return;
+        setSubmittingQuestion(true);
+        try {
+            const res = await createSpotQuestion(spot.id, newQuestion.trim());
+            if (res.success) {
+                const updated = await getSpotQuestionsAndAnswers(spot.id);
+                setQuestions(updated);
+                setNewQuestion("");
+                showToast(locale === 'de' ? "Frage erfolgreich gepostet!" : "Question posted successfully!");
+            } else {
+                showToast(locale === 'de' ? "Fehler: " + res.error : "Error: " + res.error, "error");
+            }
+        } catch (err: any) {
+            console.error(err);
+            showToast(locale === 'de' ? "Fehler beim Posten der Frage." : "Error posting question.", "error");
+        } finally {
+            setSubmittingQuestion(false);
+        }
+    };
+
+    const handleAnswerSubmit = async (e: React.FormEvent, questionId: string) => {
+        e.preventDefault();
+        if (!user || !spot || !newAnswerText.trim()) return;
+        setSubmittingAnswer(true);
+        try {
+            const res = await createSpotAnswer(questionId, newAnswerText.trim());
+            if (res.success) {
+                const updated = await getSpotQuestionsAndAnswers(spot.id);
+                setQuestions(updated);
+                setNewAnswerText("");
+                setActiveReplyBoxId(null);
+                showToast(locale === 'de' ? "Antwort erfolgreich gepostet!" : "Reply posted successfully!");
+            } else {
+                showToast(locale === 'de' ? "Fehler: " + res.error : "Error: " + res.error, "error");
+            }
+        } catch (err: any) {
+            console.error(err);
+            showToast(locale === 'de' ? "Fehler beim Posten der Antwort." : "Error posting reply.", "error");
+        } finally {
+            setSubmittingAnswer(false);
+        }
+    };
 
     if (!open || !spot) return null;
 
@@ -1453,6 +1510,175 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                 >
                                     {t('forms.suggest_edit')}
                                 </button>
+                            </div>
+
+                            {/* Questions & Answers Section */}
+                            <div className="space-y-4 border-t border-border/10 pt-6">
+                                <div className="flex justify-between items-center mb-1">
+                                    <h3 className="text-sm font-semibold uppercase text-muted-foreground tracking-wider">
+                                        {locale === 'de' ? 'Fragen & Antworten' : 'Questions & Answers'}
+                                    </h3>
+                                    <span className="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full font-bold">
+                                        {questions.length}
+                                    </span>
+                                </div>
+
+                                {/* Question Submission Form */}
+                                {user ? (
+                                    <form onSubmit={handleQuestionSubmit} className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newQuestion}
+                                            onChange={(e) => setNewQuestion(e.target.value)}
+                                            placeholder={locale === 'de' ? 'Stelle eine Frage zu diesem Spot...' : 'Ask a question about this spot...'}
+                                            required
+                                            disabled={submittingQuestion}
+                                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs focus:ring-1 focus:ring-blue-500/50 focus:outline-none"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={submittingQuestion}
+                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold text-white transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                                        >
+                                            {submittingQuestion ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : (locale === 'de' ? 'Fragen' : 'Ask')}
+                                        </button>
+                                    </form>
+                                ) : (
+                                    <div className="bg-muted/10 p-3.5 rounded-2xl border border-border text-center text-xs text-muted-foreground leading-normal">
+                                        {locale === 'de' ? 'Bitte logge dich ein, um Fragen zu stellen.' : 'Please sign in to ask questions.'}{" "}
+                                        <button 
+                                            type="button"
+                                            onClick={() => setIsAuthOpen(true)}
+                                            className="text-blue-400 font-bold hover:underline cursor-pointer border-none bg-transparent p-0"
+                                        >
+                                            {locale === 'de' ? 'Einloggen' : 'Sign In'}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Questions List */}
+                                <div className="space-y-3">
+                                    {questions.length > 0 ? (
+                                        questions.map((q) => (
+                                            <div key={q.id} className="bg-white/2 border border-white/5 p-4 rounded-2xl space-y-3 flex flex-col">
+                                                {/* Question Header & Content */}
+                                                <div className="flex items-start gap-3 min-w-0">
+                                                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-900 border border-white/10 relative shrink-0 flex items-center justify-center">
+                                                        {q.profiles?.avatar_url ? (
+                                                            <img src={q.profiles.avatar_url} alt={q.profiles.username || "eFoiler"} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <UserIcon className="w-4 h-4 text-gray-500" />
+                                                        )}
+                                                    </div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => onViewProfile?.(q.user_id)}
+                                                                className="text-xs font-bold text-white hover:text-blue-400 transition-colors border-none bg-transparent p-0 cursor-pointer"
+                                                            >
+                                                                @{q.profiles?.username || "eFoiler"}
+                                                            </button>
+                                                            <span className="text-[9px] text-gray-500">
+                                                                {new Date(q.created_at).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-gray-200 mt-1 leading-relaxed break-words">{q.question}</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Answers List */}
+                                                {q.answers && q.answers.length > 0 && (
+                                                    <div className="pl-6 border-l border-white/10 space-y-3 mt-1.5">
+                                                        {q.answers.map((ans) => (
+                                                            <div key={ans.id} className="flex items-start gap-2.5 min-w-0">
+                                                                <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-900 border border-white/10 relative shrink-0 flex items-center justify-center">
+                                                                    {ans.profiles?.avatar_url ? (
+                                                                        <img src={ans.profiles.avatar_url} alt={ans.profiles.username || "eFoiler"} className="w-full h-full object-cover" />
+                                                                    ) : (
+                                                                        <UserIcon className="w-3 h-3 text-gray-500" />
+                                                                    )}
+                                                                </div>
+                                                                <div className="min-w-0 flex-1">
+                                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                                        <button 
+                                                                            type="button"
+                                                                            onClick={() => onViewProfile?.(ans.user_id)}
+                                                                            className="text-[11px] font-bold text-gray-300 hover:text-blue-400 transition-colors border-none bg-transparent p-0 cursor-pointer"
+                                                                        >
+                                                                            @{ans.profiles?.username || "eFoiler"}
+                                                                        </button>
+                                                                        <span className="text-[8px] text-gray-500">
+                                                                            {new Date(ans.created_at).toLocaleDateString()}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p className="text-xs text-gray-300 mt-0.5 leading-relaxed break-words">{ans.answer}</p>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                {/* Reply Trigger & Box */}
+                                                <div className="flex items-center justify-end gap-2 pt-1 border-t border-white/5">
+                                                    {activeReplyBoxId === q.id ? (
+                                                        <form 
+                                                            onSubmit={(e) => handleAnswerSubmit(e, q.id)} 
+                                                            className="flex gap-2 w-full mt-1.5"
+                                                        >
+                                                            <input
+                                                                type="text"
+                                                                value={newAnswerText}
+                                                                onChange={(e) => setNewAnswerText(e.target.value)}
+                                                                placeholder={locale === 'de' ? 'Antworte auf diese Frage...' : 'Reply to this question...'}
+                                                                required
+                                                                disabled={submittingAnswer}
+                                                                className="flex-1 bg-white/3 border border-white/5 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-500/30 focus:outline-none"
+                                                            />
+                                                            <button
+                                                                type="submit"
+                                                                disabled={submittingAnswer}
+                                                                className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-[10px] font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                                                            >
+                                                                {submittingAnswer ? <Loader2 className="w-3 animate-spin" /> : (locale === 'de' ? 'Antworten' : 'Reply')}
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setActiveReplyBoxId(null);
+                                                                    setNewAnswerText("");
+                                                                }}
+                                                                className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg text-[10px] transition-colors cursor-pointer shrink-0"
+                                                            >
+                                                                X
+                                                            </button>
+                                                        </form>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (!user) {
+                                                                    setIsAuthOpen(true);
+                                                                    return;
+                                                                }
+                                                                setActiveReplyBoxId(q.id);
+                                                            }}
+                                                            className="text-[10px] text-muted-foreground hover:text-blue-400 font-bold transition-colors cursor-pointer border-none bg-transparent p-0 flex items-center gap-1"
+                                                        >
+                                                            💬 {locale === 'de' ? 'Antworten' : 'Answer'}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-center text-gray-500 italic py-4">
+                                            {locale === 'de' 
+                                                ? 'Noch keine Fragen zu diesem Spot. Stell die erste Frage!' 
+                                                : 'No questions asked yet. Be the first to ask!'}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Recent Reviews List */}

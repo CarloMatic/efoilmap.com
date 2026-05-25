@@ -29,6 +29,8 @@ export interface Spot {
     average_rating?: number;
     rating_count?: number;
     spot_visits?: { id: string; visit_date: string; visit_time: string; }[];
+    user_id?: string;
+    created_by?: string;
 }
 
 export interface DbSpot {
@@ -42,6 +44,8 @@ export interface DbSpot {
     created_at: string;
     average_rating?: number;
     rating_count?: number;
+    user_id?: string;
+    created_by?: string;
 }
 
 interface DbSpotWithVisits extends DbSpot {
@@ -56,7 +60,7 @@ export async function getSpots(): Promise<Spot[]> {
             .from("spots")
             .select(`
                 id, name, status, attributes, created_at, lat, lng,
-                average_rating, rating_count, source_locale,
+                average_rating, rating_count, source_locale, user_id, created_by,
                 spot_visits(id, visit_date, visit_time)
             `);
         let data = fetchRes.data as DbSpotWithVisits[] | null;
@@ -69,7 +73,7 @@ export async function getSpots(): Promise<Spot[]> {
                 .from("spots")
                 .select(`
                     id, name, status, attributes, created_at, lat, lng,
-                    average_rating, rating_count, source_locale
+                    average_rating, rating_count, source_locale, user_id, created_by
                 `);
             data = fetchRes.data as DbSpotWithVisits[] | null;
             error = fetchRes.error;
@@ -82,7 +86,7 @@ export async function getSpots(): Promise<Spot[]> {
                 .from("spots")
                 .select(`
                     id, name, status, attributes, created_at, lat, lng,
-                    average_rating, rating_count
+                    average_rating, rating_count, user_id, created_by
                 `);
             data = basicFetch.data as DbSpotWithVisits[] | null;
             error = basicFetch.error;
@@ -163,6 +167,10 @@ export async function updateSpot(spotId: string, data: Partial<Spot>, token?: st
         if (data.name) dbData.name = data.name;
         if (data.status) dbData.status = data.status;
         if (data.attributes) dbData.attributes = data.attributes;
+        if (data.location) {
+            dbData.lng = data.location.coordinates[0];
+            dbData.lat = data.location.coordinates[1];
+        }
 
         const { error } = await dbClient
             .from("spots")
@@ -266,7 +274,9 @@ function formatSpot(data: DbSpot): Spot {
         },
         attributes: data.attributes,
         source_locale: data.source_locale,
-        createdAt: data.created_at
+        createdAt: data.created_at,
+        user_id: data.user_id,
+        created_by: data.created_by
     };
     s.slug = generateSlug(s);
     return s;
@@ -968,6 +978,166 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
     } catch (err) {
         console.error("getUserProfileData exception:", err);
         return null;
+    }
+}
+
+export interface SpotAnswer {
+    id: string;
+    question_id: string;
+    user_id: string;
+    answer: string;
+    created_at: string;
+    profiles?: {
+        username: string | null;
+        avatar_url: string | null;
+    };
+}
+
+export interface SpotQuestion {
+    id: string;
+    spot_id: string;
+    user_id: string;
+    question: string;
+    created_at: string;
+    profiles?: {
+        username: string | null;
+        avatar_url: string | null;
+    };
+    answers?: SpotAnswer[];
+}
+
+export async function createSpotQuestion(spotId: string, question: string, token?: string) {
+    const supabase = await createClient();
+    let user = null;
+    if (token) {
+        const res = await supabase.auth.getUser(token);
+        user = res.data.user;
+    }
+    if (!user) {
+        const res = await supabase.auth.getUser();
+        user = res.data.user;
+    }
+    if (!user) {
+        const { data: { session } } = await supabase.auth.getSession();
+        user = session?.user || null;
+    }
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    const dbClient = token ? createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { global: { headers: { Authorization: `Bearer ${token}` } } }
+    ) : supabase;
+
+    try {
+        const { data, error } = await dbClient
+            .from("spot_questions")
+            .insert([{ spot_id: spotId, user_id: user.id, question }])
+            .select()
+            .single();
+
+        if (error) return { success: false, error: error.message };
+        return { success: true, data };
+    } catch (e: any) {
+        return { success: false, error: e.message || "Exception occurred" };
+    }
+}
+
+export async function createSpotAnswer(questionId: string, answer: string, token?: string) {
+    const supabase = await createClient();
+    let user = null;
+    if (token) {
+        const res = await supabase.auth.getUser(token);
+        user = res.data.user;
+    }
+    if (!user) {
+        const res = await supabase.auth.getUser();
+        user = res.data.user;
+    }
+    if (!user) {
+        const { data: { session } } = await supabase.auth.getSession();
+        user = session?.user || null;
+    }
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    const dbClient = token ? createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { global: { headers: { Authorization: `Bearer ${token}` } } }
+    ) : supabase;
+
+    try {
+        const { data, error } = await dbClient
+            .from("spot_answers")
+            .insert([{ question_id: questionId, user_id: user.id, answer }])
+            .select()
+            .single();
+
+        if (error) return { success: false, error: error.message };
+        return { success: true, data };
+    } catch (e: any) {
+        return { success: false, error: e.message || "Exception occurred" };
+    }
+}
+
+export async function getSpotQuestionsAndAnswers(spotId: string): Promise<SpotQuestion[]> {
+    const supabase = await createClient();
+    try {
+        const { data: qData, error: qErr } = await supabase
+            .from("spot_questions")
+            .select(`
+                id, spot_id, user_id, question, created_at,
+                profiles(username, avatar_url)
+            `)
+            .eq("spot_id", spotId)
+            .order("created_at", { ascending: false });
+
+        if (qErr) throw qErr;
+        if (!qData || qData.length === 0) return [];
+
+        const questions: SpotQuestion[] = qData.map((q: any) => ({
+            id: q.id,
+            spot_id: q.spot_id,
+            user_id: q.user_id,
+            question: q.question,
+            created_at: q.created_at,
+            profiles: Array.isArray(q.profiles) ? q.profiles[0] : q.profiles,
+            answers: []
+        }));
+
+        const qIds = questions.map(q => q.id);
+        const { data: aData, error: aErr } = await supabase
+            .from("spot_answers")
+            .select(`
+                id, question_id, user_id, answer, created_at,
+                profiles(username, avatar_url)
+            `)
+            .in("question_id", qIds)
+            .order("created_at", { ascending: true });
+
+        if (aErr) throw aErr;
+
+        if (aData) {
+            aData.forEach((ans: any) => {
+                const q = questions.find(q => q.id === ans.question_id);
+                if (q) {
+                    q.answers = q.answers || [];
+                    q.answers.push({
+                        id: ans.id,
+                        question_id: ans.question_id,
+                        user_id: ans.user_id,
+                        answer: ans.answer,
+                        created_at: ans.created_at,
+                        profiles: Array.isArray(ans.profiles) ? ans.profiles[0] : ans.profiles
+                    });
+                }
+            });
+        }
+
+        return questions;
+    } catch (e) {
+        console.error("getSpotQuestionsAndAnswers failed:", e);
+        return [];
     }
 }
 

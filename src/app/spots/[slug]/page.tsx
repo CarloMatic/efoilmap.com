@@ -1,7 +1,7 @@
 import HomeClient from "@/components/HomeClient";
 import { Metadata } from "next";
 import { dictionaries, Locale, SUPPORTED_LOCALES } from "@/lib/dictionaries";
-import { getSpots } from "@/app/actions";
+import { getSpots, getSpotQuestionsAndAnswers } from "@/app/actions";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -68,16 +68,20 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   
   let spots: any[] = [];
   let spot = null;
+  let questions: any[] = [];
   
   try {
     spots = await getSpots();
     spot = spots.find(s => s.slug === slug);
+    if (spot) {
+      questions = await getSpotQuestionsAndAnswers(spot.id);
+    }
   } catch (err) {
     console.error("Error fetching spots for spot page SEO:", err);
   }
 
   // Create JSON-LD Place Structured Data
-  const jsonLd = spot ? {
+  const placeJsonLd = spot ? {
     "@context": "https://schema.org",
     "@type": "Place",
     "name": spot.name,
@@ -117,18 +121,39 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     ]
   } : null;
 
+  // Create JSON-LD FAQ/QA Structured Data
+  const faqJsonLd = spot && questions.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": questions.map(q => ({
+      "@type": "Question",
+      "name": q.question,
+      "acceptedAnswer": q.answers && q.answers.length > 0 ? {
+        "@type": "Answer",
+        "text": q.answers[0].answer
+      } : undefined
+    })).filter(q => q.acceptedAnswer !== undefined)
+  } : null;
+
   return (
     <>
-      {jsonLd && (
+      {placeJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(placeJsonLd) }}
+        />
+      )}
+
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       )}
       
       <HomeClient />
       
-      {/* Hidden SEO Link Directory for Search Engine Crawlers */}
+      {/* Hidden SEO Link Directory & Q&As for Search Engine Crawlers */}
       <div className="sr-only" aria-hidden="true">
         <h2>eFoil Spots Directory</h2>
         <ul>
@@ -138,6 +163,28 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             </li>
           ))}
         </ul>
+
+        {spot && questions.length > 0 && (
+          <div>
+            <h3>Questions & Answers for {spot.name}</h3>
+            <ul>
+              {questions.map((q) => (
+                <li key={q.id}>
+                  <strong>Question: {q.question}</strong> (asked by @{q.profiles?.username || "eFoiler"})
+                  {q.answers && q.answers.length > 0 && (
+                    <ul>
+                      {q.answers.map((ans: any) => (
+                        <li key={ans.id}>
+                          Reply: {ans.answer} (by @{ans.profiles?.username || "eFoiler"})
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </>
   );

@@ -45,9 +45,15 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
 
     const [showWebsiteField, setShowWebsiteField] = useState(false);
 
+    // Coordinate States for Creators
+    const [lat, setLat] = useState("");
+    const [lng, setLng] = useState("");
+
     // New: Photo Upload State
     const [files, setFiles] = useState<File[]>([]);
     const [existingPhotos, setExistingPhotos] = useState<{ id: string; url: string }[]>([]);
+
+    const isCreator = !!(user && initialData && (initialData.user_id === user.id || initialData.created_by === user.id));
 
     // Reset function
     const resetForm = () => {
@@ -57,6 +63,8 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
         setShowWebsiteField(false);
         setFiles([]);
         setExistingPhotos([]);
+        setLat("");
+        setLng("");
     };
 
     // Load initial data for edit mode
@@ -65,6 +73,8 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
             if (initialData) {
                 setName(initialData.name);
                 setStatus(initialData.status);
+                setLat(initialData.location.coordinates[1].toString());
+                setLng(initialData.location.coordinates[0].toString());
                 setAttributes({
                     parking: !!initialData.attributes?.parking,
                     parking_distance: initialData.attributes?.parking_distance,
@@ -174,10 +184,15 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
             if (initialData) {
                 // UPDATE MODE
                 const { data: { session } } = await supabase.auth.getSession();
+                const updatedCoords: [number, number] = [parseFloat(lng), parseFloat(lat)];
                 const res = await updateSpot(initialData.id, {
                     name,
                     status,
-                    attributes
+                    attributes,
+                    location: isCreator ? {
+                        type: "Point",
+                        coordinates: updatedCoords
+                    } : undefined
                 }, session?.access_token);
                 if (res.success) {
                     const uploadRes = await uploadPhotos(initialData.id); // Upload photos if any
@@ -188,7 +203,13 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                     }
                     onSuccess({
                         ...initialData,
-                        name, status, attributes
+                        name,
+                        status,
+                        attributes,
+                        location: isCreator ? {
+                            type: "Point",
+                            coordinates: updatedCoords
+                        } : initialData.location
                     });
                     onClose();
                 } else {
@@ -257,6 +278,39 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                         {!initialData && location && (
                             <div className="p-3 bg-muted/50 rounded-lg text-xs font-mono text-muted-foreground">
                                 📍 {location[1].toFixed(6)}, {location[0].toFixed(6)}
+                            </div>
+                        )}
+
+                        {/* Creator Coordinates Editor */}
+                        {initialData && isCreator && (
+                            <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl space-y-3">
+                                <h3 className="text-xs font-black uppercase text-blue-400 tracking-wider flex items-center gap-1.5">
+                                    <span>📍</span> {locale === 'de' ? 'Position bearbeiten' : 'Edit Position'}
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{locale === 'de' ? 'Breitengrad (Lat)' : 'Latitude (Lat)'}</label>
+                                        <input
+                                            type="number"
+                                            step="any"
+                                            required
+                                            value={lat}
+                                            onChange={(e) => setLat(e.target.value)}
+                                            className="w-full px-3 py-1.5 bg-background border border-input rounded-xl text-xs focus:ring-1 focus:ring-blue-500/50 focus:outline-none"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{locale === 'de' ? 'Längengrad (Lng)' : 'Longitude (Lng)'}</label>
+                                        <input
+                                            type="number"
+                                            step="any"
+                                            required
+                                            value={lng}
+                                            onChange={(e) => setLng(e.target.value)}
+                                            className="w-full px-3 py-1.5 bg-background border border-input rounded-xl text-xs focus:ring-1 focus:ring-blue-500/50 focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
 
