@@ -8,6 +8,7 @@ import { useLanguage } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Spot } from "@/app/actions";
 import { generateSlug } from "@/lib/utils";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 interface NotificationCenterProps {
     user: any;
@@ -32,6 +33,9 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const loadNotifications = async () => {
         if (!user) return;
@@ -145,10 +149,14 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
 
     const handleNotificationClick = async (notif: NotificationItem) => {
         try {
-            // 1. Update query params for deep linking
-            const url = new URL(window.location.href);
-            url.searchParams.set("visit", notif.visitId || "");
-            window.history.pushState({}, "", url.toString());
+            // 1. Update query params for deep linking using Next.js router
+            const params = new URLSearchParams(searchParams.toString());
+            if (notif.visitId) {
+                params.set("visit", notif.visitId);
+            } else {
+                params.delete("visit");
+            }
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
 
             // 2. Fetch full spot details
             const { data: spotData } = await supabase
