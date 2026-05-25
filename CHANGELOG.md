@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-05-25
+
+### Added
+- **Notification Center**: New notification center next to the user profile with live unread badge for interaction alerts.
+- **Comment Management**: Users can now edit or delete their own comments on spot visits and delete their own spot reviews.
+- **Admin Moderation**: Admins (callematic@gmail.com) can now delete any spot review or visit comment directly from the UI.
+- **Filter Updates**: Added a "Not Forbidden" status filter (excluding 'forbidden' spots) and auto-closing map filters when clicking outside.
+- **Reactions UI Fixes**: Fixed visit comment button logic to say "Join" vs "Cancel" correctly when you are the creator or simply a participant.
+
+### Changed
+- **Privacy & Imprint**: Updated privacy policy to reflect new data handling features and updated imprint contact info in all languages.
+
 ## [0.2.1] - 2026-05-16
 
 ### Added
