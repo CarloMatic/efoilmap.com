@@ -467,29 +467,37 @@ export async function addVisitComment(comment: {
                 
             if (count === 0) {
                 // This is the first reply from a third party! Trigger email!
-                // Fetch creator's email via secure database RPC function
-                const { data: creatorEmail } = await supabase
-                    .rpc("get_profile_email", { profile_id: visitData.user_id });
-                
-                // Fetch commenter's username
-                const { data: commenterProfile } = await supabase
+                // Fetch creator's email and preferences
+                const { data: creatorProfile } = await supabase
                     .from("profiles")
-                    .select("username")
-                    .eq("id", user.id)
+                    .select("email_pref_visits")
+                    .eq("id", visitData.user_id)
                     .single();
-                
-                const { sendVisitNotificationEmail } = await import("@/lib/email");
-                
-                await sendVisitNotificationEmail({
-                    creatorEmail: creatorEmail || "carlo@efoilmap.com",
-                    visitorUsername: commenterProfile?.username || "eFoiler",
-                    spotName: (visitData?.spots as unknown as { name: string } | null)?.name || "Spot",
-                    eventDate: visitData.visit_date,
-                    eventTime: visitData.visit_time,
-                    commentText: comment.comment,
-                    spotId: visitData.spot_id || "",
-                    visitId: visitData.id
-                });
+
+                if (creatorProfile?.email_pref_visits !== false) {
+                    const { data: creatorEmail } = await supabase
+                        .rpc("get_profile_email", { profile_id: visitData.user_id });
+                    
+                    // Fetch commenter's username
+                    const { data: commenterProfile } = await supabase
+                        .from("profiles")
+                        .select("username")
+                        .eq("id", user.id)
+                        .single();
+                    
+                    const { sendVisitNotificationEmail } = await import("@/lib/email");
+                    
+                    await sendVisitNotificationEmail({
+                        creatorEmail: creatorEmail || "carlo@efoilmap.com",
+                        visitorUsername: commenterProfile?.username || "eFoiler",
+                        spotName: (visitData?.spots as unknown as { name: string } | null)?.name || "Spot",
+                        eventDate: visitData.visit_date,
+                        eventTime: visitData.visit_time,
+                        commentText: comment.comment,
+                        spotId: visitData.spot_id || "",
+                        visitId: visitData.id
+                    });
+                }
             }
         }
     } catch (emailErr) {
@@ -881,6 +889,9 @@ export interface UserProfileData {
         avatar_url: string | null;
         bio: string | null;
         created_at: string;
+        locale?: string;
+        email_pref_visits?: boolean;
+        email_pref_questions?: boolean;
     };
     spots: Spot[];
     visits: {
@@ -899,7 +910,7 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
         // 1. Get profile details
         const { data: profile, error: profileErr } = await supabase
             .from("profiles")
-            .select("id, username, avatar_url, bio, created_at")
+            .select("id, username, avatar_url, bio, created_at, locale, email_pref_visits, email_pref_questions")
             .eq("id", profileId)
             .maybeSingle();
 
@@ -970,7 +981,10 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
                 username: profile.username || "eFoiler",
                 avatar_url: profile.avatar_url,
                 bio: profile.bio,
-                created_at: profile.created_at
+                created_at: profile.created_at,
+                locale: profile.locale,
+                email_pref_visits: profile.email_pref_visits,
+                email_pref_questions: profile.email_pref_questions
             },
             spots,
             visits
@@ -1037,6 +1051,51 @@ export async function createSpotQuestion(spotId: string, question: string, token
             .single();
 
         if (error) return { success: false, error: error.message };
+
+        // Send Email Notification to spot creator asynchronously
+        try {
+            const { data: spot } = await dbClient
+                .from("spots")
+                .select("id, name, created_by, user_id")
+                .eq("id", spotId)
+                .single();
+
+            const creatorId = spot?.created_by || spot?.user_id;
+
+            if (creatorId && creatorId !== user.id) {
+                const { data: creatorProfile } = await dbClient
+                    .from("profiles")
+                    .select("locale, email_pref_questions")
+                    .eq("id", creatorId)
+                    .single();
+
+                if (creatorProfile?.email_pref_questions !== false) {
+                    const { data: creatorEmail } = await dbClient
+                        .rpc("get_profile_email", { profile_id: creatorId });
+
+                    if (creatorEmail) {
+                        const { data: askerProfile } = await dbClient
+                            .from("profiles")
+                            .select("username")
+                            .eq("id", user.id)
+                            .single();
+
+                        const { sendQuestionNotificationEmail } = await import("@/lib/email");
+                        await sendQuestionNotificationEmail({
+                            creatorEmail,
+                            askerUsername: askerProfile?.username || "eFoiler",
+                            spotName: spot.name,
+                            questionText: question,
+                            spotId: spot.id,
+                            creatorLang: creatorProfile?.locale || "de"
+                        });
+                    }
+                }
+            }
+        } catch (emailErr) {
+            console.error("Failed to send spot question email:", emailErr);
+        }
+
         return { success: true, data };
     } catch (e: any) {
         return { success: false, error: e.message || "Exception occurred" };

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, User, Loader2, Camera, Check, MessageSquare, LogOut, Bookmark, MapPin, Star } from "lucide-react";
+import { X, User, Loader2, Camera, Check, MessageSquare, LogOut, Bookmark, MapPin, Star, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n";
@@ -27,7 +27,11 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
 
     const [bookmarks, setBookmarks] = useState<Spot[]>([]);
     const [bookmarksLoading, setBookmarksLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<"settings" | "bookmarks">("settings");
+    const [activeTab, setActiveTab] = useState<"profile" | "notifications" | "bookmarks">("profile");
+
+    const [emailPrefVisits, setEmailPrefVisits] = useState(true);
+    const [emailPrefQuestions, setEmailPrefQuestions] = useState(true);
+    const [notificationLocale, setNotificationLocale] = useState("de");
 
     const loadBookmarks = async () => {
         if (!user) return;
@@ -57,8 +61,11 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
         if (profile) {
             setUsername(profile.username || "");
             setBio(profile.bio || "");
+            setEmailPrefVisits((profile as any).email_pref_visits !== false);
+            setEmailPrefQuestions((profile as any).email_pref_questions !== false);
+            setNotificationLocale((profile as any).locale || locale || "de");
         }
-    }, [profile, open]);
+    }, [profile, open, locale]);
 
     if (!open || !user) return null;
 
@@ -158,6 +165,26 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
         }
     };
 
+    const handleSaveSettings = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const { error } = await updateProfile({ 
+                email_pref_visits: emailPrefVisits,
+                email_pref_questions: emailPrefQuestions,
+                locale: notificationLocale
+            } as any);
+            if (error) throw error;
+            showToast(locale === 'de' ? 'Einstellungen gespeichert!' : 'Settings saved successfully!', "success");
+            onClose();
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            showToast(message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in" onClick={onClose} />
@@ -179,16 +206,29 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                     <div className="flex bg-white/5 border border-white/10 p-1 rounded-2xl mb-6">
                         <button
                             type="button"
-                            onClick={() => setActiveTab("settings")}
+                            onClick={() => setActiveTab("profile")}
                             className={cn(
                                 "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none focus:outline-none",
-                                activeTab === "settings"
+                                activeTab === "profile"
                                     ? "bg-blue-600 text-white shadow-lg font-extrabold"
                                     : "text-gray-400 hover:text-gray-200"
                             )}
                         >
                             <User className="w-3.5 h-3.5" />
-                            {locale === 'de' ? 'Einstellungen' : 'Settings'}
+                            {locale === 'de' ? 'Profil' : 'Profile'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab("notifications")}
+                            className={cn(
+                                "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none focus:outline-none",
+                                activeTab === "notifications"
+                                    ? "bg-blue-600 text-white shadow-lg font-extrabold"
+                                    : "text-gray-400 hover:text-gray-200"
+                            )}
+                        >
+                            <Bell className="w-3.5 h-3.5" />
+                            {locale === 'de' ? 'Mails' : 'Mails'}
                         </button>
                         <button
                             type="button"
@@ -201,11 +241,11 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                             )}
                         >
                             <Bookmark className="w-3.5 h-3.5" />
-                            {locale === 'de' ? 'Merkliste' : 'Saved Spots'}
+                            {locale === 'de' ? 'Merkliste' : 'Saved'}
                         </button>
                     </div>
 
-                    {activeTab === "settings" ? (
+                    {activeTab === "profile" ? (
                         <>
                             {/* Avatar Section */}
                             <div className="flex flex-col items-center mb-6">
@@ -301,6 +341,103 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                     <button
                                         type="submit"
                                         disabled={loading || uploading}
+                                        className="flex-[2] bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-blue-400/30 cursor-pointer"
+                                    >
+                                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+                                        {t('common.save')}
+                                    </button>
+                                </div>
+                            </form>
+                        </>
+                    ) : activeTab === "notifications" ? (
+                        <>
+                            {/* Email Preferences and Language Settings Form */}
+                            <form onSubmit={handleSaveSettings} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">
+                                        {locale === 'de' ? 'E-Mail-Sprache' : 'Email Language'}
+                                    </label>
+                                    <select
+                                        value={notificationLocale}
+                                        onChange={(e) => setNotificationLocale(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/20 rounded-2xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer"
+                                    >
+                                        <option value="de" className="bg-gray-900 text-white">Deutsch</option>
+                                        <option value="en" className="bg-gray-900 text-white">English</option>
+                                        <option value="es" className="bg-gray-900 text-white">Español</option>
+                                        <option value="fr" className="bg-gray-900 text-white">Français</option>
+                                        <option value="it" className="bg-gray-900 text-white">Italiano</option>
+                                        <option value="pt" className="bg-gray-900 text-white">Português</option>
+                                        <option value="nl" className="bg-gray-900 text-white">Nederlands</option>
+                                        <option value="pl" className="bg-gray-900 text-white">Polski</option>
+                                        <option value="sv" className="bg-gray-900 text-white">Svenska</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">
+                                        {locale === 'de' ? 'Benachrichtigungen' : 'Notifications'}
+                                    </label>
+                                    
+                                    {/* Visits comments toggle */}
+                                    <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all duration-150">
+                                        <div className="flex-1 pr-4">
+                                            <h4 className="text-sm font-semibold text-white">
+                                                {locale === 'de' ? 'Termine & Mitfahrer' : 'Sessions & Riders'}
+                                            </h4>
+                                            <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
+                                                {locale === 'de' 
+                                                    ? 'E-Mail erhalten, wenn sich ein Rider für deinen geplanten eFoil-Termin einträgt.' 
+                                                    : 'Receive an email when a rider signs up for your planned eFoil session.'}
+                                            </p>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={emailPrefVisits} 
+                                                onChange={(e) => setEmailPrefVisits(e.target.checked)} 
+                                                className="sr-only peer" 
+                                            />
+                                            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
+                                    {/* Spot questions toggle */}
+                                    <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all duration-150">
+                                        <div className="flex-1 pr-4">
+                                            <h4 className="text-sm font-semibold text-white">
+                                                {locale === 'de' ? 'Spot-Fragen' : 'Spot Questions'}
+                                            </h4>
+                                            <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
+                                                {locale === 'de' 
+                                                    ? 'E-Mail erhalten, wenn jemand eine Frage zu deinem Spot stellt.' 
+                                                    : 'Receive an email when someone asks a question about a spot you contributed.'}
+                                            </p>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={emailPrefQuestions} 
+                                                onChange={(e) => setEmailPrefQuestions(e.target.checked)} 
+                                                className="sr-only peer" 
+                                            />
+                                            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => { signOut(); onClose(); }}
+                                        className="flex-1 bg-white/5 hover:bg-red-500/10 text-red-400 font-semibold py-4 rounded-2xl border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                    >
+                                        <LogOut className="w-5 h-5" />
+                                        {t('common.logout')}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
                                         className="flex-[2] bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-blue-400/30 cursor-pointer"
                                     >
                                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
