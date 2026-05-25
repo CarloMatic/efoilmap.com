@@ -210,19 +210,22 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
     useEffect(() => {
         if (open && spot) {
             const deepVisitId = searchParams.get('visit');
-            if (deepVisitId) {
+            const tab = searchParams.get('tab');
+            if (deepVisitId || tab === 'visits') {
                 setShowPlanning(true);
-                supabase
-                    .from('spot_visits')
-                    .select('visit_date')
-                    .eq('id', deepVisitId)
-                    .single()
-                    .then(({ data }) => {
-                        if (data?.visit_date) {
-                            setSelectedDate(data.visit_date);
-                            setCurrentMonth(new Date(data.visit_date));
-                        }
-                    });
+                if (deepVisitId) {
+                    supabase
+                        .from('spot_visits')
+                        .select('visit_date')
+                        .eq('id', deepVisitId)
+                        .single()
+                        .then(({ data }) => {
+                            if (data?.visit_date) {
+                                setSelectedDate(data.visit_date);
+                                setCurrentMonth(new Date(data.visit_date));
+                            }
+                        });
+                }
             }
         }
     }, [open, spot, searchParams]);

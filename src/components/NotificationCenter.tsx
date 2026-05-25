@@ -6,7 +6,7 @@ import { Bell, MessageSquare, Star, X, User as UserIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { Spot } from "@/app/actions";
+import { Spot, getLastReadNotifications, updateLastReadNotifications } from "@/app/actions";
 import { generateSlug } from "@/lib/utils";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
@@ -123,8 +123,8 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
             items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setNotifications(items);
 
-            // 6. Calculate unread count based on last opened timestamp
-            const lastOpened = localStorage.getItem(`efoilmap-notifications-last-opened-${user.id}`);
+            // 6. Calculate unread count based on last opened timestamp from DB
+            const { data: lastOpened } = await getLastReadNotifications();
             if (lastOpened) {
                 const count = items.filter(item => new Date(item.createdAt).getTime() > new Date(lastOpened).getTime()).length;
                 setUnreadCount(count);
@@ -141,8 +141,8 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
         const nextState = !isOpen;
         setIsOpen(nextState);
         if (nextState && user) {
-            // Update last opened timestamp
-            localStorage.setItem(`efoilmap-notifications-last-opened-${user.id}`, new Date().toISOString());
+            // Update last opened timestamp in DB
+            updateLastReadNotifications();
             setUnreadCount(0);
         }
     };
@@ -153,8 +153,10 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
             const params = new URLSearchParams(searchParams.toString());
             if (notif.visitId) {
                 params.set("visit", notif.visitId);
+                params.set("tab", "visits");
             } else {
                 params.delete("visit");
+                params.delete("tab");
             }
             router.push(`${pathname}?${params.toString()}`, { scroll: false });
 
