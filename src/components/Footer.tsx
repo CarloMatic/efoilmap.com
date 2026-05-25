@@ -21,6 +21,10 @@ export function Footer() {
                     {t('auth.community_rules')}
                 </Link>
                 <span>•</span>
+                <a href="mailto:hi@efoilmap.com?subject=Feedback%20eFoilMap" className="hover:text-foreground transition-colors font-bold text-blue-500">
+                    Feedback
+                </a>
+                <span>•</span>
                 <span>© 2026 efoilmap.com</span>
             </div>
         </footer>

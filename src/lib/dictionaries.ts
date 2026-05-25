@@ -117,7 +117,7 @@ export const dictionaries = {
     de: {
         meta: {
             label: "Deutsch",
-            title: "Die eFoil & Jetboard Community - Gemeinsam die besten Einstiege zum eFoilen finden.",
+            title: "Die eFoil & Jetboard Community - Die besten Einstiege und Mitfahrer zum eFoilen finden.",
             description: "Finde legale eFoil-, Electric Hydrofoil- und Jetboard-Spots in deiner Nähe. Interaktive Community-Karte."
         },
         common: {
@@ -160,7 +160,7 @@ export const dictionaries = {
             food: "Essen"
         },
         hero: {
-            slogan: "Gemeinsam die besten Einstiege zum eFoilen finden."
+            slogan: "Die besten Einstiege und Mitfahrer zum eFoilen finden."
         },
         forms: {
             name: "Spot Name",
@@ -219,7 +219,7 @@ export const dictionaries = {
         },
         intro: {
             title: "Willkommen bei eFoilMap",
-            text: "Die Community für eFoiler. Finde die besten Einstiegspunkte mit Parkplatz nah am Wasser, Lademöglichkeit, Essen und mehr. Teile deine Erfahrung und lass uns gemeinsam die Community vergrößern.",
+            text: "Die Community für eFoiler (Betaversion). Finde die besten Einstiegspunkte mit Parkplatz nah am Wasser, Lademöglichkeit, Essen und mehr. Verabrede dich mit anderen zum eFoilen. Teile deine Erfahrung und lass uns gemeinsam die Community vergrößern. Nutz gern den Feedback-Button.",
             cta: "Let's Foil"
         },
         ugc: {
