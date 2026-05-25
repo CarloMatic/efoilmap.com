@@ -142,7 +142,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
 
     const { user, profile } = useAuth();
     const isAdmin = user?.email === 'callematic@gmail.com';
-    const isSpotCreator = !!(user && spot && (spot.user_id === user.id || spot.created_by === user.id));
+    const isSpotCreator = !!(user && spot && (spot.user_id === user.id || spot.created_by === user.id || isAdmin));
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const { showToast } = useToast();
     const { t, locale } = useLanguage();

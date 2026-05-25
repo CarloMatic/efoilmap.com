@@ -9,6 +9,18 @@ import { AuthDialog } from "@/components/AuthDialog";
 import { supabase } from "@/lib/supabase";
 import { compressImage } from "@/lib/image-utils";
 
+const GOOGLE_MAPS_TIP: Record<string, string> = {
+    de: "Tipp: Du findest Breiten- und Längengrad z.B. in der URL von Google Maps (z.B. @50.638,6.385).",
+    en: "Tip: You can find latitude & longitude in the URL of Google Maps (e.g. @50.638,6.385).",
+    es: "Consejo: Puedes encontrar la latitud y longitud en la URL de Google Maps (por ejemplo, @50.638,6.385).",
+    fr: "Astuce : Tu trouves la latitude et la longitude dans l'URL de Google Maps (par ex. @50.638,6.385).",
+    it: "Suggerimento: Puoi trovare latitudine e longitudine nell'URL di Google Maps (es. @50.638,6.385).",
+    pt: "Dica: Podes encontrar a latitude e longitude no URL do Google Maps (ex: @50.638,6.385).",
+    nl: "Tip: Je vindt de breedte- en lengtegraad in de URL van Google Maps (bijv. @50.638,6.385).",
+    pl: "Wskazówka: Szerokość i długość geograficzną znajdziesz np. w adresie URL Google Maps (np. @50.638,6.385).",
+    sv: "Tips: Du hittar latitud och longitud i URL-adressen för Google Maps (t.ex. @50.638,6.385)."
+};
+
 interface AddSpotDialogProps {
     open: boolean;
     onClose: () => void;
@@ -53,7 +65,8 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
     const [files, setFiles] = useState<File[]>([]);
     const [existingPhotos, setExistingPhotos] = useState<{ id: string; url: string }[]>([]);
 
-    const isCreator = !!(user && initialData && (initialData.user_id === user.id || initialData.created_by === user.id));
+    const isAdmin = user?.email === 'callematic@gmail.com';
+    const isCreator = !!(user && initialData && (initialData.user_id === user.id || initialData.created_by === user.id || isAdmin));
 
     // Reset function
     const resetForm = () => {
@@ -311,6 +324,9 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                                         />
                                     </div>
                                 </div>
+                                <p className="text-[10px] text-blue-300/80 leading-relaxed italic mt-2">
+                                    💡 {GOOGLE_MAPS_TIP[locale] || GOOGLE_MAPS_TIP['en']}
+                                </p>
                             </div>
                         )}
 
