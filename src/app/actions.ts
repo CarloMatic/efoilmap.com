@@ -118,7 +118,9 @@ export async function getSpots(): Promise<Spot[]> {
                 createdAt: d.created_at,
                 average_rating: d.average_rating,
                 rating_count: d.rating_count,
-                spot_visits: activeVisits
+                spot_visits: activeVisits,
+                user_id: d.user_id,
+                created_by: d.created_by
             };
             s.slug = generateSlug(s);
             return s;

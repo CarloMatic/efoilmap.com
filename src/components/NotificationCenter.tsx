@@ -185,7 +185,7 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                 .from("spots")
                 .select(`
                     id, name, status, attributes, created_at, lat, lng,
-                    average_rating, rating_count, source_locale,
+                    average_rating, rating_count, source_locale, user_id, created_by,
                     spot_visits(id, visit_date, visit_time)
                 `)
                 .eq("id", notif.spotId)
@@ -198,7 +198,9 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                     status: spotData.status as any,
                     location: { type: "Point", coordinates: [spotData.lng, spotData.lat] },
                     attributes: spotData.attributes as any,
-                    spot_visits: spotData.spot_visits as any
+                    spot_visits: spotData.spot_visits as any,
+                    user_id: spotData.user_id,
+                    created_by: spotData.created_by
                 };
                 s.slug = generateSlug(s);
 
