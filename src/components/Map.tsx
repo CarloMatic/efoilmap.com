@@ -5,7 +5,7 @@ import Image from "next/image";
 import Map, { GeolocateControl, NavigationControl, ScaleControl, Marker } from "react-map-gl/mapbox";
 import type { MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { AlertCircle, MapPin } from "lucide-react";
+import { AlertCircle, MapPin, Layers } from "lucide-react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { getSpots, Spot } from "@/app/actions";
 import { cn } from "@/lib/utils";
@@ -30,6 +30,33 @@ export default function EfoilMap() {
     const { user, profile } = useAuth();
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+    // Map view / styles switcher state
+    const [mapStyle, setMapStyle] = useState<string>("mapbox://styles/mapbox/light-v11");
+    const [isStylesMenuOpen, setIsStylesMenuOpen] = useState(false);
+
+    const mapStyleOptions = useMemo(() => [
+        {
+            id: "light",
+            name: { de: "Hell", en: "Light", es: "Claro", fr: "Clair", it: "Chiaro", pt: "Claro", nl: "Licht", pl: "Jasny", sv: "Ljus" },
+            url: "mapbox://styles/mapbox/light-v11"
+        },
+        {
+            id: "dark",
+            name: { de: "Dunkel", en: "Dark", es: "Oscuro", fr: "Sombre", it: "Scuro", pt: "Escuro", nl: "Donker", pl: "Ciemny", sv: "Mörk" },
+            url: "mapbox://styles/mapbox/dark-v11"
+        },
+        {
+            id: "satellite",
+            name: { de: "Satellit", en: "Satellite", es: "Satélite", fr: "Satellite", it: "Satellite", pt: "Satélite", nl: "Satelliet", pl: "Satelita", sv: "Satellit" },
+            url: "mapbox://styles/mapbox/satellite-streets-v12"
+        },
+        {
+            id: "outdoors",
+            name: { de: "Gelände", en: "Outdoors", es: "Exterior", fr: "Plein air", it: "All'aperto", pt: "Ao ar livre", nl: "Buiten", pl: "Teren", sv: "Terräng" },
+            url: "mapbox://styles/mapbox/outdoors-v12"
+        }
+    ], []);
     const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
     const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
 
@@ -301,13 +328,17 @@ export default function EfoilMap() {
                         latitude: 50.7753,
                         zoom: 12,
                     }}
-                    mapStyle="mapbox://styles/mapbox/light-v11"
+                    mapStyle={mapStyle}
                     attributionControl={false}
                     cursor={(isSelectingLocation || isMovingSpotPosition) ? 'crosshair' : 'auto'}
                     onLoad={(e) => {
-                        // Force water to be a visible blue
-                        if (e.target.getLayer('water')) {
-                            e.target.setPaintProperty('water', 'fill-color', '#3bb2d0'); // Standard bright mapbox blue
+                        // Force water to be a visible blue if the layer exists in the active style
+                        try {
+                            if (e.target.getStyle() && e.target.getLayer('water')) {
+                                e.target.setPaintProperty('water', 'fill-color', '#3bb2d0'); // Standard bright mapbox blue
+                            }
+                        } catch (err) {
+                            console.warn("Water fill color could not be applied for this style:", err);
                         }
                     }}
                     onClick={(e) => {
@@ -323,6 +354,50 @@ export default function EfoilMap() {
                     <GeolocateControl position="bottom-right" />
                     <NavigationControl position="bottom-right" />
                     <ScaleControl />
+
+                    {/* Floating Map Style Selector */}
+                    <div className="absolute bottom-6 left-6 z-10 flex flex-col-reverse items-start gap-2 pointer-events-auto">
+                        <button
+                            type="button"
+                            onClick={() => setIsStylesMenuOpen(!isStylesMenuOpen)}
+                            className="w-10 h-10 rounded-full bg-gray-900/90 hover:bg-gray-900 border border-white/20 flex items-center justify-center text-white shadow-xl hover:border-blue-400/50 transition-all active:scale-95 cursor-pointer"
+                            title={locale === 'de' ? 'Kartenansicht ändern' : 'Change Map View'}
+                        >
+                            <Layers className="w-5 h-5 text-gray-300 hover:text-blue-400 transition-colors" />
+                        </button>
+
+                        {isStylesMenuOpen && (
+                            <div className="flex flex-col bg-gray-900/95 backdrop-blur-md border border-white/10 rounded-2xl p-2.5 shadow-2xl gap-1.5 min-w-[130px] animate-in slide-in-from-bottom-4 fade-in duration-200">
+                                <h4 className="text-[10px] font-black uppercase text-blue-400 tracking-wider px-2 mb-1">
+                                    {locale === 'de' ? 'Ansicht' : 'Map View'}
+                                </h4>
+                                {mapStyleOptions.map((opt) => {
+                                    const active = mapStyle === opt.url;
+                                    return (
+                                        <button
+                                            key={opt.id}
+                                            type="button"
+                                            onClick={() => {
+                                                setMapStyle(opt.url);
+                                                setIsStylesMenuOpen(false);
+                                            }}
+                                            className={cn(
+                                                "w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-between",
+                                                active 
+                                                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" 
+                                                    : "text-gray-300 hover:bg-white/5 hover:text-white"
+                                            )}
+                                        >
+                                            <span>{opt.name[locale as keyof typeof opt.name] || opt.name.en}</span>
+                                            {active && (
+                                                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Controls Overlay (Search & Filter) */}
                     <div className="absolute top-4 left-0 right-0 z-10 flex flex-col items-center gap-3 px-4 pointer-events-none">

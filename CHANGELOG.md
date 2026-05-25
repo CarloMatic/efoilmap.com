@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.0] - 2026-05-25
+
+### Added
+- **Map View Switcher**: Designed a floating glassmorphic Layers selector widget allowing users to switch dynamically between Light, Dark, Satellite, and Outdoors/Terrain views.
+- **Robust Layer Rendering**: Hardened layer paint routines with graceful fallback try-catch scopes to prevent crashes when switching raster map formats.
+- **9 Platform Languages support**: Fully localized the map views selector labels for all supported locales.
+
 ## [0.9.0] - 2026-05-25
 
 ### Added
