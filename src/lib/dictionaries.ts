@@ -45,7 +45,8 @@ export const dictionaries = {
             not_forbidden_spots: "Not Forbidden",
             parking: "Parking",
             charging: "Charging",
-            food: "Food"
+            food: "Food",
+            rental: "Rental"
         },
         hero: {
             slogan: "Find the best entry points and riding buddies."
@@ -157,7 +158,8 @@ export const dictionaries = {
             not_forbidden_spots: "Nicht verbotene",
             parking: "Parken",
             charging: "Laden",
-            food: "Essen"
+            food: "Essen",
+            rental: "Verleih"
         },
         hero: {
             slogan: "Die besten Einstiege und Mitfahrer zum eFoilen finden."
@@ -269,7 +271,8 @@ export const dictionaries = {
             not_forbidden_spots: "No Prohibidos",
             parking: "Parking",
             charging: "Carga",
-            food: "Comida"
+            food: "Comida",
+            rental: "Alquiler"
         },
         hero: {
             slogan: "Encuentra los mejores puntos de entrada y compañeros de ruta."
@@ -381,7 +384,8 @@ export const dictionaries = {
             not_forbidden_spots: "Non Interdits",
             parking: "Parking",
             charging: "Recharge",
-            food: "Restauration"
+            food: "Restauration",
+            rental: "Location"
         },
         hero: {
             slogan: "Trouvez les meilleurs points d'accès et partenaires de glisse."
@@ -493,7 +497,8 @@ export const dictionaries = {
             not_forbidden_spots: "Non Vietati",
             parking: "Parcheggio",
             charging: "Ricarica",
-            food: "Cibo"
+            food: "Cibo",
+            rental: "Noleggio"
         },
         hero: {
             slogan: "Trova i migliori punti di accesso e compagni di uscita."
@@ -605,7 +610,8 @@ export const dictionaries = {
             not_forbidden_spots: "Não Proibidos",
             parking: "Estacionamento",
             charging: "Carregamento",
-            food: "Alimentação"
+            food: "Alimentação",
+            rental: "Aluguel"
         },
         hero: {
             slogan: "Encontre os melhores pontos de acesso e parceiros."
@@ -717,7 +723,8 @@ export const dictionaries = {
             not_forbidden_spots: "Niet Verboden",
             parking: "Parkeren",
             charging: "Opladen",
-            food: "Eten"
+            food: "Eten",
+            rental: "Verhuur"
         },
         hero: {
             slogan: "Vind de beste opstapplekken en maatjes."
@@ -829,7 +836,8 @@ export const dictionaries = {
             not_forbidden_spots: "Niezabronione",
             parking: "Parking",
             charging: "Ładowanie",
-            food: "Jedzenie"
+            food: "Jedzenie",
+            rental: "Wypożyczalnia"
         },
         hero: {
             slogan: "Znajdź najlepsze miejsca do wejścia i kompanów do pływania."
@@ -941,7 +949,8 @@ export const dictionaries = {
             not_forbidden_spots: "Inte Förbjudna",
             parking: "Parkering",
             charging: "Laddning",
-            food: "Mat"
+            food: "Mat",
+            rental: "Uthyrning"
         },
         hero: {
             slogan: "Hitta de bästa startplatserna och åkkompisarna."

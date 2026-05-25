@@ -19,6 +19,7 @@ export interface Spot {
         parking_distance?: "<10m" | "<50m" | "<100m" | ">100m";
         charging?: boolean;
         food?: boolean;
+        rental?: boolean;
         verified?: boolean;
         description?: string;
         website?: string;

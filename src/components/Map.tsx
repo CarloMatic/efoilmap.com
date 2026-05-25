@@ -51,7 +51,8 @@ export default function EfoilMap() {
         status: 'all',
         parking: false,
         charging: false,
-        food: false
+        food: false,
+        rental: false
     });
 
     // derived geolocation ref to ensure geolocation only centers once on start
@@ -71,6 +72,7 @@ export default function EfoilMap() {
         if (filters.parking) res = res.filter(s => s.attributes?.parking);
         if (filters.charging) res = res.filter(s => s.attributes?.charging);
         if (filters.food) res = res.filter(s => s.attributes?.food);
+        if (filters.rental) res = res.filter(s => s.attributes?.rental);
         
         // Date Range Filtering
         if (filters.startDate || filters.endDate) {

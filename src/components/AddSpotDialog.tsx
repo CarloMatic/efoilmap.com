@@ -32,12 +32,14 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
         parking_distance?: "<10m" | "<50m" | "<100m" | ">100m";
         charging: boolean;
         food: boolean;
+        rental: boolean;
         description?: string;
         website?: string;
     }>({
         parking: false,
         charging: false,
         food: false,
+        rental: false,
         website: ""
     });
 
@@ -51,7 +53,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
     const resetForm = () => {
         setName("");
         setStatus("UNCLEAR");
-        setAttributes({ parking: false, charging: false, food: false, website: "" });
+        setAttributes({ parking: false, charging: false, food: false, rental: false, website: "" });
         setShowWebsiteField(false);
         setFiles([]);
         setExistingPhotos([]);
@@ -68,6 +70,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                     parking_distance: initialData.attributes?.parking_distance,
                     charging: !!initialData.attributes?.charging,
                     food: !!initialData.attributes?.food,
+                    rental: !!initialData.attributes?.rental,
                     description: initialData.attributes?.description || "",
                     website: initialData.attributes?.website || "",
                 });
@@ -356,6 +359,15 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                                         className="rounded border-input text-primary focus:ring-primary"
                                     />
                                     🍔 {t('filters.food')}
+                                </label>
+                                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={attributes.rental}
+                                        onChange={(e) => setAttributes({ ...attributes, rental: e.target.checked })}
+                                        className="rounded border-input text-primary focus:ring-primary"
+                                    />
+                                    🛍️ {t('filters.rental')}
                                 </label>
                             </div>
                         </div>

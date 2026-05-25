@@ -1,6 +1,6 @@
 "use client";
 
-import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare } from "lucide-react";
+import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store } from "lucide-react";
 import Image from "next/image";
 import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview } from "@/app/actions";
 import { useSearchParams } from "next/navigation";
@@ -1205,7 +1205,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                             )}
 
                             {/* Amenities Section - Plain Text/Icons (No borders) */}
-                            {(spot.attributes?.parking || spot.attributes?.charging || spot.attributes?.food) && (
+                            {(spot.attributes?.parking || spot.attributes?.charging || spot.attributes?.food || spot.attributes?.rental) && (
                                 <div className="flex flex-wrap gap-4 text-sm text-foreground/80">
                                     {spot.attributes.parking && (
                                         <span className="flex items-center gap-1.5">
@@ -1221,6 +1221,11 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                     {spot.attributes.food && (
                                         <span className="flex items-center gap-1.5">
                                             <Utensils className="w-4 h-4 text-orange-500" /> {t('filters.food')}
+                                        </span>
+                                    )}
+                                    {spot.attributes.rental && (
+                                        <span className="flex items-center gap-1.5">
+                                            <Store className="w-4 h-4 text-purple-500" /> {t('filters.rental')}
                                         </span>
                                     )}
                                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from '@/lib/i18n';
-import { Filter, BatteryCharging, ParkingSquare, Utensils, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Filter, BatteryCharging, ParkingSquare, Utensils, Calendar, X, ChevronLeft, ChevronRight, Store } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 function classNames(...classes: (string | undefined | null | false)[]) {
@@ -13,6 +13,7 @@ export type FilterState = {
     parking: boolean;
     charging: boolean;
     food: boolean;
+    rental: boolean;
     startDate?: string;
     endDate?: string;
 };
@@ -176,6 +177,20 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
                 >
                     <Utensils className="w-3.5 h-3.5" />
                     <span>{t('filters.food') || 'Food'}</span>
+                </button>
+
+                {/* Rental */}
+                <button
+                    onClick={() => toggleFilter('rental')}
+                    className={classNames(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap shadow-sm cursor-pointer shrink-0",
+                        filters.rental
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background/80 backdrop-blur-md border-white/10 text-muted-foreground hover:bg-background"
+                    )}
+                >
+                    <Store className="w-3.5 h-3.5" />
+                    <span>{t('filters.rental') || 'Rental'}</span>
                 </button>
             </div>
 
