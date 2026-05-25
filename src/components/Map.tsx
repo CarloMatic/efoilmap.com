@@ -328,6 +328,7 @@ export default function EfoilMap() {
                                     <NotificationCenter 
                                         user={user} 
                                         onSelectSpot={handleSpotSelect} 
+                                        onViewProfile={handleViewProfile}
                                     />
                                 )}
                                 {user ? (

@@ -164,6 +164,23 @@ export async function updateSpot(spotId: string, data: Partial<Spot>, token?: st
         { global: { headers: { Authorization: `Bearer ${token}` } } }
     ) : supabase;
 
+    // Server-side security check: Only creator or admin can update
+    const isAdmin = user.email === 'callematic@gmail.com';
+    const { data: existingSpot, error: fetchError } = await dbClient
+        .from("spots")
+        .select("user_id, created_by")
+        .eq("id", spotId)
+        .maybeSingle();
+
+    if (fetchError || !existingSpot) {
+        return { success: false, error: "Spot not found or error retrieving details." };
+    }
+
+    const isCreator = existingSpot.user_id === user.id || existingSpot.created_by === user.id || isAdmin;
+    if (!isCreator) {
+        return { success: false, error: "Unauthorized: Only the spot creator or an admin can edit this spot." };
+    }
+
     try {
         const dbData: Record<string, unknown> = {};
         if (data.name) dbData.name = data.name;

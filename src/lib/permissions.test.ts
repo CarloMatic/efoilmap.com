@@ -1,5 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { GOOGLE_MAPS_TIP, MOVE_ON_MAP_BTN, MOVE_POSITION_TIP } from "@/components/AddSpotDialog";
+import { editSpotText } from "@/components/SpotDialog";
+import { likedSpotText } from "@/components/NotificationCenter";
 
 // Simple emulation of the isCreator logic in AddSpotDialog.tsx & SpotDialog.tsx
 function checkSpotEditPermission(
@@ -64,6 +66,22 @@ describe("Spot Dialog Translation Coverages (9 Platform Languages)", () => {
             expect(MOVE_POSITION_TIP[locale]).toBeDefined();
             expect(typeof MOVE_POSITION_TIP[locale]).toBe("string");
             expect(MOVE_POSITION_TIP[locale].length).toBeGreaterThan(0);
+        });
+    });
+
+    test("editSpotText dictionary covers all 9 languages and has non-empty values", () => {
+        requiredLocales.forEach((locale) => {
+            expect(editSpotText[locale]).toBeDefined();
+            expect(typeof editSpotText[locale]).toBe("string");
+            expect(editSpotText[locale].length).toBeGreaterThan(0);
+        });
+    });
+
+    test("likedSpotText dictionary covers all 9 languages and has non-empty values", () => {
+        requiredLocales.forEach((locale) => {
+            expect(likedSpotText[locale]).toBeDefined();
+            expect(typeof likedSpotText[locale]).toBe("string");
+            expect(likedSpotText[locale].length).toBeGreaterThan(0);
         });
     });
 });

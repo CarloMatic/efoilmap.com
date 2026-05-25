@@ -27,6 +27,42 @@ const weekdays: Record<string, string[]> = {
     de: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
     en: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
 };
+
+function renderTextWithLinks(text: string | undefined): React.ReactNode {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map((part, index) => {
+        if (part.match(urlRegex)) {
+            const href = part.startsWith("www.") ? `https://${part}` : part;
+            return (
+                <a
+                    key={index}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 underline break-all font-semibold"
+                >
+                    {part}
+                </a>
+            );
+        }
+        return part;
+    });
+}
+
+export const editSpotText: Record<string, string> = {
+    de: "Spot bearbeiten",
+    en: "Edit Spot",
+    es: "Editar punto",
+    fr: "Modifier le spot",
+    it: "Modifica lo spot",
+    pt: "Editar o spot",
+    nl: "Spot bewerken",
+    pl: "Edytuj spot",
+    sv: "Redigera spotten"
+};
+
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ui/Toast";
@@ -147,6 +183,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     const { showToast } = useToast();
     const { t, locale } = useLanguage();
     const { translatedText: translatedDescription, isTranslated: isDescriptionTranslated } = useTranslate(spot?.attributes?.description, locale);
+    const { translatedText: translatedName, isTranslated: isNameTranslated } = useTranslate(spot?.name, locale);
 
     // Reset state when opening a new spot
     useEffect(() => {
@@ -820,6 +857,11 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                     <div className="flex items-start justify-between">
                         <div className="flex-1 pr-4">
                             <h2 className="text-xl font-bold tracking-tight leading-tight">{spot.name}</h2>
+                            {isNameTranslated && (
+                                <p className="text-xs font-semibold text-muted-foreground/80 mt-0.5 italic">
+                                    {translatedName}
+                                </p>
+                            )}
                             {/* AI Translation Badge */}
                             {spot.source_locale && spot.source_locale !== locale && (
                                 <p className="text-[10px] text-muted-foreground italic mt-0.5">
@@ -1375,7 +1417,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             {/* Description Section */}
                             {spot.attributes?.description && (
                                 <div className="text-sm text-foreground/90 whitespace-pre-line bg-muted/10 p-3 rounded-lg border border-border/50">
-                                    {translatedDescription}
+                                    {renderTextWithLinks(translatedDescription)}
                                     {isDescriptionTranslated && (
                                         <p className="text-[10px] text-muted-foreground/60 italic mt-2 border-t border-border/30 pt-1.5">
                                             {t('ugc.ai_translated')}
@@ -1498,22 +1540,22 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             </div>
 
                             {/* Suggest Edit Text Link */}
-                            <div className="flex justify-start pt-1">
-                                <button
-                                    onClick={() => {
-                                        if (!user) {
-                                            setIsAuthOpen(true);
-                                            return;
-                                        }
-                                        onEdit();
-                                    }}
-                                    className="text-xs text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-4 decoration-blue-500/30 transition-colors cursor-pointer"
-                                >
-                                    {isSpotCreator 
-                                        ? (locale === 'de' ? 'Spot bearbeiten & Position verschieben 📍' : 'Edit & Move Spot 📍') 
-                                        : t('forms.suggest_edit')}
-                                </button>
-                            </div>
+                            {isSpotCreator && (
+                                <div className="flex justify-start pt-1">
+                                    <button
+                                        onClick={() => {
+                                            if (!user) {
+                                                setIsAuthOpen(true);
+                                                return;
+                                            }
+                                            onEdit();
+                                        }}
+                                        className="text-xs text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-4 decoration-blue-500/30 transition-colors cursor-pointer"
+                                    >
+                                        {editSpotText[locale] || editSpotText['en']}
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Questions & Answers Section */}
                             <div className="space-y-4 border-t border-border/10 pt-6">

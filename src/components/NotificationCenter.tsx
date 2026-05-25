@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Bell, MessageSquare, Star, X, User as UserIcon } from "lucide-react";
+import { Bell, MessageSquare, Star, X, User as UserIcon, Heart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -10,14 +10,27 @@ import { Spot, getLastReadNotifications, updateLastReadNotifications } from "@/a
 import { generateSlug } from "@/lib/utils";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
+export const likedSpotText: Record<string, string> = {
+    de: "hat deinen Spot geliked! ❤️",
+    en: "liked your spot! ❤️",
+    es: "le gustó tu spot! ❤️",
+    fr: "a aimé ton spot! ❤️",
+    it: "ha messo mi piace al tuo spot! ❤️",
+    pt: "gostou do teu spot! ❤️",
+    nl: "vond je spot leuk! ❤️",
+    pl: "polubił Twój spot! ❤️",
+    sv: "gillade din spot! ❤️"
+};
+
 interface NotificationCenterProps {
     user: any;
     onSelectSpot: (spot: Spot) => void;
+    onViewProfile?: (profileId: string) => void;
 }
 
 interface NotificationItem {
     id: string;
-    type: "spot_comment" | "visit_comment";
+    type: "spot_comment" | "visit_comment" | "spot_like";
     spotId: string;
     spotName: string;
     visitId?: string;
@@ -25,9 +38,10 @@ interface NotificationItem {
     createdAt: string;
     username: string;
     avatarUrl?: string;
+    likerId?: string;
 }
 
-export function NotificationCenter({ user, onSelectSpot }: NotificationCenterProps) {
+export function NotificationCenter({ user, onSelectSpot, onViewProfile }: NotificationCenterProps) {
     const { locale } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -81,8 +95,34 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                 visitComments = data || [];
             }
 
+            // 4.5. Fetch likes on these spots by others
+            let spotLikes: any[] = [];
+            if (mySpotIds.length > 0) {
+                const { data } = await supabase
+                    .from("spot_likes")
+                    .select("id, spot_id, created_at, user_id, profiles(username, avatar_url)")
+                    .in("spot_id", mySpotIds)
+                    .neq("user_id", user.id);
+                spotLikes = data || [];
+            }
+
             // 5. Combine and map to NotificationItem format
             const items: NotificationItem[] = [];
+
+            spotLikes.forEach(c => {
+                const prof = Array.isArray(c.profiles) ? c.profiles[0] : c.profiles;
+                items.push({
+                    id: c.id,
+                    type: "spot_like",
+                    spotId: c.spot_id,
+                    spotName: mySpotsMap.get(c.spot_id) || "Spot",
+                    comment: "",
+                    createdAt: c.created_at,
+                    username: prof?.username || "eFoiler",
+                    avatarUrl: prof?.avatar_url,
+                    likerId: c.user_id
+                });
+            });
 
             spotComments.forEach(c => {
                 if (c.comment && c.comment.trim()) {
@@ -95,7 +135,8 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                         comment: c.comment,
                         createdAt: c.created_at,
                         username: prof?.username || "eFoiler",
-                        avatarUrl: prof?.avatar_url
+                        avatarUrl: prof?.avatar_url,
+                        likerId: c.user_id
                     });
                 }
             });
@@ -114,7 +155,8 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                         comment: c.comment,
                         createdAt: c.created_at,
                         username: prof?.username || "eFoiler",
-                        avatarUrl: prof?.avatar_url
+                        avatarUrl: prof?.avatar_url,
+                        likerId: c.user_id
                     });
                 }
             });
@@ -289,7 +331,18 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                                     {/* Contents */}
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center justify-between gap-1 mb-1">
-                                            <span className="text-xs font-bold text-gray-300 truncate">
+                                            <span 
+                                                onClick={(e) => {
+                                                    if (notif.likerId && onViewProfile) {
+                                                        e.stopPropagation();
+                                                        onViewProfile(notif.likerId);
+                                                    }
+                                                }}
+                                                className={cn(
+                                                    "text-xs font-bold text-gray-300 truncate",
+                                                    notif.likerId && onViewProfile && "hover:text-blue-400 hover:underline cursor-pointer"
+                                                )}
+                                            >
                                                 @{notif.username}
                                             </span>
                                             <span className="text-[9px] text-gray-500 shrink-0">
@@ -297,20 +350,30 @@ export function NotificationCenter({ user, onSelectSpot }: NotificationCenterPro
                                             </span>
                                         </div>
 
-                                        <p className="text-[11px] text-gray-300 leading-normal line-clamp-2 italic mb-1.5">
-                                            &ldquo;{notif.comment}&rdquo;
-                                        </p>
+                                        {notif.type === "spot_like" ? (
+                                            <p className="text-[11px] text-gray-300 leading-normal font-semibold mb-1.5 flex items-center gap-1">
+                                                {likedSpotText[locale] || likedSpotText['en']}
+                                            </p>
+                                        ) : (
+                                            <p className="text-[11px] text-gray-300 leading-normal line-clamp-2 italic mb-1.5">
+                                                &ldquo;{notif.comment}&rdquo;
+                                            </p>
+                                        )}
 
                                         <div className="flex items-center gap-1">
-                                            {notif.type === "spot_comment" ? (
+                                            {notif.type === "spot_like" ? (
+                                                <Heart className="w-3 h-3 text-red-500 fill-red-500/20 shrink-0 animate-pulse" />
+                                            ) : notif.type === "spot_comment" ? (
                                                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500/20 shrink-0" />
                                             ) : (
                                                 <MessageSquare className="w-3 h-3 text-blue-400 shrink-0" />
                                             )}
                                             <span className="text-[9px] text-blue-400 font-extrabold truncate">
-                                                {notif.type === "spot_comment"
-                                                    ? (locale === "de" ? `Spot: ${notif.spotName}` : `Spot: ${notif.spotName}`)
-                                                    : (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)}
+                                                {notif.type === "spot_like"
+                                                    ? (locale === "de" ? `Gefällt mir: ${notif.spotName}` : `Like: ${notif.spotName}`)
+                                                    : notif.type === "spot_comment"
+                                                        ? (locale === "de" ? `Spot: ${notif.spotName}` : `Spot: ${notif.spotName}`)
+                                                        : (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)}
                                             </span>
                                         </div>
                                     </div>
