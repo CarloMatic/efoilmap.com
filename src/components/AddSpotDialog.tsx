@@ -88,6 +88,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess,
     const [loading, setLoading] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [lightboxPhoto, setLightboxPhoto] = useState<string | null>(null);
 
     // Form State
     const [name, setName] = useState("");
@@ -557,39 +558,49 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess,
                         {/* Photo Section */}
                         <div className="space-y-2 pt-2 border-t">
                             <label className="text-sm font-medium flex items-center gap-2">
-                                <Camera className="w-4 h-4" /> {t('forms.add_photo')}
+                                <Camera className="w-4 h-4" /> {t('forms.photo_upload')}
                             </label>
                             <div className="flex flex-wrap gap-2">
-                                {/* Render existing photos with small X */}
-                                {existingPhotos.map((photo) => (
-                                    <div key={photo.id} className="relative w-16 h-16 rounded overflow-hidden border">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={photo.url} alt="Existing spot photo" className="w-full h-full object-cover" />
-                                        <button
-                                            type="button"
-                                            onClick={() => deleteExistingPhoto(photo.id, photo.url)}
-                                            className="absolute top-0 right-0 bg-red-500 text-white rounded-bl p-0.5 cursor-pointer hover:bg-red-600 transition-colors"
-                                            title="Delete photo"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
-                                    </div>
-                                ))}
+                                 {/* Render existing photos with small X */}
+                                 {existingPhotos.map((photo) => (
+                                     <div key={photo.id} className="relative w-16 h-16 rounded overflow-hidden border">
+                                         {/* eslint-disable-next-line @next/next/no-img-element */}
+                                         <img 
+                                             src={photo.url} 
+                                             alt="Existing spot photo" 
+                                             onClick={() => setLightboxPhoto(photo.url)}
+                                             className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                         />
+                                         <button
+                                             type="button"
+                                             onClick={() => deleteExistingPhoto(photo.id, photo.url)}
+                                             className="absolute top-0 right-0 bg-red-500 text-white rounded-bl p-0.5 cursor-pointer hover:bg-red-600 transition-colors z-10"
+                                             title="Delete photo"
+                                         >
+                                             <X className="w-3 h-3" />
+                                         </button>
+                                     </div>
+                                 ))}
 
-                                {/* Render new files */}
-                                {files.map((file, i) => (
-                                    <div key={i} className="relative w-16 h-16 rounded overflow-hidden border">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={URL.createObjectURL(file)} alt={`Upload preview ${i}`} className="w-full h-full object-cover" />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeFile(i)}
-                                            className="absolute top-0 right-0 bg-red-500 text-white rounded-bl p-0.5 cursor-pointer hover:bg-red-600 transition-colors"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
-                                    </div>
-                                ))}
+                                 {/* Render new files */}
+                                 {files.map((file, i) => (
+                                     <div key={i} className="relative w-16 h-16 rounded overflow-hidden border">
+                                         {/* eslint-disable-next-line @next/next/no-img-element */}
+                                         <img 
+                                             src={URL.createObjectURL(file)} 
+                                             alt={`Upload preview ${i}`} 
+                                             onClick={() => setLightboxPhoto(URL.createObjectURL(file))}
+                                             className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                         />
+                                         <button
+                                             type="button"
+                                             onClick={() => removeFile(i)}
+                                             className="absolute top-0 right-0 bg-red-500 text-white rounded-bl p-0.5 cursor-pointer hover:bg-red-600 transition-colors z-10"
+                                         >
+                                             <X className="w-3 h-3" />
+                                         </button>
+                                     </div>
+                                 ))}
                                 <label className="w-16 h-16 flex items-center justify-center border border-dashed rounded cursor-pointer hover:bg-muted/50">
                                     <span className="text-2xl text-muted-foreground">+</span>
                                     <input type="file" multiple accept="image/*" onChange={handleFileSelect} className="hidden" />
@@ -640,6 +651,33 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess,
                 open={isAuthOpen} 
                 onClose={() => setIsAuthOpen(false)} 
             />
+
+            {/* Premium Full-Screen Image Lightbox */}
+            {lightboxPhoto && (
+                <div 
+                    className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200 pointer-events-auto"
+                    onClick={() => setLightboxPhoto(null)}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setLightboxPhoto(null)}
+                        className="absolute top-6 right-6 p-2 text-white/70 hover:text-white rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                    <div 
+                        className="relative max-w-[90vw] max-h-[85vh] rounded-2xl overflow-hidden border border-white/15 shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                            src={lightboxPhoto} 
+                            alt="Enlarged preview" 
+                            className="max-w-full max-h-[85vh] object-contain"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

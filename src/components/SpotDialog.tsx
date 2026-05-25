@@ -264,6 +264,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     const isAdmin = user?.email === 'callematic@gmail.com';
     const isSpotCreator = !!(user && spot && (spot.user_id === user.id || spot.created_by === user.id || isAdmin));
     const [isAuthOpen, setIsAuthOpen] = useState(false);
+    const [lightboxPhoto, setLightboxPhoto] = useState<string | null>(null);
     const { showToast } = useToast();
     const { t, locale } = useLanguage();
     const { translatedText: translatedDescription, isTranslated: isDescriptionTranslated } = useTranslate(spot?.attributes?.description, locale);
@@ -1612,7 +1613,12 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                         {photos.map((url, i) => (
                                             <div key={i} className="aspect-square rounded-lg overflow-hidden border border-border bg-muted">
                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                <img src={url} alt={`Spot photo ${i + 1}`} className="w-full h-full object-cover" />
+                                                <img 
+                                                    src={url} 
+                                                    alt={`Spot photo ${i + 1}`} 
+                                                    onClick={() => setLightboxPhoto(url)}
+                                                    className="w-full h-full object-cover cursor-pointer hover:scale-105 hover:brightness-110 transition-all duration-300"
+                                                />
                                             </div>
                                         ))}
                                     </div>
@@ -1888,6 +1894,33 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                 open={isAuthOpen} 
                 onClose={() => setIsAuthOpen(false)} 
             />
+
+            {/* Premium Full-Screen Image Lightbox */}
+            {lightboxPhoto && (
+                <div 
+                    className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200 pointer-events-auto"
+                    onClick={() => setLightboxPhoto(null)}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setLightboxPhoto(null)}
+                        className="absolute top-6 right-6 p-2 text-white/70 hover:text-white rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                    <div 
+                        className="relative max-w-[90vw] max-h-[85vh] rounded-2xl overflow-hidden border border-white/15 shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                            src={lightboxPhoto} 
+                            alt="Enlarged preview" 
+                            className="max-w-full max-h-[85vh] object-contain"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

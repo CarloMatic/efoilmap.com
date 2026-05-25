@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.0] - 2026-05-25
+
+### Added
+- **Image Lightbox Magnifier**: Implemented a stunning dark glassmorphic full-screen lightbox overlay (`z-index: 150`, `backdrop-blur-md`) allowing users to view full-resolution spot photos by clicking on them.
+- **Photos Label Renaming**: Renamed the upload/existing photos section heading to `"Fotos"` (DE) / `"Photos"` (EN) across all 9 supported languages to provide a cleaner layout structure.
+- **Enlarged Upload Previews**: Configured both existing photos lists and new file uploads/previews to be fully expandable in the edit dialog.
+
 ## [0.10.0] - 2026-05-25
 
 ### Added
