@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.0] - 2026-05-25
+
+### Added
+- **YouTube Embed CSP Resolution**: Configured the Content-Security-Policy (CSP) `frame-src` headers inside `next.config.ts` to allow embedding YouTube videos (`https://www.youtube.com` / `https://youtube.com`), resolving the browser iframe blocking error.
+- **YouTube Link Blue Aesthetics**: Re-styled YouTube video launcher pill buttons from red to a sleek blue theme (`bg-blue-600/10`, `text-blue-400`, `decoration-blue-500/30`) to perfectly unify branding visuals on description cards.
+
 ## [0.12.0] - 2026-05-25
 
 ### Added

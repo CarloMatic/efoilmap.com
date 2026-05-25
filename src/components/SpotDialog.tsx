@@ -49,12 +49,12 @@ function renderTextWithLinks(text: string | undefined, onYoutubeClick?: (videoId
                         key={index}
                         type="button"
                         onClick={() => onYoutubeClick(youtubeId)}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-600/10 hover:bg-red-600/20 border border-red-500/20 hover:border-red-500/40 rounded text-red-400 hover:text-red-300 transition-all text-xs font-semibold cursor-pointer align-middle mx-0.5"
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/20 hover:border-blue-500/40 rounded text-blue-400 hover:text-blue-300 transition-all text-xs font-semibold cursor-pointer align-middle mx-0.5"
                     >
                         <svg className="w-3 h-3 fill-current mr-0.5 shrink-0" viewBox="0 0 24 24">
                             <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                         </svg>
-                        <span className="underline decoration-red-500/30 underline-offset-2 break-all">{part}</span>
+                        <span className="underline decoration-blue-500/30 underline-offset-2 break-all">{part}</span>
                     </button>
                 );
             }
