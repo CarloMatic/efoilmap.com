@@ -69,6 +69,20 @@ export default function EfoilMap() {
         return res;
     }, [spots, filters]);
 
+    // Close all overlays/drawers when custom reset event is dispatched
+    useEffect(() => {
+        const handleCloseAll = () => {
+            setIsDrawerOpen(false);
+            setSelectedSpot(null);
+            setIsAddSpotOpen(false);
+            setIsAuthOpen(false);
+            setIsProfileOpen(false);
+            setIsSelectingLocation(false);
+        };
+        window.addEventListener('close-all-overlays', handleCloseAll);
+        return () => window.removeEventListener('close-all-overlays', handleCloseAll);
+    }, []);
+
     // Load Spots on Mount
     useEffect(() => {
         async function loadSpots() {

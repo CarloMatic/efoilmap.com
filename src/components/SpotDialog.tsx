@@ -3,6 +3,18 @@
 import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon } from "lucide-react";
 import Image from "next/image";
 import { Spot } from "@/app/actions";
+
+const addedByText: Record<string, string> = {
+    en: "Added by",
+    de: "Hinzugefügt von",
+    es: "Añadido por",
+    fr: "Ajouté par",
+    it: "Aggiunto da",
+    pt: "Adicionado por",
+    nl: "Toegevoegd door",
+    pl: "Dodane przez",
+    sv: "Tillagd av"
+};
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/Toast";
@@ -40,6 +52,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
     const [photos, setPhotos] = useState<string[]>([]);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [hasExistingReview, setHasExistingReview] = useState(false);
+    const [creatorUsername, setCreatorUsername] = useState<string | null>(null);
 
     const { user, profile } = useAuth();
     const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -58,6 +71,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                 setPhotos([]); // Clear first so we don't show old photos
                 setReviews([]);
                 setHasExistingReview(false);
+                setCreatorUsername(null);
             }, 0);
             return () => clearTimeout(timer);
         }
@@ -76,6 +90,20 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                         console.error("Fetch Photos Error:", error);
                     }
                     if (data) setPhotos(data.map(d => d.url));
+                });
+
+            supabase.from('spots')
+                .select('user_id, profiles(username)')
+                .eq('id', spot.id)
+                .maybeSingle()
+                .then(({ data }) => {
+                    if (data) {
+                        const p = (data as { profiles?: { username: string | null } | { username: string | null }[] }).profiles;
+                        const profilesObj = Array.isArray(p) ? p[0] : p;
+                        setCreatorUsername(profilesObj?.username || null);
+                    } else {
+                        setCreatorUsername(null);
+                    }
                 });
 
             supabase.from('spot_verifications')
@@ -224,7 +252,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -232,7 +260,7 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
             />
 
             {/* Modal Content */}
-            <div className="relative w-full max-w-md bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in max-h-[90vh] flex flex-col">
+            <div className="relative w-full sm:max-w-md bg-card border-x border-t sm:border border-border rounded-t-2xl sm:rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 sm:zoom-in-95 sm:fade-in max-h-[92dvh] sm:max-h-[90vh] flex flex-col">
 
                 {/* Header */}
                 <div className="p-4 border-b flex flex-col gap-3 bg-muted/30">
@@ -265,6 +293,12 @@ export function SpotDialog({ spot, open, onClose, onEdit }: SpotDialogProps) {
                                     </div>
                                 ) : null}
                             </div>
+                            {creatorUsername && (
+                                <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                                    <span>{addedByText[locale] || addedByText.en}:</span>
+                                    <span className="font-semibold text-foreground">{creatorUsername}</span>
+                                </p>
+                            )}
                         </div>
 
                         <button

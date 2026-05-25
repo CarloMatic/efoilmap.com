@@ -26,7 +26,13 @@ export default function HomeClient() {
           {/* Logo & Slogan */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Logo className="h-8 w-auto" />
+              <button 
+                onClick={() => window.dispatchEvent(new Event('close-all-overlays'))}
+                className="cursor-pointer active:scale-95 transition-transform flex items-center"
+                title="Reset Map / Close Overlays"
+              >
+                <Logo className="h-8 w-auto" />
+              </button>
               <span className="px-1.5 py-0.5 text-[9px] font-black tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded uppercase select-none">
                 Beta
               </span>
