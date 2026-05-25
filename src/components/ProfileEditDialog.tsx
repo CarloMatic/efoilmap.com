@@ -402,16 +402,16 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                         </label>
                                     </div>
 
-                                    {/* Spot questions toggle */}
+                                    {/* Spot comments toggle */}
                                     <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all duration-150">
                                         <div className="flex-1 pr-4">
                                             <h4 className="text-sm font-semibold text-white">
-                                                {locale === 'de' ? 'Spot-Fragen' : 'Spot Questions'}
+                                                {locale === 'de' ? 'Spot-Kommentare' : 'Spot Comments'}
                                             </h4>
                                             <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
                                                 {locale === 'de' 
-                                                    ? 'E-Mail erhalten, wenn jemand eine Frage zu deinem Spot stellt.' 
-                                                    : 'Receive an email when someone asks a question about a spot you contributed.'}
+                                                    ? 'E-Mail erhalten, wenn jemand einen Kommentar oder eine Frage zu deinem Spot hinterlässt.' 
+                                                    : 'Receive an email when someone leaves a comment or asks a question about a spot you contributed.'}
                                             </p>
                                         </div>
                                         <label className="relative inline-flex items-center cursor-pointer shrink-0">

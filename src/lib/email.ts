@@ -208,88 +208,88 @@ const EMAIL_LOCALIZATION: Record<string, {
   bodyText: (asker: string, spotName: string) => string;
   ctaText: string;
   fallbackText: string;
-  footerText: string;
+  footerText: (settingsLink: string) => string;
 }> = {
   de: {
-    subject: (spotName) => `Neue Frage zu deinem eFoil-Spot ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} hat eine Frage zu deinem Spot ${spotName} gestellt!`,
+    subject: (spotName) => `Neuer Kommentar zu deinem eFoil-Spot ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} hat einen Kommentar zu deinem Spot ${spotName} hinterlassen!`,
     greeting: "Hallo!",
-    bodyText: (asker, spotName) => `Gute Neuigkeiten aus der Community! Jemand hat eine Frage zu deinem Spot <strong>${spotName}</strong> gestellt. <strong>@${asker}</strong> fragt:`,
-    ctaText: "Frage beantworten 💬",
+    bodyText: (asker, spotName) => `Gute Neuigkeiten aus der Community! Jemand hat einen Kommentar zu deinem Spot <strong>${spotName}</strong> hinterlassen. <strong>@${asker}</strong> schreibt:`,
+    ctaText: "Kommentar ansehen 💬",
     fallbackText: "Falls der Button nicht funktioniert, kopiere diesen Link direkt in deinen Webbrowser:",
-    footerText: "Du erhältst diese E-Mail, weil du auf <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> einen eFoil-Spot eingetragen hast und ein anderer Rider eine Frage gestellt hat."
+    footerText: (settingsLink) => `Du erhältst diese E-Mail, weil du auf <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a> einen eFoil-Spot eingetragen hast. Du kannst diese Benachrichtigungen in deinen <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">Einstellungen</a> verwalten.`
   },
   en: {
-    subject: (spotName) => `New question about your eFoil spot ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} asked a question about your spot ${spotName}!`,
+    subject: (spotName) => `New comment about your eFoil spot ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} left a comment about your spot ${spotName}!`,
     greeting: "Hello!",
-    bodyText: (asker, spotName) => `Good news from the community! Someone asked a question about your spot <strong>${spotName}</strong>. <strong>@${asker}</strong> asks:`,
-    ctaText: "Answer question 💬",
+    bodyText: (asker, spotName) => `Good news from the community! Someone left a comment about your spot <strong>${spotName}</strong>. <strong>@${asker}</strong> writes:`,
+    ctaText: "View comment 💬",
     fallbackText: "If the button does not work, copy this link directly into your web browser:",
-    footerText: "You are receiving this email because you contributed an eFoil spot on <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> and another rider asked a question."
+    footerText: (settingsLink) => `You are receiving this email because you contributed an eFoil spot on <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. You can manage these notifications in your <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">settings</a>.`
   },
   es: {
-    subject: (spotName) => `¡Nueva pregunta sobre tu spot de eFoil ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} ha hecho una pregunta sobre tu spot ${spotName}!`,
+    subject: (spotName) => `¡Nuevo comentario sobre tu spot de eFoil ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} ha dejado un comentario sobre tu spot ${spotName}!`,
     greeting: "¡Hola!",
-    bodyText: (asker, spotName) => `¡Buenas noticias de la comunidad! Alguien ha hecho una pregunta sobre tu spot <strong>${spotName}</strong>. <strong>@${asker}</strong> pregunta:`,
-    ctaText: "Responder pregunta 💬",
+    bodyText: (asker, spotName) => `¡Buenas noticias de la comunidad! Alguien ha dejado un comentario sobre tu spot <strong>${spotName}</strong>. <strong>@${asker}</strong> escribe:`,
+    ctaText: "Ver comentario 💬",
     fallbackText: "Si el botón no funciona, copia este enlace directamente en tu navegador web:",
-    footerText: "Recibes este correo electrónico porque registraste un spot de eFoil en <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> y otro rider hizo una pregunta."
+    footerText: (settingsLink) => `Recibes este correo electrónico porque registraste un spot de eFoil en <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Puedes administrar estas notificaciones en tus <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">ajustes</a>.`
   },
   fr: {
-    subject: (spotName) => `Nouvelle question sur ton spot eFoil ${spotName} ! 🌊`,
-    preheader: (asker, spotName) => `@${asker} a posé une question sur ton spot ${spotName} !`,
+    subject: (spotName) => `Nouveau commentaire sur ton spot eFoil ${spotName} ! 🌊`,
+    preheader: (asker, spotName) => `@${asker} a laissé un commentaire sur ton spot ${spotName} !`,
     greeting: "Bonjour !",
-    bodyText: (asker, spotName) => `Bonne nouvelle de la communauté ! Quelqu'un a posé une question sur ton spot <strong>${spotName}</strong>. <strong>@${asker}</strong> demande :`,
-    ctaText: "Répondre à la question 💬",
+    bodyText: (asker, spotName) => `Bonne nouvelle de la communauté ! Quelqu'un a laissé un commentaire sur ton spot <strong>${spotName}</strong>. <strong>@${asker}</strong> écrit :`,
+    ctaText: "Voir le commentaire 💬",
     fallbackText: "Si le bouton ne fonctionne pas, copie ce lien directement dans ton navigateur web :",
-    footerText: "Tu reçois cet e-mail car tu as enregistré un spot eFoil sur <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> et un autre rider a posé une question."
+    footerText: (settingsLink) => `Tu reçois cet e-mail car tu as enregistré un spot eFoil sur <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Tu peux gérer ces notifications dans tes <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">paramètres</a>.`
   },
   it: {
-    subject: (spotName) => `Nuova domanda sul tuo spot eFoil ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} ha fatto una domanda sul tuo spot ${spotName}!`,
+    subject: (spotName) => `Nuovo commento sul tuo spot eFoil ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} ha lasciato un commento sul tuo spot ${spotName}!`,
     greeting: "Ciao!",
-    bodyText: (asker, spotName) => `Buone notizie dalla community! Qualcuno ha posto una domanda sul tuo spot <strong>${spotName}</strong>. <strong>@${asker}</strong> chiede:`,
-    ctaText: "Rispondi alla domanda 💬",
+    bodyText: (asker, spotName) => `Buone notizie dalla community! Qualcuno ha lasciato un commento sul tuo spot <strong>${spotName}</strong>. <strong>@${asker}</strong> scrive:`,
+    ctaText: "Vedi commento 💬",
     fallbackText: "Se il pulsante non funziona, copia questo link direttamente nel tuo browser:",
-    footerText: "Ricevi questa email perché hai inserito uno spot eFoil su <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> e un altro rider ha fatto una domanda."
+    footerText: (settingsLink) => `Ricevi questa email perché hai inserito uno spot eFoil su <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Puoi gestire queste notifiche nelle tue <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">impostazioni</a>.`
   },
   pt: {
-    subject: (spotName) => `Nova pergunta sobre o teu spot de eFoil ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} fez uma pergunta sobre o teu spot ${spotName}!`,
+    subject: (spotName) => `Novo comentário sobre o teu spot de eFoil ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} deixou um comentário sobre o teu spot ${spotName}!`,
     greeting: "Olá!",
-    bodyText: (asker, spotName) => `Boas notícias da comunidade! Alguém fez uma pergunta sobre o teu spot <strong>${spotName}</strong>. <strong>@${asker}</strong> pergunta:`,
-    ctaText: "Responder à pergunta 💬",
+    bodyText: (asker, spotName) => `Boas notícias da comunidade! Alguém deixou um comentário sobre o teu spot <strong>${spotName}</strong>. <strong>@${asker}</strong> escreve:`,
+    ctaText: "Ver comentário 💬",
     fallbackText: "Se o botão não funcionar, copia este link diretamente para o teu navegador:",
-    footerText: "Recebeste este email porque registaste um spot de eFoil em <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> e outro rider fez uma pergunta."
+    footerText: (settingsLink) => `Recebeste este email porque registaste um spot de eFoil em <a href="https://www.efoilmap.com" target="_blank" style="color: #38bdf8; text-decoration: underline;">efoilmap.com</a>. Podes gerir estas notificações nas tuas <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">definições</a>.`
   },
   nl: {
-    subject: (spotName) => `Nieuwe vraag over jouw eFoil-spot ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} heeft een vraag gesteld over jouw spot ${spotName}!`,
+    subject: (spotName) => `Nieuwe reactie op jouw eFoil-spot ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} heeft een reactie achtergelaten op jouw spot ${spotName}!`,
     greeting: "Hallo!",
-    bodyText: (asker, spotName) => `Goed nieuws van de community! Iemand heeft een vraag gesteld over jouw spot <strong>${spotName}</strong>. <strong>@${asker}</strong> vraagt:`,
-    ctaText: "Vraag beantwoorden 💬",
+    bodyText: (asker, spotName) => `Goed nieuws van de community! Iemand heeft een reactie achtergelaten op jouw spot <strong>${spotName}</strong>. <strong>@${asker}</strong> schrijft:`,
+    ctaText: "Reactie bekijken 💬",
     fallbackText: "Als de knop niet werkt, kopieer dan deze link rechtstreeks in je webbrowser:",
-    footerText: "Je ontvangt deze e-mail omdat je een eFoil-spot hebt toegevoegd op <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> en een andere rider een vraag heeft gesteld."
+    footerText: (settingsLink) => `Je ontvangt deze e-mail omdat je een eFoil-spot hebt toegevoegd op <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Je kunt deze meldingen beheren in je <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">instellingen</a>.`
   },
   pl: {
-    subject: (spotName) => `Nowe pytanie o Twój spot eFoil ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} zadał pytanie o Twój spot ${spotName}!`,
+    subject: (spotName) => `Nowy komentarz o Twój spot eFoil ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} zostawił komentarz o Twój spot ${spotName}!`,
     greeting: "Cześć!",
-    bodyText: (asker, spotName) => `Dobre wieści ze społeczności! Ktoś zadał pytanie dotyczące Twojego spotu <strong>${spotName}</strong>. <strong>@${asker}</strong> pyta:`,
-    ctaText: "Odpowiedz na pytanie 💬",
+    bodyText: (asker, spotName) => `Dobre wieści ze społeczności! Ktoś zostawił komentarz dotyczący Twojego spotu <strong>${spotName}</strong>. <strong>@${asker}</strong> pisze:`,
+    ctaText: "Zobacz komentarz 💬",
     fallbackText: "Jeśli przycisk nie działa, skopiuj ten link bezpośrednio do przeglądarki internetowej:",
-    footerText: "Otrzymujesz tę wiadomość e-mail, ponieważ dodałeś spot eFoil na stronie <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a>, a inny użytkownik zadał pytanie."
+    footerText: (settingsLink) => `Otrzymujesz tę wiadomość e-mail, ponieważ dodałeś spot eFoil na stronie <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Możesz zarządzać tymi powiadomieniami w swoich <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">ustawieniach</a>.`
   },
   sv: {
-    subject: (spotName) => `Ny fråga om din eFoil-spot ${spotName}! 🌊`,
-    preheader: (asker, spotName) => `@${asker} har ställt en fråga om din spot ${spotName}!`,
+    subject: (spotName) => `Ny kommentar om din eFoil-spot ${spotName}! 🌊`,
+    preheader: (asker, spotName) => `@${asker} har lämnat en kommentar om din spot ${spotName}!`,
     greeting: "Hej!",
-    bodyText: (asker, spotName) => `Goda nyheter från communityn! Någon har ställt en fråga om din spot <strong>${spotName}</strong>. <strong>@${asker}</strong> frågar:`,
-    ctaText: "Besvara frågan 💬",
+    bodyText: (asker, spotName) => `Goda nyheter från communityn! Någon har lämnat en kommentar om din spot <strong>${spotName}</strong>. <strong>@${asker}</strong> skriver:`,
+    ctaText: "Visa kommentar 💬",
     fallbackText: "Om knappen inte fungerar, kopiera denna länk direkt till din webbläsare:",
-    footerText: "Du får detta e-postmeddelande eftersom du har lagt till en eFoil-spot på <a href=\"https://www.efoilmap.com\" target=\"_blank\" style=\"color: #94a3b8; text-decoration: underline;\">efoilmap.com</a> och en annan åkare har ställt en fråga."
+    footerText: (settingsLink) => `Du får detta e-postmeddelande eftersom du har lagt till en eFoil-spot på <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Du kan hantera dessa aviseringar i dina <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">inställningar</a>.`
   }
 };
 
@@ -305,8 +305,9 @@ export async function sendQuestionNotificationEmail({
   const langKey = EMAIL_LOCALIZATION[creatorLang] ? creatorLang : 'en';
   const local = EMAIL_LOCALIZATION[langKey];
   
-  // Construct deep link to the spot question
-  const deepLink = `http://localhost:3000/?spot=${spotId}&tab=questions`;
+  // Construct deep links to spot page and notification settings page
+  const deepLink = `http://localhost:3000/?spot=${spotId}`;
+  const settingsLink = `http://localhost:3000/?settings=true`;
   
   const emailHtml = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${langKey}">
@@ -416,7 +417,7 @@ export async function sendQuestionNotificationEmail({
           <tr>
             <td align="center" valign="top" style="padding: 20px 40px 40px 40px; background-color: #0f172a; border-top: 1px solid rgba(255, 255, 255, 0.05);">
               <p style="font-size: 11px; line-height: 1.6; color: #64748b; margin-bottom: 15px;">
-                ${local.footerText}
+                ${local.footerText(settingsLink)}
               </p>
               
               <p style="font-size: 11px; line-height: 1.6; color: #64748b; margin-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 15px;">
@@ -457,11 +458,11 @@ export async function sendQuestionNotificationEmail({
 
     // Print highly premium CLI announcement
     console.log(`\n\x1b[36m================== ⚡ eFoilMap EMAIL SIMULATOR ⚡ ==================\x1b[0m`);
-    console.log(`\x1b[32m📧 Spot Question Notification Triggered Successfully!\x1b[0m`);
+    console.log(`\x1b[32m📧 Spot Comment Notification Triggered Successfully!\x1b[0m`);
     console.log(`\x1b[37mTo:\x1b[0m \x1b[33m${creatorEmail || 'unknown@efoilmap.com'}\x1b[0m`);
     console.log(`\x1b[37mLanguage:\x1b[0m \x1b[35m${langKey.toUpperCase()}\x1b[0m`);
     console.log(`\x1b[37mSubject:\x1b[0m ${local.subject(spotName)}`);
-    console.log(`\x1b[37mQuestion:\x1b[0m @${askerUsername}: "${questionText}"`);
+    console.log(`\x1b[37mComment:\x1b[0m @${askerUsername}: "${questionText}"`);
     console.log(`\x1b[36m-----------------------------------------------------------------\x1b[0m`);
     console.log(`\x1b[35m👉 Local Browser Preview Links:\x1b[0m`);
     console.log(`\x1b[37mWeb URL:\x1b[0m \x1b[4mhttp://localhost:3000/last_question_notification.html\x1b[0m`);

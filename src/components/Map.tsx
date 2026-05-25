@@ -191,6 +191,17 @@ export default function EfoilMap() {
         };
     }, [searchParams]);
 
+    // Deep Linking: Settings Drawer
+    useEffect(() => {
+        if (searchParams.get('settings') === 'true') {
+            setIsProfileOpen(true);
+            const params = new URLSearchParams(window.location.search);
+            params.delete('settings');
+            const query = params.toString() ? `?${params.toString()}` : '';
+            window.history.replaceState(null, '', `${window.location.pathname}${query}`);
+        }
+    }, [searchParams]);
+
     // Deep Linking: Sync URL with Selected Spot
     useEffect(() => {
         const spotId = searchParams.get('spot');

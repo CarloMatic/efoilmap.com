@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { GOOGLE_MAPS_TIP, MOVE_ON_MAP_BTN, MOVE_POSITION_TIP } from "@/components/AddSpotDialog";
-import { editSpotText } from "@/components/SpotDialog";
+import { editSpotText, noCommentsText, commentsHeaderText, commentPlaceholderText, commentButtonText, commentSignInPrompt, replyPlaceholderText, replyButtonText } from "@/components/SpotDialog";
 import { likedSpotText } from "@/components/NotificationCenter";
 
 // Simple emulation of the isCreator logic in AddSpotDialog.tsx & SpotDialog.tsx
@@ -82,6 +82,46 @@ describe("Spot Dialog Translation Coverages (9 Platform Languages)", () => {
             expect(likedSpotText[locale]).toBeDefined();
             expect(typeof likedSpotText[locale]).toBe("string");
             expect(likedSpotText[locale].length).toBeGreaterThan(0);
+        });
+    });
+
+    test("noCommentsText dictionary covers all 9 languages and has non-empty values", () => {
+        requiredLocales.forEach((locale) => {
+            expect(noCommentsText[locale]).toBeDefined();
+            expect(typeof noCommentsText[locale]).toBe("string");
+            expect(noCommentsText[locale].length).toBeGreaterThan(0);
+        });
+    });
+
+    test("noCommentsText has the exact user-requested phrasing for German empty state", () => {
+        expect(noCommentsText["de"]).toBe("Noch keine Kommentare oder Fragen zu diesem Spot. Stell das erste Kommentar oder die erste Frage!");
+    });
+
+    test("commentsHeaderText, commentPlaceholderText, commentButtonText, commentSignInPrompt, replyPlaceholderText, replyButtonText cover all 9 languages and have non-empty values", () => {
+        requiredLocales.forEach((locale) => {
+            expect(commentsHeaderText[locale]).toBeDefined();
+            expect(typeof commentsHeaderText[locale]).toBe("string");
+            expect(commentsHeaderText[locale].length).toBeGreaterThan(0);
+
+            expect(commentPlaceholderText[locale]).toBeDefined();
+            expect(typeof commentPlaceholderText[locale]).toBe("string");
+            expect(commentPlaceholderText[locale].length).toBeGreaterThan(0);
+
+            expect(commentButtonText[locale]).toBeDefined();
+            expect(typeof commentButtonText[locale]).toBe("string");
+            expect(commentButtonText[locale].length).toBeGreaterThan(0);
+
+            expect(commentSignInPrompt[locale]).toBeDefined();
+            expect(typeof commentSignInPrompt[locale]).toBe("string");
+            expect(commentSignInPrompt[locale].length).toBeGreaterThan(0);
+
+            expect(replyPlaceholderText[locale]).toBeDefined();
+            expect(typeof replyPlaceholderText[locale]).toBe("string");
+            expect(replyPlaceholderText[locale].length).toBeGreaterThan(0);
+
+            expect(replyButtonText[locale]).toBeDefined();
+            expect(typeof replyButtonText[locale]).toBe("string");
+            expect(replyButtonText[locale].length).toBeGreaterThan(0);
         });
     });
 });

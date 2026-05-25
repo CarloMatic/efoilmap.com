@@ -901,6 +901,32 @@ export async function getUserBookmarks(): Promise<Spot[]> {
 
 
 // 7. Clickable User Profile Server Action
+export interface ProfileReviewReply {
+    id: string;
+    review_id: string;
+    author_id: string;
+    reply: string;
+    created_at: string;
+    profiles?: {
+        username: string | null;
+        avatar_url: string | null;
+    };
+}
+
+export interface ProfileReview {
+    id: string;
+    target_profile_id: string;
+    author_id: string;
+    rating: number;
+    comment: string;
+    created_at: string;
+    profiles?: {
+        username: string | null;
+        avatar_url: string | null;
+    };
+    reply?: ProfileReviewReply | null;
+}
+
 export interface UserProfileData {
     profile: {
         id: string;
@@ -921,6 +947,9 @@ export interface UserProfileData {
         visit_time: string;
         description: string;
     }[];
+    likesCount: number;
+    hasLiked: boolean;
+    reviews: ProfileReview[];
 }
 
 export async function getUserProfileData(profileId: string): Promise<UserProfileData | null> {
@@ -994,6 +1023,75 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
                 };
             });
 
+        // 4. Get profile likes count and liked status for current user
+        const { count: likesCount, error: likesErr } = await supabase
+            .from("profile_likes")
+            .select("*", { count: "exact", head: true })
+            .eq("target_profile_id", profileId);
+
+        let hasLiked = false;
+        const authUserRes = await supabase.auth.getUser();
+        if (authUserRes.data.user) {
+            const currentUser = authUserRes.data.user;
+            const { data: likeData } = await supabase
+                .from("profile_likes")
+                .select("id")
+                .eq("target_profile_id", profileId)
+                .eq("liker_id", currentUser.id)
+                .maybeSingle();
+            if (likeData) hasLiked = true;
+        }
+
+        // 5. Get profile reviews and replies
+        const { data: reviewsData, error: reviewsErr } = await supabase
+            .from("profile_reviews")
+            .select(`
+                id, target_profile_id, author_id, rating, comment, created_at,
+                profiles:author_id(username, avatar_url)
+            `)
+            .eq("target_profile_id", profileId)
+            .order("created_at", { ascending: false });
+
+        const reviews: ProfileReview[] = [];
+        if (reviewsData && !reviewsErr) {
+            const reviewIds = reviewsData.map(r => r.id);
+            let repliesData: any[] = [];
+            if (reviewIds.length > 0) {
+                const { data: repData } = await supabase
+                    .from("profile_review_replies")
+                    .select(`
+                        id, review_id, author_id, reply, created_at,
+                        profiles:author_id(username, avatar_url)
+                    `)
+                    .in("review_id", reviewIds);
+                repliesData = repData || [];
+            }
+
+            reviewsData.forEach((r: any) => {
+                const authorProfile = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
+                const replyObj = repliesData.find(rep => rep.review_id === r.id);
+                const replyProfiles = replyObj ? (Array.isArray(replyObj.profiles) ? replyObj.profiles[0] : replyObj.profiles) : null;
+
+                reviews.push({
+                    id: r.id,
+                    target_profile_id: r.target_profile_id,
+                    author_id: r.author_id,
+                    rating: r.rating,
+                    comment: r.comment,
+                    created_at: r.created_at,
+                    profiles: authorProfile,
+                    reply: replyObj ? {
+                        id: replyObj.id,
+                        review_id: replyObj.review_id,
+                        author_id: replyObj.author_id,
+                        reply: replyObj.reply,
+                        created_at: replyObj.created_at,
+                        profiles: replyProfiles
+                    } : null
+                });
+            });
+        }
+
         return {
             profile: {
                 id: profile.id,
@@ -1006,7 +1104,10 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
                 email_pref_questions: profile.email_pref_questions
             },
             spots,
-            visits
+            visits,
+            likesCount: likesCount || 0,
+            hasLiked,
+            reviews
         };
     } catch (err) {
         console.error("getUserProfileData exception:", err);
@@ -1216,6 +1317,179 @@ export async function getSpotQuestionsAndAnswers(spotId: string): Promise<SpotQu
     } catch (e) {
         console.error("getSpotQuestionsAndAnswers failed:", e);
         return [];
+    }
+}
+
+export async function toggleLikeProfile(targetProfileId: string): Promise<{ success: boolean; error?: string; liked?: boolean }> {
+    const supabase = await createClient();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes.data.user;
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        const { data: existingLike } = await supabase
+            .from("profile_likes")
+            .select("id")
+            .eq("target_profile_id", targetProfileId)
+            .eq("liker_id", user.id)
+            .maybeSingle();
+
+        if (existingLike) {
+            const { error } = await supabase
+                .from("profile_likes")
+                .delete()
+                .eq("id", existingLike.id);
+            if (error) throw error;
+            return { success: true, liked: false };
+        } else {
+            const { error } = await supabase
+                .from("profile_likes")
+                .insert([{ target_profile_id: targetProfileId, liker_id: user.id }]);
+            if (error) throw error;
+            return { success: true, liked: true };
+        }
+    } catch (e: any) {
+        console.error("toggleLikeProfile failed:", e);
+        return { success: false, error: e.message || "Exception occurred" };
+    }
+}
+
+export async function rateProfile(targetProfileId: string, rating: number, comment: string): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createClient();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes.data.user;
+    if (!user) return { success: false, error: "Unauthorized" };
+    if (user.id === targetProfileId) return { success: false, error: "You cannot review your own profile!" };
+
+    try {
+        const { error } = await supabase
+            .from("profile_reviews")
+            .upsert({
+                target_profile_id: targetProfileId,
+                author_id: user.id,
+                rating,
+                comment
+            }, {
+                onConflict: "target_profile_id,author_id"
+            });
+
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        console.error("rateProfile failed:", e);
+        return { success: false, error: e.message || "Exception occurred" };
+    }
+}
+
+export async function deleteProfileReview(reviewId: string): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createClient();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes.data.user;
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        const { data: review, error: getErr } = await supabase
+            .from("profile_reviews")
+            .select("author_id, target_profile_id")
+            .eq("id", reviewId)
+            .maybeSingle();
+
+        if (getErr || !review) return { success: false, error: "Review not found" };
+
+        const isAdmin = user.email === 'callematic@gmail.com';
+        if (review.author_id !== user.id && review.target_profile_id !== user.id && !isAdmin) {
+            return { success: false, error: "Unauthorized to delete this review" };
+        }
+
+        const { error } = await supabase
+            .from("profile_reviews")
+            .delete()
+            .eq("id", reviewId);
+
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        console.error("deleteProfileReview failed:", e);
+        return { success: false, error: e.message || "Exception occurred" };
+    }
+}
+
+export async function replyToProfileReview(reviewId: string, reply: string): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createClient();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes.data.user;
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        const { data: review } = await supabase
+            .from("profile_reviews")
+            .select("target_profile_id")
+            .eq("id", reviewId)
+            .maybeSingle();
+
+        if (!review) return { success: false, error: "Review not found" };
+        if (review.target_profile_id !== user.id) {
+            return { success: false, error: "Only the profile owner can reply to reviews left on their profile!" };
+        }
+
+        const { error } = await supabase
+            .from("profile_review_replies")
+            .upsert({
+                review_id: reviewId,
+                author_id: user.id,
+                reply
+            }, {
+                onConflict: "review_id"
+            });
+
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        console.error("replyToProfileReview failed:", e);
+        return { success: false, error: e.message || "Exception occurred" };
+    }
+}
+
+export async function deleteProfileReviewReply(replyId: string): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createClient();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes.data.user;
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        const { data: reply, error: getErr } = await supabase
+            .from("profile_review_replies")
+            .select("author_id, review_id")
+            .eq("id", replyId)
+            .maybeSingle();
+
+        if (getErr || !reply) return { success: false, error: "Reply not found" };
+
+        let reviewTargetProfileId = null;
+        if (reply.review_id) {
+            const { data: review } = await supabase
+                .from("profile_reviews")
+                .select("target_profile_id")
+                .eq("id", reply.review_id)
+                .maybeSingle();
+            reviewTargetProfileId = review?.target_profile_id;
+        }
+
+        const isAdmin = user.email === 'callematic@gmail.com';
+        if (reply.author_id !== user.id && reviewTargetProfileId !== user.id && !isAdmin) {
+            return { success: false, error: "Unauthorized to delete this reply" };
+        }
+
+        const { error } = await supabase
+            .from("profile_review_replies")
+            .delete()
+            .eq("id", replyId);
+
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        console.error("deleteProfileReviewReply failed:", e);
+        return { success: false, error: e.message || "Exception occurred" };
     }
 }
 

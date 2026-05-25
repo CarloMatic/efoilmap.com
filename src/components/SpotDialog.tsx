@@ -63,6 +63,90 @@ export const editSpotText: Record<string, string> = {
     sv: "Redigera spotten"
 };
 
+export const commentsHeaderText: Record<string, string> = {
+    de: "Kommentare",
+    en: "Comments",
+    es: "Comentarios",
+    fr: "Commentaires",
+    it: "Commenti",
+    pt: "Comentários",
+    nl: "Reacties",
+    pl: "Komentarze",
+    sv: "Kommentarer"
+};
+
+export const commentPlaceholderText: Record<string, string> = {
+    de: "Schreibe einen Kommentar oder eine Frage...",
+    en: "Write a comment or ask a question...",
+    es: "Escribe un comentario o haz una pregunta...",
+    fr: "Écris un commentaire ou pose une question...",
+    it: "Scrivi un commento o fai una domanda...",
+    pt: "Escreve um comentário ou faz uma pergunta...",
+    nl: "Schrijf een reactie of stel een vraag...",
+    pl: "Napisz komentarz lub zadaj pytanie...",
+    sv: "Skriv en kommentar eller ställ en fråga..."
+};
+
+export const commentButtonText: Record<string, string> = {
+    de: "Kommentieren",
+    en: "Comment",
+    es: "Comentar",
+    fr: "Commenter",
+    it: "Commenta",
+    pt: "Comentar",
+    nl: "Reageren",
+    pl: "Skomentuj",
+    sv: "Kommentera"
+};
+
+export const commentSignInPrompt: Record<string, string> = {
+    de: "Bitte logge dich ein, um Kommentare zu hinterlassen.",
+    en: "Please sign in to leave comments.",
+    es: "Por favor, inicia sesión para dejar comentarios.",
+    fr: "Veuillez vous connecter pour laisser des commentaires.",
+    it: "Per favore, accedi per lasciare commenti.",
+    pt: "Por favor, inicia sessão para deixar comentários.",
+    nl: "Log in om reacties achter te laten.",
+    pl: "Zaloguj się, aby zostawić komentarz.",
+    sv: "Logga in för att lämna kommentarer."
+};
+
+export const replyPlaceholderText: Record<string, string> = {
+    de: "Antworte auf diesen Kommentar...",
+    en: "Reply to this comment...",
+    es: "Responde a este comentario...",
+    fr: "Répondre à ce commentaire...",
+    it: "Rispondi a questo commento...",
+    pt: "Responde a este comentário...",
+    nl: "Reageer op deze reactie...",
+    pl: "Odpowiedz na ten komentarz...",
+    sv: "Svara på denna kommentar..."
+};
+
+export const replyButtonText: Record<string, string> = {
+    de: "Antworten",
+    en: "Reply",
+    es: "Responder",
+    fr: "Répondre",
+    it: "Rispondi",
+    pt: "Responder",
+    nl: "Reageren",
+    pl: "Odpowiedz",
+    sv: "Svara"
+};
+
+export const noCommentsText: Record<string, string> = {
+    de: "Noch keine Kommentare oder Fragen zu diesem Spot. Stell das erste Kommentar oder die erste Frage!",
+    en: "No comments or questions yet about this spot. Write the first comment or ask the first question!",
+    es: "¡Aún no hay comentarios ni preguntas sobre este spot. Escribe el primer comentario o haz la primera pregunta!",
+    fr: "Pas encore de commentaires ou de questions sur ce spot. Écris le premier commentaire ou pose la première question !",
+    it: "Non ci sono ancora commenti o domande su questo spot. Scrivi il primo commento o fai la prima domanda!",
+    pt: "Ainda não há comentários ou perguntas sobre este spot. Escreve o primeiro comentário ou faz a primeira pergunta!",
+    nl: "Nog geen reacties of vragen over deze spot. Schrijf de eerste reactie of stel de eerste vraag!",
+    pl: "Nie ma jeszcze komentarzy ani pytań o tym spocie. Napisz pierwszy komentarz lub zadaj pierwsze pytanie!",
+    sv: "Inga kommentarer eller frågor om denna spot ännu. Skriv den första kommentaren eller ställ den första frågan!"
+};
+
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ui/Toast";
@@ -1557,25 +1641,25 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                 </div>
                             )}
 
-                            {/* Questions & Answers Section */}
+                            {/* Comments Section */}
                             <div className="space-y-4 border-t border-border/10 pt-6">
                                 <div className="flex justify-between items-center mb-1">
                                     <h3 className="text-sm font-semibold uppercase text-muted-foreground tracking-wider">
-                                        {locale === 'de' ? 'Fragen & Antworten' : 'Questions & Answers'}
+                                        {commentsHeaderText[locale] || commentsHeaderText['en']}
                                     </h3>
                                     <span className="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full font-bold">
                                         {questions.length}
                                     </span>
                                 </div>
 
-                                {/* Question Submission Form */}
+                                {/* Comment Submission Form */}
                                 {user ? (
                                     <form onSubmit={handleQuestionSubmit} className="flex gap-2">
                                         <input
                                             type="text"
                                             value={newQuestion}
                                             onChange={(e) => setNewQuestion(e.target.value)}
-                                            placeholder={locale === 'de' ? 'Stelle eine Frage zu diesem Spot...' : 'Ask a question about this spot...'}
+                                            placeholder={commentPlaceholderText[locale] || commentPlaceholderText['en']}
                                             required
                                             disabled={submittingQuestion}
                                             className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs focus:ring-1 focus:ring-blue-500/50 focus:outline-none"
@@ -1585,12 +1669,12 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                             disabled={submittingQuestion}
                                             className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold text-white transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                                         >
-                                            {submittingQuestion ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : (locale === 'de' ? 'Fragen' : 'Ask')}
+                                            {submittingQuestion ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : (commentButtonText[locale] || commentButtonText['en'])}
                                         </button>
                                     </form>
                                 ) : (
                                     <div className="bg-muted/10 p-3.5 rounded-2xl border border-border text-center text-xs text-muted-foreground leading-normal">
-                                        {locale === 'de' ? 'Bitte logge dich ein, um Fragen zu stellen.' : 'Please sign in to ask questions.'}{" "}
+                                        {commentSignInPrompt[locale] || commentSignInPrompt['en']}{" "}
                                         <button 
                                             type="button"
                                             onClick={() => setIsAuthOpen(true)}
@@ -1601,12 +1685,12 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                     </div>
                                 )}
 
-                                {/* Questions List */}
+                                {/* Comments List */}
                                 <div className="space-y-3">
                                     {questions.length > 0 ? (
                                         questions.map((q) => (
                                             <div key={q.id} className="bg-white/2 border border-white/5 p-4 rounded-2xl space-y-3 flex flex-col">
-                                                {/* Question Header & Content */}
+                                                {/* Comment Header & Content */}
                                                 <div className="flex items-start gap-3 min-w-0">
                                                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-900 border border-white/10 relative shrink-0 flex items-center justify-center">
                                                         {q.profiles?.avatar_url ? (
@@ -1632,7 +1716,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                     </div>
                                                 </div>
 
-                                                {/* Answers List */}
+                                                {/* Replies List */}
                                                 {q.answers && q.answers.length > 0 && (
                                                     <div className="pl-6 border-l border-white/10 space-y-3 mt-1.5">
                                                         {q.answers.map((ans) => (
@@ -1675,7 +1759,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                                 type="text"
                                                                 value={newAnswerText}
                                                                 onChange={(e) => setNewAnswerText(e.target.value)}
-                                                                placeholder={locale === 'de' ? 'Antworte auf diese Frage...' : 'Reply to this question...'}
+                                                                placeholder={replyPlaceholderText[locale] || replyPlaceholderText['en']}
                                                                 required
                                                                 disabled={submittingAnswer}
                                                                 className="flex-1 bg-white/3 border border-white/5 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-500/30 focus:outline-none"
@@ -1685,7 +1769,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                                 disabled={submittingAnswer}
                                                                 className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-[10px] font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                                                             >
-                                                                {submittingAnswer ? <Loader2 className="w-3 animate-spin" /> : (locale === 'de' ? 'Antworten' : 'Reply')}
+                                                                {submittingAnswer ? <Loader2 className="w-3 animate-spin" /> : (replyButtonText[locale] || replyButtonText['en'])}
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -1710,7 +1794,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                             }}
                                                             className="text-[10px] text-muted-foreground hover:text-blue-400 font-bold transition-colors cursor-pointer border-none bg-transparent p-0 flex items-center gap-1"
                                                         >
-                                                            💬 {locale === 'de' ? 'Antworten' : 'Answer'}
+                                                            💬 {replyButtonText[locale] || replyButtonText['en']}
                                                         </button>
                                                     )}
                                                 </div>
@@ -1718,9 +1802,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                         ))
                                     ) : (
                                         <p className="text-xs text-center text-gray-500 italic py-4">
-                                            {locale === 'de' 
-                                                ? 'Noch keine Fragen zu diesem Spot. Stell die erste Frage!' 
-                                                : 'No questions asked yet. Be the first to ask!'}
+                                            {noCommentsText[locale] || noCommentsText['en']}
                                         </p>
                                     )}
                                 </div>

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2026-05-25
+
+### Added
+- **Spot Comments Renaming**: Shifted spot Q&As entirely into a sleek Comments ("Kommentare") system in 9 languages, while retaining technical structure for search engine FAQ schemas.
+- **User Profile Likes**: Integrated interactive heart toggle widgets with live count updates on community profile cards.
+- **Profile Ratings & Reviews**: Designed a glassmorphic 5-star profile rating widget and textual review timeline.
+- **Review Replies & Deletions**: Enabled direct author and profile owner replies to reviews, with complete deletion support for authors, owners, and admins.
+- **Direct Settings E-Mails**: Added a new "Spot-Kommentare" toggle setting to notification settings and generated direct settings link pathways in email footers.
+
 ## [0.7.0] - 2026-05-25
 
 ### Added
