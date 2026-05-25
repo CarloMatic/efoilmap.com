@@ -878,13 +878,18 @@ export default function Privacy() {
     const t = (locale as string) in content ? content[locale as keyof typeof content] : content.en;
 
     return (
-        <div className="h-full overflow-y-auto bg-background text-foreground p-8 leading-relaxed relative flex flex-col justify-between">
-            <div className="max-w-3xl mx-auto space-y-8 pb-12 w-full flex-1">
-                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors mb-4 text-sm">
-                    <ArrowLeft className="w-4 h-4" />
-                    {t.backToMap}
-                </Link>
+        <div className="h-full overflow-y-auto bg-background text-foreground leading-relaxed relative flex flex-col justify-between">
+            {/* Sticky Header Wrapper */}
+            <div className="sticky top-0 bg-background/90 backdrop-blur-md border-b border-border/50 z-20 w-full py-4 px-8 flex justify-center">
+                <div className="max-w-3xl w-full">
+                    <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors text-sm">
+                        <ArrowLeft className="w-4 h-4" />
+                        {t.backToMap}
+                    </Link>
+                </div>
+            </div>
 
+            <div className="max-w-3xl mx-auto space-y-8 pb-12 w-full flex-1 px-8 pt-8">
                 <div className="space-y-2">
                     <h1 className="text-3xl font-black tracking-tight">{t.title}</h1>
                     <p className="text-xs text-muted-foreground">{t.lastUpdated}</p>

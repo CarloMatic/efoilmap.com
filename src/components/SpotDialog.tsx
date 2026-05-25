@@ -891,19 +891,6 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             )}
                         </button>
 
-                        <button
-                            onClick={() => {
-                                if (!user) {
-                                    setIsAuthOpen(true);
-                                    return;
-                                }
-                                onEdit();
-                            }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold text-gray-300 transition-all active:scale-95 ml-2"
-                        >
-                            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                            {t('forms.suggest_edit')}
-                        </button>
                     </div>
                 </div>
 
@@ -1450,6 +1437,22 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                         {t('forms.no_photos')}
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Suggest Edit Text Link */}
+                            <div className="flex justify-start pt-1">
+                                <button
+                                    onClick={() => {
+                                        if (!user) {
+                                            setIsAuthOpen(true);
+                                            return;
+                                        }
+                                        onEdit();
+                                    }}
+                                    className="text-xs text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-4 decoration-blue-500/30 transition-colors cursor-pointer"
+                                >
+                                    {t('forms.suggest_edit')}
+                                </button>
                             </div>
 
                             {/* Recent Reviews List */}

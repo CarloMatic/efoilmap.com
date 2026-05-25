@@ -130,13 +130,18 @@ export default function CommunityRulesPage() {
     const currentContent = (content as Record<string, typeof content.en>)[locale] || content.en;
 
     return (
-        <div className="h-full overflow-y-auto bg-background text-foreground flex flex-col items-center justify-between py-12 px-4 sm:px-6 relative">
-            <div className="max-w-2xl w-full pb-12 flex-1">
-                <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors mb-4 text-sm">
-                    <ArrowLeft className="w-4 h-4" />
-                    {currentContent.backToMap}
-                </Link>
+        <div className="h-full overflow-y-auto bg-background text-foreground flex flex-col items-center justify-between relative">
+            {/* Sticky Header Wrapper */}
+            <div className="sticky top-0 bg-background/90 backdrop-blur-md border-b border-border/50 z-20 w-full py-4 px-4 sm:px-6 flex justify-center">
+                <div className="max-w-2xl w-full">
+                    <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors text-sm">
+                        <ArrowLeft className="w-4 h-4" />
+                        {currentContent.backToMap}
+                    </Link>
+                </div>
+            </div>
 
+            <div className="max-w-2xl w-full pb-12 flex-1 px-4 sm:px-6 pt-8">
                 <h1 className="text-3xl font-bold mb-6 text-foreground">{currentContent.title}</h1>
                 <p className="text-foreground/80 mb-8 leading-relaxed">
                     {currentContent.intro}
