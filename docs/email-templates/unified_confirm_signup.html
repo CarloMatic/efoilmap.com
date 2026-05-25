@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eFoilMap</title>
+  <style type="text/css">
+    /* Reset styles to ensure client compatibility */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    table { border-collapse: collapse !important; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    
+    /* Custom CSS for modern clients */
+    @media screen and (max-width: 600px) {
+      .email-container { width: 100% !important; padding: 10px !important; }
+      .button-wrapper { width: 100% !important; text-align: center !important; }
+      .button { display: block !important; padding: 16px 20px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; width: 100%; background-color: #0f172a; color: #f8fafc;">
+  <!-- Hidden Preheader Text for email clients -->
+  <div style="display: none; max-height: 0px; overflow: hidden;">
+    {{ if eq .Data.locale "de" }}Aktiviere dein Konto und werde Teil der eFoilMap Community.
+    {{ else if eq .Data.locale "es" }}Activa tu cuenta y únete a la comunidad de eFoilMap.
+    {{ else if eq .Data.locale "fr" }}Activez votre compte et rejoignez la communauté eFoilMap.
+    {{ else if eq .Data.locale "it" }}Attiva il tuo account ed entra a far parte della community di eFoilMap.
+    {{ else if eq .Data.locale "pt" }}Ative a sua conta e junte-se à comunidade eFoilMap.
+    {{ else if eq .Data.locale "nl" }}Activeer je account en word lid van de eFoilMap-community.
+    {{ else if eq .Data.locale "pl" }}Aktywuj swoje konto i dołącz do społeczności eFoilMap.
+    {{ else if eq .Data.locale "sv" }}Aktivera ditt konto och gå med i eFoilMap-gemenskapen.
+    {{ else }}Activate your account and join the eFoilMap community.{{ end }}
+  </div>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0f172a; table-layout: fixed;">
+    <tr>
+      <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
+        <!-- Email Container -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 580px; background-color: #1e293b; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+          
+          <!-- Decorative Top Accent Bar -->
+          <tr>
+            <td height="6" style="background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);"></td>
+          </tr>
+
+          <!-- Header Section -->
+          <tr>
+            <td align="center" valign="top" style="padding: 40px 30px 20px 30px;">
+              <!-- Beautiful Pure HTML/CSS Logo (Fast loading, privacy friendly) -->
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="background-color: rgba(56, 189, 248, 0.1); border-radius: 16px; padding: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
+                    <span style="font-size: 24px; font-weight: 800; color: #38bdf8; letter-spacing: -1px; font-family: system-ui, sans-serif; display: block; line-height: 1;">⚡</span>
+                  </td>
+                </tr>
+              </table>
+              <h1 style="margin: 20px 0 0 0; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">eFoilMap</h1>
+              <p style="margin: 5px 0 0 0; font-size: 13px; font-weight: 500; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px;">
+                {{ if eq .Data.locale "de" }}Premium Community-Karte
+                {{ else if eq .Data.locale "es" }}Mapa Premium de la Comunidad
+                {{ else if eq .Data.locale "fr" }}Carte de la Communauté Premium
+                {{ else if eq .Data.locale "it" }}Mappa Premium della Community
+                {{ else if eq .Data.locale "pt" }}Mapa Premium da Comunidade
+                {{ else if eq .Data.locale "nl" }}Premium Community-Kaart
+                {{ else if eq .Data.locale "pl" }}Mapa Premium Społeczności
+                {{ else if eq .Data.locale "sv" }}Premium Community-karta
+                {{ else }}Premium Community Map{{ end }}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content Section -->
+          <tr>
+            <td align="left" valign="top" style="padding: 10px 40px 30px 40px;">
+              <p style="font-size: 16px; line-height: 1.6; color: #f8fafc; margin-bottom: 20px;">
+                {{ if eq .Data.locale "de" }}Hallo!
+                {{ else if eq .Data.locale "es" }}¡Hola!
+                {{ else if eq .Data.locale "fr" }}Bonjour !
+                {{ else if eq .Data.locale "it" }}Ciao!
+                {{ else if eq .Data.locale "pt" }}Olá!
+                {{ else if eq .Data.locale "nl" }}Hallo!
+                {{ else if eq .Data.locale "pl" }}Witaj!
+                {{ else if eq .Data.locale "sv" }}Hej!
+                {{ else }}Hello!{{ end }}
+              </p>
+              <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1; margin-bottom: 30px;">
+                {{ if eq .Data.locale "de" }}Schön, dass du dabei bist! Bitte bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren und deine Spots auf eFoilMap zu sichern:
+                {{ else if eq .Data.locale "es" }}¡Qué bueno tenerte aquí! Por favor, confirma tu dirección de correo electrónico para activar tu cuenta y guardar tus spots en eFoilMap:
+                {{ else if eq .Data.locale "fr" }}Ravi de vous compter parmi nous ! Veuillez confirmer votre adresse e-mail pour activer votre compte et commencer à enregistrer des spots sur eFoilMap :
+                {{ else if eq .Data.locale "it" }}Siamo felici di averti con noi! Conferma il tuo indirizzo email per attivare il tuo account e iniziare a salvare spot su eFoilMap:
+                {{ else if eq .Data.locale "pt" }}Que bom ter você aqui! Por favor, confirme seu endereço de e-mail para ativar sua conta e começar a salvar spots no eFoilMap:
+                {{ else if eq .Data.locale "nl" }}Leuk dat je erbij bent! Bevestig je e-mailadres om je account te activeren en je spots op eFoilMap op te slaan:
+                {{ else if eq .Data.locale "pl" }}Cieszymy się, że jesteś z nami! Potwierdź swój adres e-mail, aby aktywować konto i zacząć zapisywać spoty na eFoilMap:
+                {{ else if eq .Data.locale "sv" }}Kul att du är här! Vänligen bekräfta din e-postadress för att aktivera ditt konto och börja spara spots på eFoilMap:
+                {{ else }}Thanks for joining our community! Please confirm your email address to activate your account and start saving spots on eFoilMap:{{ end }}
+              </p>
+
+              <!-- CTA Button Section -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 35px;">
+                <tr>
+                  <td align="center">
+                    <table border="0" cellpadding="0" cellspacing="0" class="button-wrapper">
+                      <tr>
+                        <td align="center" style="background-color: #0ea5e9; border-radius: 14px; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2), 0 2px 4px -1px rgba(14, 165, 233, 0.1);">
+                          <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup" target="_blank" class="button" style="display: inline-block; padding: 14px 32px; font-size: 15px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 14px; border: 1px solid #38bdf8;">
+                            {{ if eq .Data.locale "de" }}E-Mail bestätigen ⚡
+                            {{ else if eq .Data.locale "es" }}Confirmar correo ⚡
+                            {{ else if eq .Data.locale "fr" }}Confirmer l'e-mail ⚡
+                            {{ else if eq .Data.locale "it" }}Conferma Email ⚡
+                            {{ else if eq .Data.locale "pt" }}Confirmar e-mail ⚡
+                            {{ else if eq .Data.locale "nl" }}E-mail bevestigen ⚡
+                            {{ else if eq .Data.locale "pl" }}Potwierdź e-mail ⚡
+                            {{ else if eq .Data.locale "sv" }}Bekräfta e-post ⚡
+                            {{ else }}Confirm Email ⚡{{ end }}
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 25px;">
+                <tr><td></td></tr>
+              </table>
+
+              <!-- Fallback Link (Crucial for Spam Prevention & Usability) -->
+              <p style="font-size: 12px; line-height: 1.5; color: #94a3b8; margin-bottom: 8px;">
+                {{ if eq .Data.locale "de" }}Falls der Button nicht funktioniert, kopiere diesen Link in deinen Webbrowser (die Domain stimmt exakt mit efoilmap.com überein):
+                {{ else if eq .Data.locale "es" }}Si el botón no funciona, copia y pega este enlace en tu navegador web (el dominio coincide exactamente con efoilmap.com):
+                {{ else if eq .Data.locale "fr" }}Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur (le domaine correspond exactement à efoilmap.com) :
+                {{ else if eq .Data.locale "it" }}Se il pulsante non funziona, copia e incolla questo link nel tuo browser (il dominio corrisponde esattamente a efoilmap.com):
+                {{ else if eq .Data.locale "pt" }}Se o botão não funcionar, copie e cole este link no seu navegador (o domínio corresponde exatamente a efoilmap.com):
+                {{ else if eq .Data.locale "nl" }}Als de knop niet werkt, kopieer en plak dan deze link in je webbrowser (het domein komt exact overeen met efoilmap.com):
+                {{ else if eq .Data.locale "pl" }}Jeśli przycisk nie działa, skopiuj i wklej ten link do przeglądarki internetowej (domena zgadza się dokładnie z efoilmap.com):
+                {{ else if eq .Data.locale "sv" }}Om knappen inte fungerar, kopiera och klistra in denna länk i din webbläsare (domänen matchar efoilmap.com exakt):
+                {{ else }}If the button doesn't work, copy and paste this link into your web browser (the domain matches efoilmap.com exactly):{{ end }}
+              </p>
+              <p style="font-size: 11px; line-height: 1.5; color: #38bdf8; word-break: break-all; margin-bottom: 30px;">
+                <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup" target="_blank" style="color: #38bdf8; text-decoration: underline;">
+                  {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup
+                </a>
+              </p>
+
+              <!-- Security Information -->
+              <table border="0" cellpadding="15" cellspacing="0" width="100%" style="background-color: rgba(255, 255, 255, 0.03); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 10px;">
+                <tr>
+                  <td style="font-size: 12px; line-height: 1.6; color: #94a3b8;">
+                    {{ if eq .Data.locale "de" }}<strong>Sicherheitshinweis:</strong> Dieser Bestätigungslink läuft aus Sicherheitsgründen nach <strong>15 Minuten</strong> ab und kann nur einmal verwendet werden. Falls du dich nicht auf eFoilMap registriert hast, kannst du diese E-Mail getrost ignorieren.
+                    {{ else if eq .Data.locale "es" }}<strong>Aviso de seguridad:</strong> Este enlace de confirmación caduca en <strong>15 minutos</strong> por razones de seguridad y solo se puede usar una vez. Si no te has registrado en eFoilMap, puedes ignorar este correo.
+                    {{ else if eq .Data.locale "fr" }}<strong>Avis de sécurité :</strong> Ce lien de confirmation expire dans <strong>15 minutes</strong> pour des raisons de sécurité et ne peut être utilisé qu'une seule fois. Si vous ne vous êtes pas inscrit sur eFoilMap, vous pouvez ignorer cet e-mail.
+                    {{ else if eq .Data.locale "it" }}<strong>Avviso di sicurezza:</strong> Questo link di conferma scade tra <strong>15 minuti</strong> per motivi di sicurezza e può essere utilizzato una sola volta. Se non ti sei registrato su eFoilMap, puoi ignorare questa email.
+                    {{ else if eq .Data.locale "pt" }}<strong>Aviso de segurança:</strong> Este link de confirmação expira em <strong>15 minutos</strong> por motivos de segurança e só pode ser usado uma vez. Se não se registou no eFoilMap, pode ignorar este e-mail.
+                    {{ else if eq .Data.locale "nl" }}<strong>Veiligheidswaarschuwing:</strong> Deze bevestigingslink verloopt na <strong>15 minuten</strong> en kan slechts eenmaal worden gebruikt. Als je je niet hebt geregistreerd op eFoilMap, kun je deze e-mail gerust negeren.
+                    {{ else if eq .Data.locale "pl" }}<strong>Uwaga dotycząca bezpieczeństwa:</strong> Ten link potwierdzający wygasa po <strong>15 minutach</strong> i może być użyty tylko raz. Jeśli nie rejestrowałeś się na eFoilMap, możesz bezpiecznie zignorować tę wiadomość.
+                    {{ else if eq .Data.locale "sv" }}<strong>Säkerhetsmeddelande:</strong> Denna bekräftelselänk upphör att gälla efter <strong>15 minuter</strong> och kan endast användas en gång. Om du inte har registrerat dig på eFoilMap kan du ignorera detta e-postmeddelande.
+                    {{ else }}<strong>Security Notice:</strong> For security reasons, this confirmation link expires in <strong>15 minutes</strong> and can only be used once. If you did not sign up on eFoilMap, you can safely ignore this email.{{ end }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Legal and Company Footer (Essential for Spam/DMARC Compliance) -->
+          <tr>
+            <td align="center" valign="top" style="padding: 20px 40px 40px 40px; background-color: #0f172a; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+              <p style="font-size: 11px; line-height: 1.6; color: #64748b; margin-bottom: 15px;">
+                {{ if eq .Data.locale "de" }}Du erhältst diese E-Mail, weil du auf <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a> ein Konto erstellt hast.
+                {{ else if eq .Data.locale "es" }}Recibes este correo electrónico porque has creado una cuenta en <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.
+                {{ else if eq .Data.locale "fr" }}Vous recevez cet e-mail parce que vous avez créé un compte sur <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.
+                {{ else if eq .Data.locale "it" }}Ricevi questa email perché hai creato un account su <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.
+                {{ else if eq .Data.locale "pt" }}Você está recebendo este e-mail porque criou uma conta no <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.
+                {{ else if eq .Data.locale "nl" }}Je ontvangt deze e-mail omdat je een account hebt aangemaakt op <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.
+                {{ else if eq .Data.locale "pl" }}Otrzymujesz tę wiadomość, ponieważ utworzyłeś konto w serwisie <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.
+                {{ else if eq .Data.locale "sv" }}Du får detta e-postmeddelande eftersom du har skapat ett konto på <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.
+                {{ else }}You are receiving this email because you created an account on <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>.{{ end }}
+              </p>
+              
+              <!-- Legal Imprint (Impressum) -->
+              <p style="font-size: 11px; line-height: 1.6; color: #64748b; margin-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 15px;">
+                <strong>eFoilMap.com</strong><br />
+                Angelpower UG (haftungsbeschränkt)<br />
+                Belvedereallee 5, 52070 Aachen, Deutschland<br />
+                Vertreten durch die Geschäftsführung: Carlo Matic<br />
+                E-Mail: <a href="mailto:hi@efoilmap.com" style="color: #64748b; text-decoration: none;">hi@efoilmap.com</a>
+              </p>
+              
+              <p style="font-size: 10px; line-height: 1.5; color: #475569; margin-top: 20px;">
+                © 2026 eFoilMap. Alle Rechte vorbehalten.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
