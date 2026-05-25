@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Loader2, Camera } from "lucide-react";
+import { X, Loader2, Camera, Store } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { createSpot, updateSpot, Spot } from "@/app/actions";
 import { useAuth } from "@/hooks/useAuth";
@@ -367,7 +367,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess 
                                         onChange={(e) => setAttributes({ ...attributes, rental: e.target.checked })}
                                         className="rounded border-input text-primary focus:ring-primary"
                                     />
-                                    🛍️ {t('filters.rental')}
+                                    <Store className="w-4 h-4 text-purple-500" /> {t('filters.rental')}
                                 </label>
                             </div>
                         </div>

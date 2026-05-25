@@ -217,7 +217,7 @@ export const dictionaries = {
             avatar_updated: "Foto optimiert & hochgeladen!",
             wait_60s: "Link wurde bereits gesendet. Bitte prüfe auch deinen Spam-Ordner oder warte 60s.",
             privacy_policy: "Datenschutzbestimmungen",
-            community_rules: "Community-Richtlinien"
+            community_rules: "Regeln"
         },
         intro: {
             title: "Willkommen bei eFoilMap",

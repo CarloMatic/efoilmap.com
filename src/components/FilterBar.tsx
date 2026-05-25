@@ -101,7 +101,7 @@ export function FilterBar({ filters, setFilters }: FilterBarProps) {
     const offsetArray = Array.from({ length: firstDayIndex }, (_, i) => i);
 
     return (
-        <div ref={containerRef} className="flex flex-col items-center gap-2 w-full max-w-lg pointer-events-auto">
+        <div ref={containerRef} className="flex flex-col items-center gap-2 w-full max-w-3xl pointer-events-auto">
             {/* Primary Horizontal Filter Scroll */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 max-w-full">
                 {/* Status Filter */}
