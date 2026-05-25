@@ -5,7 +5,7 @@ export const dictionaries = {
     en: {
         meta: {
             label: "English",
-            title: "The eFoil & Jetboard Community - Find together the best entry points for eFoiling.",
+            title: "The eFoil & Jetboard Community - Find the best entry points and riding buddies.",
             description: "Find legal e-foil, electric hydrofoil, and jetboard spots near you. Community-driven interactive map for eFoilers."
         },
         common: {
@@ -48,7 +48,7 @@ export const dictionaries = {
             food: "Food"
         },
         hero: {
-            slogan: "Find together the best entry points for eFoiling."
+            slogan: "Find the best entry points and riding buddies."
         },
         forms: {
             name: "Spot Name",
@@ -107,7 +107,7 @@ export const dictionaries = {
         },
         intro: {
             title: "Welcome to eFoilMap",
-            text: "The community for eFoilers. Find the best entry points with parking close to the water, charging options, food, and more. Share your experience and let's grow the community together.",
+            text: "The community for eFoilers (Beta version). Find the best entry points with parking close to the water, charging options, food, and more. Arrange to go eFoiling with others. Share your experience and let's grow the community together. Feel free to use the feedback button.",
             cta: "Let's Foil"
         },
         ugc: {
@@ -229,7 +229,7 @@ export const dictionaries = {
     es: {
         meta: {
             label: "Español",
-            title: "La comunidad eFoil & Jetboard - Encuentren juntos los mejores puntos de entrada para eFoil.",
+            title: "La comunidad eFoil y Jetboard - Encuentra los mejores puntos de entrada y compañeros de ruta.",
             description: "Encuentra lugares legales para e-foil, electric hydrofoil y jetboard cerca de ti. Mapa interactivo de la comunidad."
         },
         common: {
@@ -272,7 +272,7 @@ export const dictionaries = {
             food: "Comida"
         },
         hero: {
-            slogan: "Encuentren juntos los melhores puntos de entrada para eFoil."
+            slogan: "Encuentra los mejores puntos de entrada y compañeros de ruta."
         },
         forms: {
             name: "Nombre del Spot",
@@ -301,8 +301,8 @@ export const dictionaries = {
         },
         intro: {
             title: "Bienvenido a eFoilMap",
-            text: "La comunidad para eFoilers. Encuentra los mejores puntos de entrada con aparcamiento cerca del agua, opciones de carga, comida y más. Comparte tu experiencia y hagamos crecer la comunidad juntos.",
-            cta: "Let's Foil"
+            text: "La comunidad para eFoilers (Versión Beta). Encuentra los mejores puntos de entrada con estacionamiento cerca del agua, opciones de carga, comida y más. Organiza salidas con otros. Comparte tu experiencia y hagamos crecer la comunidad juntos. No dudes en usar el botón de comentarios.",
+            cta: "Vamos a surfear"
         },
         ugc: {
             ai_translated: "(traducido automáticamente con IA)"
@@ -341,7 +341,7 @@ export const dictionaries = {
     fr: {
         meta: {
             label: "Français",
-            title: "La communauté eFoil & Jetboard - Trouvez ensemble les meilleurs points d'entrée pour l'eFoil.",
+            title: "La communauté eFoil et Jetboard - Trouvez les meilleurs points d'accès et partenaires de glisse.",
             description: "Trouvez des spots légaux d'e-foil, electric hydrofoil et jetboard près de chez vous. Carte interactive de la communauté."
         },
         common: {
@@ -384,7 +384,7 @@ export const dictionaries = {
             food: "Restauration"
         },
         hero: {
-            slogan: "Trouvez ensemble les meilleurs points d'entrée pour l'eFoil."
+            slogan: "Trouvez les meilleurs points d'accès et partenaires de glisse."
         },
         forms: {
             name: "Nom du Spot",
@@ -413,8 +413,8 @@ export const dictionaries = {
         },
         intro: {
             title: "Bienvenue sur eFoilMap",
-            text: "La communauté pour les eFoilers. Trouvez les meilleurs points d'accès avec parking à proximité de l'eau, possibilités de recharge, restauration et plus encore. Partagez votre expérience et développons la communauté ensemble.",
-            cta: "Let's Foil"
+            text: "La communauté pour les eFoileurs (Version Bêta). Trouvez les meilleurs points d'accès avec parking près de l'eau, options de recharge, nourriture, et plus. Organisez des sorties avec d'autres. Partagez votre expérience et faisons grandir la communauté ensemble. N'hésitez pas à utiliser le bouton de commentaires.",
+            cta: "Allons surfer"
         },
         ugc: {
             ai_translated: "(traduit automatiquement par IA)"
@@ -453,7 +453,7 @@ export const dictionaries = {
     it: {
         meta: {
             label: "Italiano",
-            title: "La community eFoil & Jetboard - Troviamo insieme i migliori punti di ingresso per l'eFoil.",
+            title: "La community eFoil e Jetboard - Trova i migliori punti di accesso e compagni di uscita.",
             description: "Trova spot e-foil, electric hydrofoil e jetboard legali vicino a te. Mappa interattiva della community."
         },
         common: {
@@ -496,7 +496,7 @@ export const dictionaries = {
             food: "Cibo"
         },
         hero: {
-            slogan: "Trova insieme i migliori punti di ingresso per l'eFoil."
+            slogan: "Trova i migliori punti di accesso e compagni di uscita."
         },
         forms: {
             name: "Nome dello Spot",
@@ -555,8 +555,8 @@ export const dictionaries = {
         },
         intro: {
             title: "Benvenuto su eFoilMap",
-            text: "La community per gli eFoiler. Trova i migliori punti di accesso con parcheggio vicino all'acqua, opzioni di ricarica, cibo e altro ancora. Condividi la tua esperienza e facciamo crescere la community insieme.",
-            cta: "Let's Foil"
+            text: "La community per eFoiler (Versione Beta). Trova i migliori punti di accesso con parcheggio vicino all'acqua, opzioni di ricarica, cibo e altro. Organizza uscite con altri. Condividi la tua esperienza e facciamo crescere la community insieme. Sentiti libero di usare il pulsante di feedback.",
+            cta: "Andiamo a surfare"
         },
         ugc: {
             ai_translated: "(tradotto automaticamente con IA)"
@@ -565,7 +565,7 @@ export const dictionaries = {
     pt: {
         meta: {
             label: "Português",
-            title: "A Comunidade eFoil & Jetboard - Encontrem juntos os melhores pontos de entrada para eFoiling.",
+            title: "A comunidade eFoil e Jetboard - Encontre os melhores pontos de acesso e parceiros.",
             description: "Encontre spots de e-foil, electric hydrofoil e jetboard legais perto de si. Mapa interativo da comunidade."
         },
         common: {
@@ -608,7 +608,7 @@ export const dictionaries = {
             food: "Alimentação"
         },
         hero: {
-            slogan: "Encontrem juntos os melhores pontos de entrada para eFoiling."
+            slogan: "Encontre os melhores pontos de acesso e parceiros."
         },
         forms: {
             name: "Nome do Spot",
@@ -667,8 +667,8 @@ export const dictionaries = {
         },
         intro: {
             title: "Bem-vindo ao eFoilMap",
-            text: "A comunidade de eFoilers. Encontre os melhores pontos de acesso com estacionamento perto da água, opções de carregamento, alimentação e muito mais. Partilhe a sua experiência e vamos fazer crescer a comunidade juntos.",
-            cta: "Let's Foil"
+            text: "A comunidade para eFoilers (Versão Beta). Encontre os melhores pontos de acesso com estacionamento perto da água, opções de recarga, comida e muito mais. Combine passeios com outros. Compartilhe sua experiência e vamos aumentar a comunidade juntos. Fique à vontade para usar o botão de feedback.",
+            cta: "Vamos surfar"
         },
         ugc: {
             ai_translated: "(traduzido automaticamente com IA)"
@@ -677,7 +677,7 @@ export const dictionaries = {
     nl: {
         meta: {
             label: "Nederlands",
-            title: "De eFoil & Jetboard Community - Vind samen de beste toegangspunten voor eFoiling.",
+            title: "De eFoil & Jetboard Community - Vind de beste opstapplekken en maatjes.",
             description: "Vind legale e-foil, electric hydrofoil en jetboard spots bij jou in de buurt. Interactieve communitykaart."
         },
         common: {
@@ -720,7 +720,7 @@ export const dictionaries = {
             food: "Eten"
         },
         hero: {
-            slogan: "Vind samen de beste toegangspunten voor eFoiling."
+            slogan: "Vind de beste opstapplekken en maatjes."
         },
         forms: {
             name: "Spotnaam",
@@ -779,8 +779,8 @@ export const dictionaries = {
         },
         intro: {
             title: "Welkom bij eFoilMap",
-            text: "De community voor eFoilers. Vind de beste toegangspunten met parkeergelegenheid dicht bij het water, oplaadopties, eten en meer. Deel je ervaring en laten we samen de community laten groeien.",
-            cta: "Let's Foil"
+            text: "De community voor eFoilen (Bètaversie). Vind de beste opstapplekken met parkeergelegenheid dicht bij het water, oplaadmogelijkheden, eten en meer. Spreek af om samen te gaan eFoilen. Deel je ervaring en laten we samen de community laten groeien. Gebruik gerust de feedbackknop.",
+            cta: "Laten we gaan"
         },
         ugc: {
             ai_translated: "(automatisch vertaald met AI)"
@@ -789,7 +789,7 @@ export const dictionaries = {
     pl: {
         meta: {
             label: "Polski",
-            title: "Społeczność eFoil & Jetboard - Znajdźmy razem najlepsze miejsca do wodowania eFoil.",
+            title: "Społeczność eFoil i Jetboard - Znajdź najlepsze miejsca do wejścia i kompanów do pływania.",
             description: "Znajdź legalne miejsca e-foil, electric hydrofoil i jetboard w swojej okolicy. Interaktywna mapa społecznościowa."
         },
         common: {
@@ -832,7 +832,7 @@ export const dictionaries = {
             food: "Jedzenie"
         },
         hero: {
-            slogan: "Znajdźmy razem najlepsze miejsca do wodowania eFoil."
+            slogan: "Znajdź najlepsze miejsca do wejścia i kompanów do pływania."
         },
         forms: {
             name: "Nazwa Spotu",
@@ -891,8 +891,8 @@ export const dictionaries = {
         },
         intro: {
             title: "Witaj w eFoilMap",
-            text: "Społeczność dla eFoilerów. Znajdź najlepsze miejsca z parkingiem blisko wody, możliwościami ładowania, gastronomią i nie tylko. Podziel się swoimi wrażeniami i wspólnie rozwijajmy społeczność.",
-            cta: "Let's Foil"
+            text: "Społeczność dla eFoilerów (Wersja Beta). Znajdź najlepsze punkty startowe z parkingiem blisko wody, możliwością ładowania, jedzeniem i nie tylko. Umawiaj się z innymi na pływanie. Podziel się swoim doświadczeniem i razem rozwijajmy społeczność. Śmiało korzystaj z przycisku opinii.",
+            cta: "Chodźmy popływać"
         },
         ugc: {
             ai_translated: "(przetłumaczone automatycznie przez AI)"
@@ -901,7 +901,7 @@ export const dictionaries = {
     sv: {
         meta: {
             label: "Svenska",
-            title: "eFoil-communityt - Hitta tillsammans de bästa iläggsplatserna för eFoiling.",
+            title: "eFoil- och Jetboard-communityn - Hitta de bästa startplatserna och åkkompisarna.",
             description: "Hitta lagliga platser för e-foil, electric hydrofoil och jetboard nära dig. Interaktiv community-karta."
         },
         common: {
@@ -944,7 +944,7 @@ export const dictionaries = {
             food: "Mat"
         },
         hero: {
-            slogan: "Hitta tillsammans de bästa iläggsplatserna för eFoiling."
+            slogan: "Hitta de bästa startplatserna och åkkompisarna."
         },
         forms: {
             name: "Platsens Namn",
@@ -1003,8 +1003,8 @@ export const dictionaries = {
         },
         intro: {
             title: "Välkommen till eFoilMap",
-            text: "Communityt för eFoilare. Hitta de bästa platserna med parkering nära vattnet, laddningsmöjligheter, mat och mer. Dela din upplevelse och låt oss växa communityt tillsammans.",
-            cta: "Let's Foil"
+            text: "Communityn för eFoilers (Betaversion). Hitta de bästa startplatserna med parkering nära vattnet, laddningsmöjligheter, mat och mer. Boka träffar med andra för att eFoila. Dela med dig av din erfarenhet och låt oss bygga communityn tillsammans. Använd gärna feedback-knappen.",
+            cta: "Låt oss foila"
         },
         ugc: {
             ai_translated: "(automatiskt översatt med AI)"
