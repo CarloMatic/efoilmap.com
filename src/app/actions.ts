@@ -203,6 +203,70 @@ export async function updateSpot(spotId: string, data: Partial<Spot>, token?: st
     }
 }
 
+export async function deleteSpot(spotId: string, token?: string) {
+    const supabase = await createClient();
+    
+    // Auth Check: Try token first, then getSession
+    let user = null;
+    let authError = null;
+    
+    if (token) {
+        const res = await supabase.auth.getUser(token);
+        user = res.data.user;
+        authError = res.error;
+    }
+    
+    if (!user) {
+        // Fallback to cookies
+        const res = await supabase.auth.getUser();
+        user = res.data.user;
+        if (!authError && res.error) authError = res.error;
+    }
+    
+    if (!user) {
+        const { data: { session } } = await supabase.auth.getSession();
+        user = session?.user || null;
+    }
+    if (!user) return { success: false, error: "Unauthorized: Please sign in first." };
+
+    // DB Client: Use token explicitly for RLS
+    const dbClient = token ? createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { global: { headers: { Authorization: `Bearer ${token}` } } }
+    ) : supabase;
+
+    // Server-side security check: Only creator or admin can delete
+    const isAdmin = user.email === 'callematic@gmail.com';
+    const { data: existingSpot, error: fetchError } = await dbClient
+        .from("spots")
+        .select("user_id, created_by")
+        .eq("id", spotId)
+        .maybeSingle();
+
+    if (fetchError || !existingSpot) {
+        return { success: false, error: "Spot not found or error retrieving details." };
+    }
+
+    const isCreator = existingSpot.user_id === user.id || existingSpot.created_by === user.id || isAdmin;
+    if (!isCreator) {
+        return { success: false, error: "Unauthorized: Only the spot creator or an admin can delete this spot." };
+    }
+
+    try {
+        const { error } = await dbClient
+            .from("spots")
+            .delete()
+            .eq("id", spotId);
+
+        if (error) return { success: false, error: error.message };
+        return { success: true };
+    } catch {
+        return { success: false, error: "Deletion failed" };
+    }
+}
+
+
 
 
 export async function createSpot(spotData: Omit<Spot, "id" | "createdAt">, token?: string) {

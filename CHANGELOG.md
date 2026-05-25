@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.0] - 2026-05-25
+
+### Added
+- **Spot Deletion**: Enabled creators and administrators to permanently delete spots directly from the edit modal.
+- **Database RLS Policies**: Added a secure deletion RLS policy on the `spots` table to restrict deletion actions strictly to creators and global admins.
+- **Dynamic State Refresh**: Re-engineered frontend Map and Drawer states to remove deleted spots instantly without full page reloads.
+- **Unit Test Coverage**: Added comprehensive, 9-language translation dictionary checks for all new spot deletion elements.
+
 ## [0.8.0] - 2026-05-25
 
 ### Added

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Loader2, Camera, Store } from "lucide-react";
+import { X, Loader2, Camera, Store, Trash2 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
-import { createSpot, updateSpot, Spot } from "@/app/actions";
+import { createSpot, updateSpot, deleteSpot, Spot } from "@/app/actions";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/AuthDialog";
 import { supabase } from "@/lib/supabase";
@@ -46,12 +46,37 @@ export const MOVE_POSITION_TIP: Record<string, string> = {
     sv: "Tips: Klicka på knappen ovan och välj den nya positionen direkt genom kartklick."
 };
 
+export const deleteSpotBtnText: Record<string, string> = {
+    de: "Spot löschen",
+    en: "Delete Spot",
+    es: "Eliminar punto",
+    fr: "Supprimer le spot",
+    it: "Elimina lo spot",
+    pt: "Excluir spot",
+    nl: "Spot verwijderen",
+    pl: "Usuń spot",
+    sv: "Ta bort spotten"
+};
+
+export const deleteSpotConfirmText: Record<string, string> = {
+    de: "Bist du sicher, dass du diesen Spot dauerhaft löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
+    en: "Are you sure you want to permanently delete this spot? This action cannot be undone.",
+    es: "¿Estás seguro de que deseas eliminar permanentemente este punto? Esta ação no se puede deshacer.",
+    fr: "Es-tu sûr de vouloir supprimer définitivement ce spot ? Cette action est irréversible.",
+    it: "Sei sicuro di voler eliminare permanentemente questo spot? Questa azione non può essere annullata.",
+    pt: "Tens a certeza de que desejas excluir permanentemente este spot? Esta ação não pode ser desfeita.",
+    nl: "Weet je zeker dat je deze spot permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    pl: "Czy na pewno chcesz na stałe usunąć ten spot? Tej operacji nie można cofnąć.",
+    sv: "Är du säker på att du vill ta bort den här spotten permanent? Denna åtgärd kan inte ångras."
+};
+
+
 interface AddSpotDialogProps {
     open: boolean;
     onClose: () => void;
     location: [number, number] | null;
     initialData?: Spot | null;
-    onSuccess: (spot?: Spot) => void;
+    onSuccess: (spot?: Spot, isDeleted?: boolean) => void;
     isMovingPosition?: boolean;
     onInitiateMove?: () => void;
 }
@@ -61,6 +86,7 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess,
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const { t, locale } = useLanguage();
     const [loading, setLoading] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     // Form State
@@ -293,6 +319,32 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess,
             setError("Something went wrong");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!initialData || !user) return;
+        
+        const confirmMsg = deleteSpotConfirmText[locale] || deleteSpotConfirmText['en'];
+        if (!window.confirm(confirmMsg)) return;
+
+        setDeleting(true);
+        setError(null);
+
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await deleteSpot(initialData.id, session?.access_token);
+            
+            if (res.success) {
+                onSuccess(undefined, true);
+                onClose();
+            } else {
+                setError(res.error || "Failed to delete spot.");
+            }
+        } catch (err: any) {
+            setError(err.message || "Failed to delete spot.");
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -553,6 +605,17 @@ export function AddSpotDialog({ open, onClose, location, initialData, onSuccess,
 
                         {/* Actions */}
                         <div className="pt-4 flex justify-end gap-3 border-t">
+                            {initialData && isCreator && (
+                                <button
+                                    type="button"
+                                    onClick={handleDelete}
+                                    disabled={deleting || loading}
+                                    className="mr-auto px-4 py-2 text-sm font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                >
+                                    {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                    {deleteSpotBtnText[locale] || deleteSpotBtnText['en']}
+                                </button>
+                            )}
                             <button
                                 type="button"
                                 onClick={onClose}

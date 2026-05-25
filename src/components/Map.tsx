@@ -488,8 +488,12 @@ export default function EfoilMap() {
                 }}
                 location={newSpotLocation || (selectedSpot?.location.coordinates as [number, number])}
                 initialData={isAddSpotOpen && selectedSpot && !isSelectingLocation ? selectedSpot : null}
-                onSuccess={(updatedSpot) => {
-                    if (updatedSpot) {
+                onSuccess={(updatedSpot, isDeleted = false) => {
+                    if (isDeleted && selectedSpot) {
+                        setSpots(prev => prev.filter(s => s.id !== selectedSpot.id));
+                        setSelectedSpot(null);
+                        setIsDrawerOpen(false);
+                    } else if (updatedSpot) {
                         setSpots(prev => {
                             const exists = prev.find(s => s.id === updatedSpot.id);
                             if (exists) {

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { GOOGLE_MAPS_TIP, MOVE_ON_MAP_BTN, MOVE_POSITION_TIP } from "@/components/AddSpotDialog";
+import { GOOGLE_MAPS_TIP, MOVE_ON_MAP_BTN, MOVE_POSITION_TIP, deleteSpotBtnText, deleteSpotConfirmText } from "@/components/AddSpotDialog";
 import { editSpotText, noCommentsText, commentsHeaderText, commentPlaceholderText, commentButtonText, commentSignInPrompt, replyPlaceholderText, replyButtonText } from "@/components/SpotDialog";
 import { likedSpotText } from "@/components/NotificationCenter";
 
@@ -124,4 +124,21 @@ describe("Spot Dialog Translation Coverages (9 Platform Languages)", () => {
             expect(replyButtonText[locale].length).toBeGreaterThan(0);
         });
     });
+
+    test("deleteSpotBtnText dictionary covers all 9 languages and has non-empty values", () => {
+        requiredLocales.forEach((locale) => {
+            expect(deleteSpotBtnText[locale]).toBeDefined();
+            expect(typeof deleteSpotBtnText[locale]).toBe("string");
+            expect(deleteSpotBtnText[locale].length).toBeGreaterThan(0);
+        });
+    });
+
+    test("deleteSpotConfirmText dictionary covers all 9 languages and has non-empty values", () => {
+        requiredLocales.forEach((locale) => {
+            expect(deleteSpotConfirmText[locale]).toBeDefined();
+            expect(typeof deleteSpotConfirmText[locale]).toBe("string");
+            expect(deleteSpotConfirmText[locale].length).toBeGreaterThan(0);
+        });
+    });
 });
+
