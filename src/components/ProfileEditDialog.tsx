@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, User, Loader2, Camera, Check, MessageSquare, LogOut, Bookmark, MapPin, Star, Bell } from "lucide-react";
+import { X, User, Loader2, Camera, Check, MessageSquare, LogOut, Bookmark, MapPin, Star, Bell, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n";
@@ -27,7 +27,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
 
     const [bookmarks, setBookmarks] = useState<Spot[]>([]);
     const [bookmarksLoading, setBookmarksLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<"profile" | "notifications" | "bookmarks">("profile");
+    const [activeTab, setActiveTab] = useState<"profile" | "settings" | "bookmarks">("profile");
 
     const [emailPrefVisits, setEmailPrefVisits] = useState(true);
     const [emailPrefQuestions, setEmailPrefQuestions] = useState(true);
@@ -222,19 +222,6 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                         </button>
                         <button
                             type="button"
-                            onClick={() => setActiveTab("notifications")}
-                            className={cn(
-                                "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none focus:outline-none",
-                                activeTab === "notifications"
-                                    ? "bg-blue-600 text-white shadow-lg font-extrabold"
-                                    : "text-gray-400 hover:text-gray-200"
-                            )}
-                        >
-                            <Bell className="w-3.5 h-3.5" />
-                            {locale === 'de' ? 'Mails' : 'Mails'}
-                        </button>
-                        <button
-                            type="button"
                             onClick={() => setActiveTab("bookmarks")}
                             className={cn(
                                 "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none focus:outline-none",
@@ -245,6 +232,19 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                         >
                             <Bookmark className="w-3.5 h-3.5" />
                             {locale === 'de' ? 'Merkliste' : 'Saved'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab("settings")}
+                            className={cn(
+                                "px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center cursor-pointer border-none focus:outline-none shrink-0",
+                                activeTab === "settings"
+                                    ? "bg-blue-600 text-white shadow-lg"
+                                    : "text-gray-400 hover:text-gray-200"
+                            )}
+                            title={locale === 'de' ? 'Einstellungen' : 'Settings'}
+                        >
+                            <Settings className="w-3.5 h-3.5" />
                         </button>
                     </div>
 
@@ -352,7 +352,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                 </div>
                             </form>
                         </>
-                    ) : activeTab === "notifications" ? (
+                    ) : activeTab === "settings" ? (
                         <>
                             {/* Email Preferences and Language Settings Form */}
                             <form onSubmit={handleSaveSettings} className="space-y-6">
