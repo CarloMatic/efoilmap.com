@@ -143,17 +143,19 @@ export const useLanguage = () => {
     return context;
 };
 
-export function useTranslate(text: string | undefined, targetLang: string) {
+export function useTranslate(text: string | undefined, targetLang: string, enabled = true) {
     const [translatedText, setTranslatedText] = useState<string>('');
     const [isTranslated, setIsTranslated] = useState(false);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (!text || !text.trim()) {
-            setTimeout(() => {
-                setTranslatedText(prev => prev !== '' ? '' : prev);
-                setIsTranslated(prev => prev !== false ? false : prev);
-            }, 0);
+        let active = true;
+
+        // Synchronously reset translation states to prevent old text from briefly displaying
+        setTranslatedText('');
+        setIsTranslated(false);
+
+        if (!enabled || !text || !text.trim()) {
             return;
         }
 
@@ -161,13 +163,14 @@ export function useTranslate(text: string | undefined, targetLang: string) {
         const sl = 'auto';
 
         setTimeout(() => {
-            setLoading(true);
+            if (active) setLoading(true);
         }, 0);
         const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
+                if (!active) return;
                 if (data && data[0] && Array.isArray(data[0])) {
                     const translated = data[0].map((x: unknown) => Array.isArray(x) ? String(x[0]) : '').join('');
                     if (translated.toLowerCase().trim() !== text.toLowerCase().trim()) {
@@ -183,14 +186,19 @@ export function useTranslate(text: string | undefined, targetLang: string) {
                 }
             })
             .catch(err => {
+                if (!active) return;
                 console.error("Translation Error:", err);
                 setTranslatedText(text);
                 setIsTranslated(false);
             })
             .finally(() => {
-                setLoading(false);
+                if (active) setLoading(false);
             });
-    }, [text, targetLang]);
+
+        return () => {
+            active = false;
+        };
+    }, [text, targetLang, enabled]);
 
     return { translatedText: translatedText || text || '', isTranslated, loading };
 }

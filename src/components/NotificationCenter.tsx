@@ -4,11 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Bell, MessageSquare, Star, X, User as UserIcon, Heart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/lib/i18n";
+import { useLanguage, useTranslate } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Spot, getLastReadNotifications, updateLastReadNotifications } from "@/app/actions";
 import { generateSlug } from "@/lib/utils";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export const likedSpotText: Record<string, string> = {
     de: "hat deinen Spot geliked! ❤️",
@@ -30,7 +31,7 @@ interface NotificationCenterProps {
 
 interface NotificationItem {
     id: string;
-    type: "spot_comment" | "visit_comment" | "spot_like";
+    type: "spot_comment" | "visit_comment" | "spot_like" | "spot_question" | "spot_answer";
     spotId: string;
     spotName: string;
     visitId?: string;
@@ -43,6 +44,8 @@ interface NotificationItem {
 
 export function NotificationCenter({ user, onSelectSpot, onViewProfile }: NotificationCenterProps) {
     const { locale } = useLanguage();
+    const { profile } = useAuth();
+    const isAiTranslationEnabled = profile ? (profile as any).ai_translation_enabled !== false : true;
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -106,6 +109,34 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                 spotLikes = data || [];
             }
 
+            // 4.6. Fetch questions on these spots by others
+            let spotQuestions: any[] = [];
+            if (mySpotIds.length > 0) {
+                const { data } = await supabase
+                    .from("spot_questions")
+                    .select("id, spot_id, question, created_at, user_id, spots(name), profiles(username, avatar_url)")
+                    .in("spot_id", mySpotIds)
+                    .neq("user_id", user.id);
+                spotQuestions = data || [];
+            }
+
+            // 4.7. Fetch answers to user's questions by others
+            const { data: myQuestions } = await supabase
+                .from("spot_questions")
+                .select("id, question, spot_id")
+                .eq("user_id", user.id);
+
+            const myQuestionIds = myQuestions?.map(q => q.id) || [];
+            let spotAnswers: any[] = [];
+            if (myQuestionIds.length > 0) {
+                const { data } = await supabase
+                    .from("spot_answers")
+                    .select("id, question_id, answer, created_at, user_id, spot_questions(spot_id, question, spots(name)), profiles(username, avatar_url)")
+                    .in("question_id", myQuestionIds)
+                    .neq("user_id", user.id);
+                spotAnswers = data || [];
+            }
+
             // 5. Combine and map to NotificationItem format
             const items: NotificationItem[] = [];
 
@@ -153,6 +184,43 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                         spotName: spot?.name || "Spot",
                         visitId: c.visit_id,
                         comment: c.comment,
+                        createdAt: c.created_at,
+                        username: prof?.username || "eFoiler",
+                        avatarUrl: prof?.avatar_url,
+                        likerId: c.user_id
+                    });
+                }
+            });
+
+            spotQuestions.forEach(c => {
+                if (c.question && c.question.trim()) {
+                    const prof = Array.isArray(c.profiles) ? c.profiles[0] : c.profiles;
+                    const spot = Array.isArray(c.spots) ? c.spots[0] : c.spots;
+                    items.push({
+                        id: c.id,
+                        type: "spot_question",
+                        spotId: c.spot_id,
+                        spotName: spot?.name || mySpotsMap.get(c.spot_id) || "Spot",
+                        comment: c.question,
+                        createdAt: c.created_at,
+                        username: prof?.username || "eFoiler",
+                        avatarUrl: prof?.avatar_url,
+                        likerId: c.user_id
+                    });
+                }
+            });
+
+            spotAnswers.forEach(c => {
+                if (c.answer && c.answer.trim()) {
+                    const prof = Array.isArray(c.profiles) ? c.profiles[0] : c.profiles;
+                    const quest = Array.isArray(c.spot_questions) ? c.spot_questions[0] : c.spot_questions;
+                    const spot = quest?.spots ? (Array.isArray(quest.spots) ? quest.spots[0] : quest.spots) : null;
+                    items.push({
+                        id: c.id,
+                        type: "spot_answer",
+                        spotId: quest?.spot_id || "",
+                        spotName: spot?.name || "Spot",
+                        comment: c.answer,
                         createdAt: c.created_at,
                         username: prof?.username || "eFoiler",
                         avatarUrl: prof?.avatar_url,
@@ -356,7 +424,7 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                             </p>
                                         ) : (
                                             <p className="text-[11px] text-gray-300 leading-normal line-clamp-2 italic mb-1.5">
-                                                &ldquo;{notif.comment}&rdquo;
+                                                <NotificationComment text={notif.comment} targetLang={locale} enabled={isAiTranslationEnabled} />
                                             </p>
                                         )}
 
@@ -365,6 +433,10 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                                 <Heart className="w-3 h-3 text-red-500 fill-red-500/20 shrink-0 animate-pulse" />
                                             ) : notif.type === "spot_comment" ? (
                                                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500/20 shrink-0" />
+                                            ) : notif.type === "spot_question" ? (
+                                                <MessageSquare className="w-3 h-3 text-green-400 shrink-0" />
+                                            ) : notif.type === "spot_answer" ? (
+                                                <MessageSquare className="w-3 h-3 text-purple-400 shrink-0" />
                                             ) : (
                                                 <MessageSquare className="w-3 h-3 text-blue-400 shrink-0" />
                                             )}
@@ -373,7 +445,11 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                                     ? (locale === "de" ? `Gefällt mir: ${notif.spotName}` : `Like: ${notif.spotName}`)
                                                     : notif.type === "spot_comment"
                                                         ? (locale === "de" ? `Spot: ${notif.spotName}` : `Spot: ${notif.spotName}`)
-                                                        : (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)}
+                                                        : notif.type === "spot_question"
+                                                            ? (locale === "de" ? `Spot-Kommentar: ${notif.spotName}` : `Spot Comment: ${notif.spotName}`)
+                                                            : notif.type === "spot_answer"
+                                                                ? (locale === "de" ? `Spot-Antwort: ${notif.spotName}` : `Spot Reply: ${notif.spotName}`)
+                                                                : (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)}
                                             </span>
                                         </div>
                                     </div>
@@ -391,4 +467,15 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
             )}
         </div>
     );
+}
+
+interface NotificationCommentProps {
+    text: string;
+    targetLang: string;
+    enabled: boolean;
+}
+
+function NotificationComment({ text, targetLang, enabled }: NotificationCommentProps) {
+    const { translatedText } = useTranslate(text, targetLang, enabled);
+    return <>&ldquo;{translatedText}&rdquo;</>;
 }

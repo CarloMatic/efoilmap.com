@@ -9,6 +9,7 @@ export interface Profile {
     username: string | null;
     avatar_url?: string | null;
     bio?: string | null;
+    ai_translation_enabled?: boolean;
 }
 
 export function useAuth() {

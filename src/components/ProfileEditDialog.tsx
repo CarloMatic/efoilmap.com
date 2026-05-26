@@ -31,6 +31,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
 
     const [emailPrefVisits, setEmailPrefVisits] = useState(true);
     const [emailPrefQuestions, setEmailPrefQuestions] = useState(true);
+    const [aiTranslationEnabled, setAiTranslationEnabled] = useState(true);
     const [notificationLocale, setNotificationLocale] = useState("de");
 
     const loadBookmarks = async () => {
@@ -63,6 +64,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
             setBio(profile.bio || "");
             setEmailPrefVisits((profile as any).email_pref_visits !== false);
             setEmailPrefQuestions((profile as any).email_pref_questions !== false);
+            setAiTranslationEnabled((profile as any).ai_translation_enabled !== false);
             setNotificationLocale((profile as any).locale || locale || "de");
         }
     }, [profile, open, locale]);
@@ -172,6 +174,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
             const { error } = await updateProfile({ 
                 email_pref_visits: emailPrefVisits,
                 email_pref_questions: emailPrefQuestions,
+                ai_translation_enabled: aiTranslationEnabled,
                 locale: notificationLocale
             } as any);
             if (error) throw error;
@@ -419,6 +422,29 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                                 type="checkbox" 
                                                 checked={emailPrefQuestions} 
                                                 onChange={(e) => setEmailPrefQuestions(e.target.checked)} 
+                                                className="sr-only peer" 
+                                            />
+                                            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
+                                    {/* AI Translation toggle */}
+                                    <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all duration-150">
+                                        <div className="flex-1 pr-4">
+                                            <h4 className="text-sm font-semibold text-white">
+                                                {locale === 'de' ? 'AI-Übersetzung' : 'AI Translation'}
+                                            </h4>
+                                            <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
+                                                {locale === 'de' 
+                                                    ? 'Spot-Beschreibungen, Kommentare und Antworten automatisch in deine Sprache übersetzen.' 
+                                                    : 'Automatically translate spot descriptions, comments, and replies into your language.'}
+                                            </p>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={aiTranslationEnabled} 
+                                                onChange={(e) => setAiTranslationEnabled(e.target.checked)} 
                                                 className="sr-only peer" 
                                             />
                                             <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>

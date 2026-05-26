@@ -2,7 +2,7 @@
 
 import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store, Heart, Bookmark } from "lucide-react";
 import Image from "next/image";
-import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview, toggleLikeSpot, getSpotLikesCount, getSpotLikeStatus, toggleBookmarkSpot, getSpotQuestionsAndAnswers, createSpotQuestion, createSpotAnswer, SpotQuestion, SpotAnswer } from "@/app/actions";
+import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview, toggleLikeSpot, getSpotLikesCount, getSpotLikeStatus, toggleBookmarkSpot, getSpotQuestionsAndAnswers, createSpotQuestion, createSpotAnswer, SpotQuestion, SpotAnswer, toggleLikeQuestion, toggleLikeAnswer } from "@/app/actions";
 import { useSearchParams } from "next/navigation";
 import { Trash2, Edit2, Check } from "lucide-react";
 
@@ -290,34 +290,80 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [lightboxPhoto, setLightboxPhoto] = useState<string | null>(null);
     const [youtubeVideoId, setYoutubeVideoId] = useState<string | null>(null);
+
+    // Derived state pattern to reset states synchronously when spot.id changes
+    const [prevSpotId, setPrevSpotId] = useState<string | null>(null);
+
+    if (!open && prevSpotId !== null) {
+        setPrevSpotId(null);
+    }
+
+    if (open && spot && spot.id !== prevSpotId) {
+        setPrevSpotId(spot.id);
+        
+        // Reset all states synchronously to prevent visual flickering of old spot data
+        setRating(0);
+        setComment("");
+        setVerifying(false);
+        setUploading(false);
+        setPhotos([]);
+        setReviews([]);
+        setHasExistingReview(false);
+        setCreatorUsername(null);
+        setCreatorId(null);
+        
+        setLikesCount(0);
+        setIsLiked(false);
+        setIsBookmarked(false);
+        
+        setVisits([]);
+        setMigrationError(false);
+        setVisitDesc("");
+        setVisitTime("10:00");
+        setReplyText({});
+        setSubmittingReply({});
+        setShowPlanning(false);
+        
+        setQuestions([]);
+        setNewQuestion("");
+        setSubmittingQuestion(false);
+        setActiveReplyBoxId(null);
+        setNewAnswerText("");
+        setSubmittingAnswer(false);
+        setLightboxPhoto(null);
+        setYoutubeVideoId(null);
+    }
     const { showToast } = useToast();
     const { t, locale } = useLanguage();
-    const { translatedText: translatedDescription, isTranslated: isDescriptionTranslated } = useTranslate(spot?.attributes?.description, locale);
-    const { translatedText: translatedName, isTranslated: isNameTranslated } = useTranslate(spot?.name, locale);
+    const isAiTranslationEnabled = profile ? (profile as any).ai_translation_enabled !== false : true;
+    const { translatedText: translatedDescription, isTranslated: isDescriptionTranslated } = useTranslate(spot?.attributes?.description, locale, isAiTranslationEnabled);
+    const { translatedText: translatedName, isTranslated: isNameTranslated } = useTranslate(spot?.name, locale, isAiTranslationEnabled);
 
     // Reset state when opening a new spot
     useEffect(() => {
         if (open && spot) {
-            const timer = setTimeout(() => {
-                setRating(0);
-                setComment("");
-                setVerifying(false);
-                setUploading(false);
-                setPhotos([]); // Clear first so we don't show old photos
-                setReviews([]);
-                setHasExistingReview(false);
-                setCreatorUsername(null);
-                
-                // Reset scheduling states
-                setVisits([]);
-                setMigrationError(false);
-                setVisitDesc("");
-                setVisitTime("10:00");
-                setReplyText({});
-                setSubmittingReply({});
-                setShowPlanning(false);
-            }, 0);
-            return () => clearTimeout(timer);
+            setRating(0);
+            setComment("");
+            setVerifying(false);
+            setUploading(false);
+            setPhotos([]); // Clear first so we don't show old photos
+            setReviews([]);
+            setHasExistingReview(false);
+            setCreatorUsername(null);
+            
+            // Reset scheduling states
+            setVisits([]);
+            setMigrationError(false);
+            setVisitDesc("");
+            setVisitTime("10:00");
+            setReplyText({});
+            setSubmittingReply({});
+            setShowPlanning(false);
+
+            // Immediately reset likes & bookmarks to prevent showing previous spot's details
+            setLikesCount(0);
+            setIsLiked(false);
+            setIsBookmarked(false);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, spot?.id]); // Reset only on spot change or when opened
@@ -639,7 +685,6 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
             if (res.success) {
                 setIsLiked(res.action === 'liked');
                 setLikesCount(prev => res.action === 'liked' ? prev + 1 : prev - 1);
-                showToast(res.action === 'liked' ? (locale === 'de' ? 'Gefällt mir!' : 'Liked!') : (locale === 'de' ? 'Gefällt mir nicht mehr' : 'Unliked'), 'success');
             } else {
                 showToast(res.error || 'Error liking spot', 'error');
             }
@@ -1044,7 +1089,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             )}
                             title={isLiked ? "Unlike spot" : "Like spot"}
                         >
-                            <Heart className={cn("w-3.5 h-3.5", isLiked && "fill-current")} />
+                            <Heart className={cn("w-3.5 h-3.5 transition-all duration-300 ease-out", isLiked ? "fill-red-500 text-red-500 scale-125 rotate-12" : "scale-100 rotate-0")} />
                             <span>{likesCount}</span>
                         </button>
 
@@ -1338,96 +1383,24 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                                                 const isCommenterCancelled = commenterParticipant?.status === 'CANCELLED';
                                                                                 
                                                                                 return (
-                                                                                    <div 
-                                                                                        key={comm.id} 
-                                                                                        className={cn(
-                                                                                            "flex gap-2 text-xs bg-white/5 p-2.5 rounded-xl border border-white/5 transition-opacity duration-200 group relative",
-                                                                                            isCommenterCancelled && "opacity-35 bg-black/10 border-red-500/5"
-                                                                                        )}
-                                                                                    >
-                                                                                        <button 
-                                                                                            onClick={() => onViewProfile?.(comm.user_id)}
-                                                                                            className="w-6 h-6 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center text-gray-400 overflow-hidden relative shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-500/50 transition-all block focus:outline-none"
-                                                                                        >
-                                                                                            {comm.profiles?.avatar_url ? (
-                                                                                                <Image src={comm.profiles.avatar_url} alt="Avatar" fill className="object-cover" />
-                                                                                            ) : (
-                                                                                                <UserIcon className="w-3 h-3" />
-                                                                                            )}
-                                                                                        </button>
-                                                                                        <div className="flex-1 min-w-0">
-                                                                                            <div className="flex items-center justify-between gap-2">
-                                                                                                <button 
-                                                                                                    onClick={() => onViewProfile?.(comm.user_id)}
-                                                                                                    className="font-bold text-gray-300 hover:text-blue-400 hover:underline transition-colors border-none bg-transparent p-0 cursor-pointer text-left focus:outline-none text-xs"
-                                                                                                >
-                                                                                                    @{comm.profiles?.username || 'User'}
-                                                                                                </button>
-                                                                                                {isCommenterCancelled && (
-                                                                                                    <span className="text-[9px] font-extrabold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-400/20 ml-1.5 not-italic inline-block">
-                                                                                                        {locale === 'de' ? 'Abgesagt' : 'Cancelled'}
-                                                                                                    </span>
-                                                                                                )}
-                                                                                                <div className="flex items-center gap-2">
-                                                                                                    <span className="text-[9px] text-gray-500">{new Date(comm.created_at).toLocaleDateString()}</span>
-                                                                                                    {/* Edit / Delete Buttons */}
-                                                                                                    {user && (user.id === comm.user_id || isAdmin) && (
-                                                                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                                                                                                            {user.id === comm.user_id && (
-                                                                                                                <button
-                                                                                                                    onClick={() => {
-                                                                                                                        setEditingVisitCommentId(comm.id);
-                                                                                                                        setEditingVisitCommentText(comm.comment);
-                                                                                                                    }}
-                                                                                                                    className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-blue-400 transition-colors"
-                                                                                                                    title={locale === 'de' ? 'Bearbeiten' : 'Edit'}
-                                                                                                                >
-                                                                                                                    <Edit2 className="w-3 h-3" />
-                                                                                                                </button>
-                                                                                                            )}
-                                                                                                            <button
-                                                                                                                onClick={() => handleDeleteVisitComment(comm.id, visit.id)}
-                                                                                                                className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-red-400 transition-colors"
-                                                                                                                title={locale === 'de' ? 'Löschen' : 'Delete'}
-                                                                                                            >
-                                                                                                                <Trash2 className="w-3 h-3" />
-                                                                                                            </button>
-                                                                                                        </div>
-                                                                                                    )}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            {editingVisitCommentId === comm.id ? (
-                                                                                                <div className="mt-2 flex items-center gap-2">
-                                                                                                    <input 
-                                                                                                        type="text"
-                                                                                                        value={editingVisitCommentText}
-                                                                                                        onChange={(e) => setEditingVisitCommentText(e.target.value)}
-                                                                                                        className="flex-1 bg-black/20 border border-white/10 rounded-md px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                                                                        onKeyDown={(e) => {
-                                                                                                            if (e.key === 'Enter') handleUpdateVisitComment(comm.id, visit.id);
-                                                                                                            if (e.key === 'Escape') setEditingVisitCommentId(null);
-                                                                                                        }}
-                                                                                                    />
-                                                                                                    <button
-                                                                                                        onClick={() => handleUpdateVisitComment(comm.id, visit.id)}
-                                                                                                        className="p-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors"
-                                                                                                    >
-                                                                                                        <Check className="w-3 h-3" />
-                                                                                                    </button>
-                                                                                                    <button
-                                                                                                        onClick={() => setEditingVisitCommentId(null)}
-                                                                                                        className="p-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-md transition-colors"
-                                                                                                    >
-                                                                                                        <X className="w-3 h-3" />
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            ) : (
-                                                                                                <p className={cn("text-gray-300 mt-1 leading-relaxed", isCommenterCancelled && "line-through")}>
-                                                                                                    {comm.comment}
-                                                                                                </p>
-                                                                                            )}
-                                                                                        </div>
-                                                                                    </div>
+                                                                                    <VisitCommentItem
+                                                                                        key={comm.id}
+                                                                                        comm={comm}
+                                                                                        locale={locale}
+                                                                                        t={t}
+                                                                                        isAiTranslationEnabled={isAiTranslationEnabled}
+                                                                                        isCommenterCancelled={isCommenterCancelled}
+                                                                                        onViewProfile={onViewProfile}
+                                                                                        user={user}
+                                                                                        isAdmin={isAdmin}
+                                                                                        editingVisitCommentId={editingVisitCommentId}
+                                                                                        setEditingVisitCommentId={setEditingVisitCommentId}
+                                                                                        editingVisitCommentText={editingVisitCommentText}
+                                                                                        setEditingVisitCommentText={setEditingVisitCommentText}
+                                                                                        handleUpdateVisitComment={handleUpdateVisitComment}
+                                                                                        handleDeleteVisitComment={handleDeleteVisitComment}
+                                                                                        visitId={visit.id}
+                                                                                    />
                                                                                 );
                                                                             })}
                                                                         </div>
@@ -1720,116 +1693,24 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                 <div className="space-y-3">
                                     {questions.length > 0 ? (
                                         questions.map((q) => (
-                                            <div key={q.id} className="bg-white/2 border border-white/5 p-4 rounded-2xl space-y-3 flex flex-col">
-                                                {/* Comment Header & Content */}
-                                                <div className="flex items-start gap-3 min-w-0">
-                                                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-900 border border-white/10 relative shrink-0 flex items-center justify-center">
-                                                        {q.profiles?.avatar_url ? (
-                                                            <img src={q.profiles.avatar_url} alt={q.profiles.username || "eFoiler"} className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            <UserIcon className="w-4 h-4 text-gray-500" />
-                                                        )}
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <div className="flex items-center gap-1.5 flex-wrap">
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => onViewProfile?.(q.user_id)}
-                                                                className="text-xs font-bold text-white hover:text-blue-400 transition-colors border-none bg-transparent p-0 cursor-pointer"
-                                                            >
-                                                                @{q.profiles?.username || "eFoiler"}
-                                                            </button>
-                                                            <span className="text-[9px] text-gray-500">
-                                                                {new Date(q.created_at).toLocaleDateString()}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-xs text-gray-200 mt-1 leading-relaxed break-words">{q.question}</p>
-                                                    </div>
-                                                </div>
-
-                                                {/* Replies List */}
-                                                {q.answers && q.answers.length > 0 && (
-                                                    <div className="pl-6 border-l border-white/10 space-y-3 mt-1.5">
-                                                        {q.answers.map((ans) => (
-                                                            <div key={ans.id} className="flex items-start gap-2.5 min-w-0">
-                                                                <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-900 border border-white/10 relative shrink-0 flex items-center justify-center">
-                                                                    {ans.profiles?.avatar_url ? (
-                                                                        <img src={ans.profiles.avatar_url} alt={ans.profiles.username || "eFoiler"} className="w-full h-full object-cover" />
-                                                                    ) : (
-                                                                        <UserIcon className="w-3 h-3 text-gray-500" />
-                                                                    )}
-                                                                </div>
-                                                                <div className="min-w-0 flex-1">
-                                                                    <div className="flex items-center gap-1.5 flex-wrap">
-                                                                        <button 
-                                                                            type="button"
-                                                                            onClick={() => onViewProfile?.(ans.user_id)}
-                                                                            className="text-[11px] font-bold text-gray-300 hover:text-blue-400 transition-colors border-none bg-transparent p-0 cursor-pointer"
-                                                                        >
-                                                                            @{ans.profiles?.username || "eFoiler"}
-                                                                        </button>
-                                                                        <span className="text-[8px] text-gray-500">
-                                                                            {new Date(ans.created_at).toLocaleDateString()}
-                                                                        </span>
-                                                                    </div>
-                                                                    <p className="text-xs text-gray-300 mt-0.5 leading-relaxed break-words">{ans.answer}</p>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-
-                                                {/* Reply Trigger & Box */}
-                                                <div className="flex items-center justify-end gap-2 pt-1 border-t border-white/5">
-                                                    {activeReplyBoxId === q.id ? (
-                                                        <form 
-                                                            onSubmit={(e) => handleAnswerSubmit(e, q.id)} 
-                                                            className="flex gap-2 w-full mt-1.5"
-                                                        >
-                                                            <input
-                                                                type="text"
-                                                                value={newAnswerText}
-                                                                onChange={(e) => setNewAnswerText(e.target.value)}
-                                                                placeholder={replyPlaceholderText[locale] || replyPlaceholderText['en']}
-                                                                required
-                                                                disabled={submittingAnswer}
-                                                                className="flex-1 bg-white/3 border border-white/5 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-500/30 focus:outline-none"
-                                                            />
-                                                            <button
-                                                                type="submit"
-                                                                disabled={submittingAnswer}
-                                                                className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-[10px] font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-50"
-                                                            >
-                                                                {submittingAnswer ? <Loader2 className="w-3 animate-spin" /> : (replyButtonText[locale] || replyButtonText['en'])}
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    setActiveReplyBoxId(null);
-                                                                    setNewAnswerText("");
-                                                                }}
-                                                                className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg text-[10px] transition-colors cursor-pointer shrink-0"
-                                                            >
-                                                                X
-                                                            </button>
-                                                        </form>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                if (!user) {
-                                                                    setIsAuthOpen(true);
-                                                                    return;
-                                                                }
-                                                                setActiveReplyBoxId(q.id);
-                                                            }}
-                                                            className="text-[10px] text-muted-foreground hover:text-blue-400 font-bold transition-colors cursor-pointer border-none bg-transparent p-0 flex items-center gap-1"
-                                                        >
-                                                            💬 {replyButtonText[locale] || replyButtonText['en']}
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
+                                            <QuestionItem 
+                                                key={q.id}
+                                                q={q}
+                                                locale={locale}
+                                                t={t}
+                                                isAiTranslationEnabled={isAiTranslationEnabled}
+                                                onViewProfile={onViewProfile}
+                                                activeReplyBoxId={activeReplyBoxId}
+                                                setActiveReplyBoxId={setActiveReplyBoxId}
+                                                newAnswerText={newAnswerText}
+                                                setNewAnswerText={setNewAnswerText}
+                                                handleAnswerSubmit={handleAnswerSubmit}
+                                                submittingAnswer={submittingAnswer}
+                                                user={user}
+                                                setIsAuthOpen={setIsAuthOpen}
+                                                replyPlaceholderText={replyPlaceholderText}
+                                                replyButtonText={replyButtonText}
+                                            />
                                         ))
                                     ) : (
                                         <p className="text-xs text-center text-gray-500 italic py-4">
@@ -1853,6 +1734,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                 isAdmin={isAdmin}
                                                 onDelete={() => handleAdminDeleteReview(rev.id)}
                                                 onViewProfile={onViewProfile}
+                                                enabled={isAiTranslationEnabled}
                                             />
                                         ))}
                                     </div>
@@ -1979,6 +1861,435 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     );
 }
 
+interface AnswerItemProps {
+    ans: SpotAnswer;
+    locale: string;
+    t: (key: string) => string;
+    isAiTranslationEnabled: boolean;
+    onViewProfile?: (profileId: string) => void;
+    user: any;
+    setIsAuthOpen: (open: boolean) => void;
+}
+
+function AnswerItem({ ans, locale, t, isAiTranslationEnabled, onViewProfile, user, setIsAuthOpen }: AnswerItemProps) {
+    const { translatedText, isTranslated } = useTranslate(ans.answer, locale, isAiTranslationEnabled);
+    
+    // Sync state when props change
+    const [prevAns, setPrevAns] = useState<SpotAnswer | null>(null);
+    const [likesCount, setLikesCount] = useState(ans.likesCount || 0);
+    const [isLiked, setIsLiked] = useState(ans.isLiked || false);
+    const [likeLoading, setLikeLoading] = useState(false);
+
+    if (ans !== prevAns) {
+        setPrevAns(ans);
+        setLikesCount(ans.likesCount || 0);
+        setIsLiked(ans.isLiked || false);
+    }
+
+    const handleLike = async () => {
+        if (!user) {
+            setIsAuthOpen(true);
+            return;
+        }
+        if (likeLoading) return;
+        setLikeLoading(true);
+
+        const nextLiked = !isLiked;
+        setIsLiked(nextLiked);
+        setLikesCount(prev => nextLiked ? prev + 1 : prev - 1);
+
+        try {
+            const res = await toggleLikeAnswer(ans.id);
+            if (!res.success) {
+                setIsLiked(!nextLiked);
+                setLikesCount(prev => nextLiked ? prev - 1 : prev + 1);
+            }
+        } catch (err) {
+            console.error("Like answer error:", err);
+            setIsLiked(!nextLiked);
+            setLikesCount(prev => nextLiked ? prev - 1 : prev + 1);
+        } finally {
+            setLikeLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex items-start gap-2.5 min-w-0">
+            <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-900 border border-white/10 relative shrink-0 flex items-center justify-center">
+                {ans.profiles?.avatar_url ? (
+                    <img src={ans.profiles.avatar_url} alt={ans.profiles.username || "eFoiler"} className="w-full h-full object-cover" />
+                ) : (
+                    <UserIcon className="w-3 h-3 text-gray-500" />
+                )}
+            </div>
+            <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                    <button 
+                        type="button"
+                        onClick={() => onViewProfile?.(ans.user_id)}
+                        className="text-[11px] font-bold text-gray-300 hover:text-blue-400 transition-colors border-none bg-transparent p-0 cursor-pointer"
+                    >
+                        @{ans.profiles?.username || "eFoiler"}
+                    </button>
+                    <span className="text-[8px] text-gray-500">
+                        {new Date(ans.created_at).toLocaleDateString()}
+                    </span>
+                    
+                    <button 
+                        onClick={handleLike}
+                        disabled={likeLoading}
+                        className={cn(
+                            "flex items-center gap-1 transition-all active:scale-75 border-none bg-transparent p-0 cursor-pointer shrink-0 ml-auto text-[9px] hover:text-red-400 focus:outline-none",
+                            isLiked ? "text-red-500 hover:text-red-400 font-bold" : "text-gray-500"
+                        )}
+                    >
+                        <Heart className={cn("w-2.5 h-2.5 transition-all duration-300 ease-out", isLiked ? "fill-red-500 text-red-500 scale-125 rotate-12" : "scale-100 rotate-0")} />
+                        <span>{likesCount}</span>
+                    </button>
+                </div>
+                <p className="text-xs text-gray-300 mt-0.5 leading-relaxed break-words">{translatedText}</p>
+                {isTranslated && (
+                    <p className="text-[9px] text-gray-500/60 italic mt-0.5">
+                        {t('ugc.ai_translated')}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+}
+
+interface QuestionItemProps {
+    q: SpotQuestion;
+    locale: string;
+    t: (key: string) => string;
+    isAiTranslationEnabled: boolean;
+    onViewProfile?: (profileId: string) => void;
+    activeReplyBoxId: string | null;
+    setActiveReplyBoxId: (id: string | null) => void;
+    newAnswerText: string;
+    setNewAnswerText: (text: string) => void;
+    handleAnswerSubmit: (e: React.FormEvent, questionId: string) => void;
+    submittingAnswer: boolean;
+    user: any;
+    setIsAuthOpen: (open: boolean) => void;
+    replyPlaceholderText: Record<string, string>;
+    replyButtonText: Record<string, string>;
+}
+
+function QuestionItem({
+    q,
+    locale,
+    t,
+    isAiTranslationEnabled,
+    onViewProfile,
+    activeReplyBoxId,
+    setActiveReplyBoxId,
+    newAnswerText,
+    setNewAnswerText,
+    handleAnswerSubmit,
+    submittingAnswer,
+    user,
+    setIsAuthOpen,
+    replyPlaceholderText,
+    replyButtonText
+}: QuestionItemProps) {
+    const { translatedText, isTranslated } = useTranslate(q.question, locale, isAiTranslationEnabled);
+
+    // Sync state when props change
+    const [prevQ, setPrevQ] = useState<SpotQuestion | null>(null);
+    const [likesCount, setLikesCount] = useState(q.likesCount || 0);
+    const [isLiked, setIsLiked] = useState(q.isLiked || false);
+    const [likeLoading, setLikeLoading] = useState(false);
+
+    if (q !== prevQ) {
+        setPrevQ(q);
+        setLikesCount(q.likesCount || 0);
+        setIsLiked(q.isLiked || false);
+    }
+
+    const handleLike = async () => {
+        if (!user) {
+            setIsAuthOpen(true);
+            return;
+        }
+        if (likeLoading) return;
+        setLikeLoading(true);
+
+        const nextLiked = !isLiked;
+        setIsLiked(nextLiked);
+        setLikesCount(prev => nextLiked ? prev + 1 : prev - 1);
+
+        try {
+            const res = await toggleLikeQuestion(q.id);
+            if (!res.success) {
+                setIsLiked(!nextLiked);
+                setLikesCount(prev => nextLiked ? prev - 1 : prev + 1);
+            }
+        } catch (err) {
+            console.error("Like question error:", err);
+            setIsLiked(!nextLiked);
+            setLikesCount(prev => nextLiked ? prev - 1 : prev + 1);
+        } finally {
+            setLikeLoading(false);
+        }
+    };
+
+    return (
+        <div className="bg-white/2 border border-white/5 p-4 rounded-2xl space-y-3 flex flex-col">
+            {/* Comment Header & Content */}
+            <div className="flex items-start gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-900 border border-white/10 relative shrink-0 flex items-center justify-center">
+                    {q.profiles?.avatar_url ? (
+                        <img src={q.profiles.avatar_url} alt={q.profiles.username || "eFoiler"} className="w-full h-full object-cover" />
+                    ) : (
+                        <UserIcon className="w-4 h-4 text-gray-500" />
+                    )}
+                </div>
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <button 
+                                type="button"
+                                onClick={() => onViewProfile?.(q.user_id)}
+                                className="text-xs font-bold text-white hover:text-blue-400 transition-colors border-none bg-transparent p-0 cursor-pointer"
+                            >
+                                @{q.profiles?.username || "eFoiler"}
+                            </button>
+                            <span className="text-[9px] text-gray-500">
+                                {new Date(q.created_at).toLocaleDateString()}
+                            </span>
+                        </div>
+                        
+                        <button 
+                            onClick={handleLike}
+                            disabled={likeLoading}
+                            className={cn(
+                                "flex items-center gap-1 transition-all active:scale-75 border-none bg-transparent p-0 cursor-pointer shrink-0 text-[10px] hover:text-red-400 focus:outline-none",
+                                isLiked ? "text-red-500 hover:text-red-400 font-bold" : "text-gray-500"
+                            )}
+                        >
+                            <Heart className={cn("w-3 h-3 transition-all duration-300 ease-out", isLiked ? "fill-red-500 text-red-500 scale-125 rotate-12" : "scale-100 rotate-0")} />
+                            <span>{likesCount}</span>
+                        </button>
+                    </div>
+                    <p className="text-xs text-gray-200 mt-1 leading-relaxed break-words">{translatedText}</p>
+                    {isTranslated && (
+                        <p className="text-[9px] text-gray-500/60 italic mt-1">
+                            {t('ugc.ai_translated')}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            {/* Replies List */}
+            {q.answers && q.answers.length > 0 && (
+                <div className="pl-6 border-l border-white/10 space-y-3 mt-1.5">
+                    {q.answers.map((ans) => (
+                        <AnswerItem 
+                            key={ans.id} 
+                            ans={ans} 
+                            locale={locale} 
+                            t={t} 
+                            isAiTranslationEnabled={isAiTranslationEnabled} 
+                            onViewProfile={onViewProfile} 
+                            user={user}
+                            setIsAuthOpen={setIsAuthOpen}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Reply Trigger & Box */}
+            <div className="flex items-center justify-end gap-2 pt-1 border-t border-white/5">
+                {activeReplyBoxId === q.id ? (
+                    <form 
+                        onSubmit={(e) => handleAnswerSubmit(e, q.id)} 
+                        className="flex gap-2 w-full mt-1.5"
+                    >
+                        <input
+                            type="text"
+                            value={newAnswerText}
+                            onChange={(e) => setNewAnswerText(e.target.value)}
+                            placeholder={replyPlaceholderText[locale] || replyPlaceholderText['en']}
+                            required
+                            disabled={submittingAnswer}
+                            className="flex-1 bg-white/3 border border-white/5 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-500/30 focus:outline-none"
+                        />
+                        <button
+                            type="submit"
+                            disabled={submittingAnswer}
+                            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-[10px] font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                        >
+                            {submittingAnswer ? <Loader2 className="w-3 animate-spin" /> : (replyButtonText[locale] || replyButtonText['en'])}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setActiveReplyBoxId(null);
+                                setNewAnswerText("");
+                            }}
+                            className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg text-[10px] transition-colors cursor-pointer shrink-0"
+                        >
+                            X
+                        </button>
+                    </form>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (!user) {
+                                setIsAuthOpen(true);
+                                return;
+                            }
+                            setActiveReplyBoxId(q.id);
+                        }}
+                        className="text-[10px] text-muted-foreground hover:text-blue-400 font-bold transition-colors cursor-pointer border-none bg-transparent p-0 flex items-center gap-1"
+                    >
+                        💬 {replyButtonText[locale] || replyButtonText['en']}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+}
+
+interface VisitCommentItemProps {
+    comm: any;
+    locale: string;
+    t: (key: string) => string;
+    isAiTranslationEnabled: boolean;
+    isCommenterCancelled: boolean;
+    onViewProfile?: (profileId: string) => void;
+    user: any;
+    isAdmin: boolean;
+    editingVisitCommentId: string | null;
+    setEditingVisitCommentId: (id: string | null) => void;
+    editingVisitCommentText: string;
+    setEditingVisitCommentText: (text: string) => void;
+    handleUpdateVisitComment: (id: string, visitId: string) => void;
+    handleDeleteVisitComment: (id: string, visitId: string) => void;
+    visitId: string;
+}
+
+function VisitCommentItem({
+    comm,
+    locale,
+    t,
+    isAiTranslationEnabled,
+    isCommenterCancelled,
+    onViewProfile,
+    user,
+    isAdmin,
+    editingVisitCommentId,
+    setEditingVisitCommentId,
+    editingVisitCommentText,
+    setEditingVisitCommentText,
+    handleUpdateVisitComment,
+    handleDeleteVisitComment,
+    visitId
+}: VisitCommentItemProps) {
+    const { translatedText, isTranslated } = useTranslate(comm.comment, locale, isAiTranslationEnabled);
+
+    return (
+        <div 
+            className={cn(
+                "flex gap-2 text-xs bg-white/5 p-2.5 rounded-xl border border-white/5 transition-opacity duration-200 group relative",
+                isCommenterCancelled && "opacity-35 bg-black/10 border-red-500/5"
+            )}
+        >
+            <button 
+                onClick={() => onViewProfile?.(comm.user_id)}
+                className="w-6 h-6 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center text-gray-400 overflow-hidden relative shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-500/50 transition-all block focus:outline-none"
+            >
+                {comm.profiles?.avatar_url ? (
+                    <Image src={comm.profiles.avatar_url} alt="Avatar" fill className="object-cover" />
+                ) : (
+                    <UserIcon className="w-3 h-3" />
+                )}
+            </button>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                    <button 
+                        onClick={() => onViewProfile?.(comm.user_id)}
+                        className="font-bold text-gray-300 hover:text-blue-400 hover:underline transition-colors border-none bg-transparent p-0 cursor-pointer text-left focus:outline-none text-xs"
+                    >
+                        @{comm.profiles?.username || 'User'}
+                    </button>
+                    {isCommenterCancelled && (
+                        <span className="text-[9px] font-extrabold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-400/20 ml-1.5 not-italic inline-block">
+                            {locale === 'de' ? 'Abgesagt' : 'Cancelled'}
+                        </span>
+                    )}
+                    <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-gray-500">{new Date(comm.created_at).toLocaleDateString()}</span>
+                        {/* Edit / Delete Buttons */}
+                        {user && (user.id === comm.user_id || isAdmin) && (
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                {user.id === comm.user_id && (
+                                    <button
+                                        onClick={() => {
+                                            setEditingVisitCommentId(comm.id);
+                                            setEditingVisitCommentText(comm.comment);
+                                        }}
+                                        className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-blue-400 transition-colors"
+                                        title={locale === 'de' ? 'Bearbeiten' : 'Edit'}
+                                    >
+                                        <Edit2 className="w-3 h-3" />
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => handleDeleteVisitComment(comm.id, visitId)}
+                                    className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-red-400 transition-colors"
+                                    title={locale === 'de' ? 'Löschen' : 'Delete'}
+                                >
+                                    <Trash2 className="w-3 h-3" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                {editingVisitCommentId === comm.id ? (
+                    <div className="mt-2 flex items-center gap-2">
+                        <input 
+                            type="text"
+                            value={editingVisitCommentText}
+                            onChange={(e) => setEditingVisitCommentText(e.target.value)}
+                            className="flex-1 bg-black/20 border border-white/10 rounded-md px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleUpdateVisitComment(comm.id, visitId);
+                                if (e.key === 'Escape') setEditingVisitCommentId(null);
+                            }}
+                        />
+                        <button
+                            onClick={() => handleUpdateVisitComment(comm.id, visitId)}
+                            className="p-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors"
+                        >
+                            <Check className="w-3 h-3" />
+                        </button>
+                        <button
+                            onClick={() => setEditingVisitCommentId(null)}
+                            className="p-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-md transition-colors"
+                        >
+                            <X className="w-3 h-3" />
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        <p className={cn("text-gray-300 mt-1 leading-relaxed break-words", isCommenterCancelled && "line-through")}>
+                            {translatedText}
+                        </p>
+                        {isTranslated && (
+                            <p className="text-[9px] text-gray-500/60 italic mt-0.5">
+                                {t('ugc.ai_translated')}
+                            </p>
+                        )}
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}
+
 interface ReviewItemProps {
     review: Review;
     targetLang: string;
@@ -1986,10 +2297,11 @@ interface ReviewItemProps {
     isAdmin?: boolean;
     onDelete?: () => void;
     onViewProfile?: (profileId: string) => void;
+    enabled?: boolean;
 }
 
-function ReviewItem({ review, targetLang, t, isAdmin, onDelete, onViewProfile }: ReviewItemProps) {
-    const { translatedText: translatedComment, isTranslated } = useTranslate(review.comment, targetLang);
+function ReviewItem({ review, targetLang, t, isAdmin, onDelete, onViewProfile, enabled = true }: ReviewItemProps) {
+    const { translatedText: translatedComment, isTranslated } = useTranslate(review.comment, targetLang, enabled);
 
     return (
         <div className="p-4 bg-muted/20 rounded-2xl border border-border/50 transition-all hover:bg-muted/30 group">

@@ -1001,6 +1001,7 @@ export interface UserProfileData {
         locale?: string;
         email_pref_visits?: boolean;
         email_pref_questions?: boolean;
+        ai_translation_enabled?: boolean;
     };
     spots: Spot[];
     visits: {
@@ -1022,7 +1023,7 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
         // 1. Get profile details
         const { data: profile, error: profileErr } = await supabase
             .from("profiles")
-            .select("id, username, avatar_url, bio, created_at, locale, email_pref_visits, email_pref_questions")
+            .select("id, username, avatar_url, bio, created_at, locale, email_pref_visits, email_pref_questions, ai_translation_enabled")
             .eq("id", profileId)
             .maybeSingle();
 
@@ -1189,6 +1190,8 @@ export interface SpotAnswer {
         username: string | null;
         avatar_url: string | null;
     };
+    likesCount?: number;
+    isLiked?: boolean;
 }
 
 export interface SpotQuestion {
@@ -1202,6 +1205,8 @@ export interface SpotQuestion {
         avatar_url: string | null;
     };
     answers?: SpotAnswer[];
+    likesCount?: number;
+    isLiked?: boolean;
 }
 
 export async function createSpotQuestion(spotId: string, question: string, token?: string) {
@@ -1325,38 +1330,87 @@ export async function createSpotAnswer(questionId: string, answer: string, token
 
 export async function getSpotQuestionsAndAnswers(spotId: string): Promise<SpotQuestion[]> {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+
     try {
-        const { data: qData, error: qErr } = await supabase
+        // Try fetching questions with likes
+        let qRes: any = await supabase
             .from("spot_questions")
             .select(`
                 id, spot_id, user_id, question, created_at,
-                profiles(username, avatar_url)
+                profiles(username, avatar_url),
+                spot_question_likes(id, user_id)
             `)
             .eq("spot_id", spotId)
             .order("created_at", { ascending: false });
 
+        let qErr = qRes.error;
+        let qData = qRes.data;
+
+        // Fallback if likes relation doesn't exist
+        if (qErr && (qErr.message.includes("spot_question_likes") || qErr.message.includes("relation"))) {
+            console.warn("DB schema sync: spot_question_likes missing. Falling back.");
+            qRes = await supabase
+                .from("spot_questions")
+                .select(`
+                    id, spot_id, user_id, question, created_at,
+                    profiles(username, avatar_url)
+                `)
+                .eq("spot_id", spotId)
+                .order("created_at", { ascending: false });
+            qErr = qRes.error;
+            qData = qRes.data;
+        }
+
         if (qErr) throw qErr;
         if (!qData || qData.length === 0) return [];
 
-        const questions: SpotQuestion[] = qData.map((q: any) => ({
-            id: q.id,
-            spot_id: q.spot_id,
-            user_id: q.user_id,
-            question: q.question,
-            created_at: q.created_at,
-            profiles: Array.isArray(q.profiles) ? q.profiles[0] : q.profiles,
-            answers: []
-        }));
+        const questions: SpotQuestion[] = qData.map((q: any) => {
+            const likesList = q.spot_question_likes || [];
+            return {
+                id: q.id,
+                spot_id: q.spot_id,
+                user_id: q.user_id,
+                question: q.question,
+                created_at: q.created_at,
+                profiles: Array.isArray(q.profiles) ? q.profiles[0] : q.profiles,
+                answers: [],
+                likesCount: likesList.length,
+                isLiked: userId ? likesList.some((l: any) => l.user_id === userId) : false
+            };
+        });
 
         const qIds = questions.map(q => q.id);
-        const { data: aData, error: aErr } = await supabase
+
+        // Try fetching answers with likes
+        let aRes: any = await supabase
             .from("spot_answers")
             .select(`
                 id, question_id, user_id, answer, created_at,
-                profiles(username, avatar_url)
+                profiles(username, avatar_url),
+                spot_answer_likes(id, user_id)
             `)
             .in("question_id", qIds)
             .order("created_at", { ascending: true });
+
+        let aErr = aRes.error;
+        let aData = aRes.data;
+
+        // Fallback if likes relation doesn't exist
+        if (aErr && (aErr.message.includes("spot_answer_likes") || aErr.message.includes("relation"))) {
+            console.warn("DB schema sync: spot_answer_likes missing. Falling back.");
+            aRes = await supabase
+                .from("spot_answers")
+                .select(`
+                    id, question_id, user_id, answer, created_at,
+                    profiles(username, avatar_url)
+                `)
+                .in("question_id", qIds)
+                .order("created_at", { ascending: true });
+            aErr = aRes.error;
+            aData = aRes.data;
+        }
 
         if (aErr) throw aErr;
 
@@ -1364,6 +1418,7 @@ export async function getSpotQuestionsAndAnswers(spotId: string): Promise<SpotQu
             aData.forEach((ans: any) => {
                 const q = questions.find(q => q.id === ans.question_id);
                 if (q) {
+                    const likesList = ans.spot_answer_likes || [];
                     q.answers = q.answers || [];
                     q.answers.push({
                         id: ans.id,
@@ -1371,7 +1426,9 @@ export async function getSpotQuestionsAndAnswers(spotId: string): Promise<SpotQu
                         user_id: ans.user_id,
                         answer: ans.answer,
                         created_at: ans.created_at,
-                        profiles: Array.isArray(ans.profiles) ? ans.profiles[0] : ans.profiles
+                        profiles: Array.isArray(ans.profiles) ? ans.profiles[0] : ans.profiles,
+                        likesCount: likesList.length,
+                        isLiked: userId ? likesList.some((l: any) => l.user_id === userId) : false
                     });
                 }
             });
@@ -1554,6 +1611,78 @@ export async function deleteProfileReviewReply(replyId: string): Promise<{ succe
     } catch (e: any) {
         console.error("deleteProfileReviewReply failed:", e);
         return { success: false, error: e.message || "Exception occurred" };
+    }
+}
+
+export async function toggleLikeQuestion(questionId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized: Please sign in to like comments." };
+
+    try {
+        const { data: existingLike, error: fetchErr } = await supabase
+            .from("spot_question_likes")
+            .select("id")
+            .eq("question_id", questionId)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (fetchErr) throw fetchErr;
+
+        if (existingLike) {
+            const { error: deleteErr } = await supabase
+                .from("spot_question_likes")
+                .delete()
+                .eq("id", existingLike.id);
+            if (deleteErr) throw deleteErr;
+            return { success: true, action: "unliked" };
+        } else {
+            const { error: insertErr } = await supabase
+                .from("spot_question_likes")
+                .insert([{ question_id: questionId, user_id: user.id }]);
+            if (insertErr) throw insertErr;
+            return { success: true, action: "liked" };
+        }
+    } catch (err: any) {
+        console.error("Toggle comment like error:", err);
+        return { success: false, error: err.message };
+    }
+}
+
+export async function toggleLikeAnswer(answerId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Unauthorized: Please sign in to like replies." };
+
+    try {
+        const { data: existingLike, error: fetchErr } = await supabase
+            .from("spot_answer_likes")
+            .select("id")
+            .eq("answer_id", answerId)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (fetchErr) throw fetchErr;
+
+        if (existingLike) {
+            const { error: deleteErr } = await supabase
+                .from("spot_answer_likes")
+                .delete()
+                .eq("id", existingLike.id);
+            if (deleteErr) throw deleteErr;
+            return { success: true, action: "unliked" };
+        } else {
+            const { error: insertErr } = await supabase
+                .from("spot_answer_likes")
+                .insert([{ answer_id: answerId, user_id: user.id }]);
+            if (insertErr) throw insertErr;
+            return { success: true, action: "liked" };
+        }
+    } catch (err: any) {
+        console.error("Toggle reply like error:", err);
+        return { success: false, error: err.message };
     }
 }
 
