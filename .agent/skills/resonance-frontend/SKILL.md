@@ -20,6 +20,7 @@ You do not just "build components". You craft experiences. You operate at the in
 1.  **Motion Trinity**: Every element must have Entrance, Hover, and Click states.
 2.  **Mobile First**: Design for the smallest screen, enhance for the largest.
 3.  **Zero Layout Shift**: CLS must be < 0.1. No jumping elements.
+4.  **Email Obfuscation**: Email addresses must never be rendered as raw strings in templates to prevent spambot harvesting. Always use the `ObfuscatedEmail` component or dynamic JS decryption.
 
 ---
 

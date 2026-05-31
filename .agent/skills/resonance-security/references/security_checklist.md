@@ -124,3 +124,24 @@ const clean = DOMPurify.sanitize(userContent)
 - [ ] `npm audit` returns clean.
 - [ ] No unused dependencies.
 - [ ] Lockfiles (`package-lock.json`) committed.
+
+---
+
+## 8. Privacy & Anti-Harvesting (Email Obfuscation)
+
+### ❌ NEVER Render Raw Email Addresses
+```html
+<a href="mailto:info@efoilmap.com">info@efoilmap.com</a> <!-- VULNERABLE TO HARVESTING BOTS -->
+```
+
+### ✅ ALWAYS Use Obfuscated Rendering
+```typescript
+import { ObfuscatedEmail } from "@/components/ObfuscatedEmail"
+// Safe - hides email from spambots in SSR and page source
+<ObfuscatedEmail email="info@efoilmap.com" />
+```
+
+### Verification Steps
+- [ ] No raw email addresses rendered in HTML/JSX.
+- [ ] Email addresses are rendered using dynamic javascript obfuscation or ObfuscatedEmail.
+- [ ] Dynamic decryption occurs only on hover or client-side interaction.

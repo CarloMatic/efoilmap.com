@@ -16,9 +16,8 @@
 > *These are hard constraints that cannot be broken without a formal Amendment.*
 
 **Technical Laws**:
-1.  [e.g. Zero external dependencies for UI components]
-2.  [e.g. Max bundle size < 100kb]
-3.  [e.g. 100% Type Safety (No `any`)]
+1.  100% Type Safety (No unsafe `any` usage in core logic).
+2.  Email Protection: Email addresses must never be rendered as raw text. Always use obfuscation (such as the ObfuscatedEmail component or custom javascript de-obfuscation) to prevent harvesting by spambots.
 
 **UX Laws**:
 1.  [e.g. Mobile-first interaction model]
