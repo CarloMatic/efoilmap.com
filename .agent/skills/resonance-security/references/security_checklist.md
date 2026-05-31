@@ -145,3 +145,23 @@ import { ObfuscatedEmail } from "@/components/ObfuscatedEmail"
 - [ ] No raw email addresses rendered in HTML/JSX.
 - [ ] Email addresses are rendered using dynamic javascript obfuscation or ObfuscatedEmail.
 - [ ] Dynamic decryption occurs only on hover or client-side interaction.
+
+---
+
+## 9. Content Security Policy (CSP)
+
+### ❌ NEVER Run Web Applications Without a Strict CSP
+Without a CSP, any Cross-Site Scripting (XSS) vulnerability can be easily exploited to inject malicious scripts, steal cookies, hijack user sessions, and exfiltrate sensitive data.
+
+### ✅ ALWAYS Configure a Restrictive CSP
+Configure a robust CSP header or meta tag following these practices:
+- Default: `default-src 'self'` (block everything by default).
+- Scripts: Restrict to `'self'`, safe hashes, or explicitly whitelisted HTTPS third-party domains (e.g. Mapbox, GTM).
+- Connections: Restrict `connect-src` strictly to necessary backends, APIs, and WebSockets.
+- Media/Frames: Restrict video, audio, and frames (`frame-src`) strictly to trusted domains (e.g. YouTube).
+
+### Verification Steps
+- [ ] CSP header or `<meta http-equiv="Content-Security-Policy">` is defined.
+- [ ] `default-src` is set to `'self'`.
+- [ ] No wildcards (`*`) are used in `script-src` or `connect-src` directives.
+- [ ] All external API endpoints and third-party scripts are explicitly whitelisted.

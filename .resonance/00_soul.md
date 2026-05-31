@@ -18,6 +18,7 @@
 **Technical Laws**:
 1.  100% Type Safety (No unsafe `any` usage in core logic).
 2.  Email Protection: Email addresses must never be rendered as raw text. Always use obfuscation (such as the ObfuscatedEmail component or custom javascript de-obfuscation) to prevent harvesting by spambots.
+3.  Content Security Policy (CSP): Every web project must implement a strict, robust Content Security Policy (CSP) to protect against Cross-Site Scripting (XSS), clickjacking, and unauthorized data leakage. Any third-party integrations (e.g. Mapbox, Google Tag Manager, YouTube) must be explicitly whitelisted.
 
 **UX Laws**:
 1.  [e.g. Mobile-first interaction model]
