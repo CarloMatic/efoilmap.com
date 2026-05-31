@@ -17,8 +17,8 @@ export function SpotDrawer({ spot, open, onOpenChange }: SpotDrawerProps) {
     return (
         <Drawer.Root open={open} onOpenChange={onOpenChange}>
             <Drawer.Portal>
-                <Drawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50" />
-                <Drawer.Content className="bg-[var(--card)] flex flex-col rounded-t-[10px] h-[90vh] mt-24 fixed bottom-0 left-0 right-0 z-50 outline-none border-t border-[var(--border)]">
+                <Drawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110]" />
+                <Drawer.Content className="bg-[var(--card)] flex flex-col rounded-t-[10px] h-[90vh] mt-24 fixed bottom-0 left-0 right-0 z-[110] outline-none border-t border-[var(--border)]">
                     {/* Draggable Handle */}
                     <div className="p-4 bg-[var(--card)] rounded-t-[10px] flex-shrink-0">
                         <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-[var(--muted-foreground)] mb-6" />

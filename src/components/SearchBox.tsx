@@ -22,9 +22,10 @@ interface GeocodingFeature {
 interface SearchBoxProps {
     spots: Spot[];
     onSelectSpot: (spot: Spot) => void;
+    onSelectLocation?: (center: [number, number], placeName: string) => void;
 }
 
-export function SearchBox({ spots, onSelectSpot }: SearchBoxProps) {
+export function SearchBox({ spots, onSelectSpot, onSelectLocation }: SearchBoxProps) {
     const { current: map } = useMap(); // Get map instance
     const { t } = useLanguage();
     const [query, setQuery] = useState('');
@@ -63,18 +64,20 @@ export function SearchBox({ spots, onSelectSpot }: SearchBoxProps) {
     }, [spots]);
 
     const handleSelect = (feature: GeocodingFeature) => {
-        if (!map) return;
-
         if (feature.isLocalSpot && feature.spotData) {
             onSelectSpot(feature.spotData);
             setQuery(''); // Clear so it looks clean after selection
         } else {
             const [lng, lat] = feature.center;
-            map.flyTo({
-                center: [lng, lat],
-                zoom: 12,
-                essential: true
-            });
+            if (onSelectLocation) {
+                onSelectLocation([lng, lat], feature.place_name);
+            } else if (map) {
+                map.flyTo({
+                    center: [lng, lat],
+                    zoom: 12,
+                    essential: true
+                });
+            }
             setQuery(feature.place_name);
         }
 

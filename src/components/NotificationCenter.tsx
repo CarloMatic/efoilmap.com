@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Bell, MessageSquare, Star, X, User as UserIcon, Heart } from "lucide-react";
+import { Bell, MessageSquare, Star, X, User as UserIcon, Heart, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useLanguage, useTranslate } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,7 @@ interface NotificationCenterProps {
 
 interface NotificationItem {
     id: string;
-    type: "spot_comment" | "visit_comment" | "spot_like" | "spot_question" | "spot_answer";
+    type: "spot_comment" | "visit_comment" | "spot_like" | "spot_question" | "spot_answer" | "spot_deleted";
     spotId: string;
     spotName: string;
     visitId?: string;
@@ -137,6 +137,14 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                 spotAnswers = data || [];
             }
 
+            // 4.8. Fetch spot deletions
+            const { data: deletions } = await supabase
+                .from("spot_deletions")
+                .select("id, spot_name, reason, created_at")
+                .eq("user_id", user.id);
+
+            const spotDeletions = deletions || [];
+
             // 5. Combine and map to NotificationItem format
             const items: NotificationItem[] = [];
 
@@ -229,6 +237,19 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                 }
             });
 
+            spotDeletions.forEach(c => {
+                items.push({
+                    id: c.id,
+                    type: "spot_deleted",
+                    spotId: "",
+                    spotName: c.spot_name,
+                    comment: c.reason || "",
+                    createdAt: c.created_at,
+                    username: "System",
+                    avatarUrl: undefined
+                });
+            });
+
             // Sort by date descending
             items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setNotifications(items);
@@ -277,6 +298,10 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
     };
 
     const handleNotificationClick = async (notif: NotificationItem) => {
+        if (notif.type === "spot_deleted") {
+            setIsOpen(false);
+            return;
+        }
         try {
             // 1. Update query params for deep linking using Next.js router
             const params = new URLSearchParams(searchParams.toString());
@@ -422,6 +447,12 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                             <p className="text-[11px] text-gray-300 leading-normal font-semibold mb-1.5 flex items-center gap-1">
                                                 {likedSpotText[locale] || likedSpotText['en']}
                                             </p>
+                                        ) : notif.type === "spot_deleted" ? (
+                                            <p className="text-[11px] text-red-400 leading-normal font-semibold mb-1.5">
+                                                {locale === "de" 
+                                                    ? `Dein Spot "${notif.spotName}" wurde gelöscht, da er nicht den Richtlinien entsprochen hat.` 
+                                                    : `Your spot "${notif.spotName}" was deleted as it did not comply with the guidelines.`}
+                                            </p>
                                         ) : (
                                             <p className="text-[11px] text-gray-300 leading-normal line-clamp-2 italic mb-1.5">
                                                 <NotificationComment text={notif.comment} targetLang={locale} enabled={isAiTranslationEnabled} />
@@ -431,6 +462,8 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                         <div className="flex items-center gap-1">
                                             {notif.type === "spot_like" ? (
                                                 <Heart className="w-3 h-3 text-red-500 fill-red-500/20 shrink-0 animate-pulse" />
+                                            ) : notif.type === "spot_deleted" ? (
+                                                <Trash2 className="w-3 h-3 text-red-500 shrink-0" />
                                             ) : notif.type === "spot_comment" ? (
                                                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500/20 shrink-0" />
                                             ) : notif.type === "spot_question" ? (
@@ -443,13 +476,15 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                             <span className="text-[9px] text-blue-400 font-extrabold truncate">
                                                 {notif.type === "spot_like"
                                                     ? (locale === "de" ? `Gefällt mir: ${notif.spotName}` : `Like: ${notif.spotName}`)
-                                                    : notif.type === "spot_comment"
-                                                        ? (locale === "de" ? `Spot: ${notif.spotName}` : `Spot: ${notif.spotName}`)
-                                                        : notif.type === "spot_question"
-                                                            ? (locale === "de" ? `Spot-Kommentar: ${notif.spotName}` : `Spot Comment: ${notif.spotName}`)
-                                                            : notif.type === "spot_answer"
-                                                                ? (locale === "de" ? `Spot-Antwort: ${notif.spotName}` : `Spot Reply: ${notif.spotName}`)
-                                                                : (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)}
+                                                    : notif.type === "spot_deleted"
+                                                        ? (locale === "de" ? `Gelöscht: ${notif.spotName}` : `Deleted: ${notif.spotName}`)
+                                                        : notif.type === "spot_comment"
+                                                            ? (locale === "de" ? `Spot: ${notif.spotName}` : `Spot: ${notif.spotName}`)
+                                                            : notif.type === "spot_question"
+                                                                ? (locale === "de" ? `Spot-Kommentar: ${notif.spotName}` : `Spot Comment: ${notif.spotName}`)
+                                                                : notif.type === "spot_answer"
+                                                                    ? (locale === "de" ? `Spot-Antwort: ${notif.spotName}` : `Spot Reply: ${notif.spotName}`)
+                                                                    : (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)}
                                             </span>
                                         </div>
                                     </div>

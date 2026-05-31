@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n";
+import { ObfuscatedEmail } from "@/components/ui/ObfuscatedEmail";
 
 interface FooterProps {
     isStatic?: boolean;
@@ -26,9 +27,13 @@ export function Footer({ isStatic = false }: FooterProps) {
                         {t('auth.community_rules')}
                     </Link>
                     <span>•</span>
-                    <a href="mailto:hi@efoilmap.com?subject=Feedback%20eFoilMap" className="hover:text-foreground transition-colors font-bold text-blue-500">
+                    <ObfuscatedEmail 
+                        email="hi@efoilmap.com" 
+                        subject="Feedback eFoilMap" 
+                        className="hover:text-foreground transition-colors font-bold text-blue-500"
+                    >
                         Feedback
-                    </a>
+                    </ObfuscatedEmail>
                 </div>
             </footer>
         );
@@ -49,9 +54,13 @@ export function Footer({ isStatic = false }: FooterProps) {
                     {t('auth.community_rules')}
                 </Link>
                 <span>•</span>
-                <a href="mailto:hi@efoilmap.com?subject=Feedback%20eFoilMap" className="hover:text-foreground transition-colors font-bold text-blue-500">
+                <ObfuscatedEmail 
+                    email="hi@efoilmap.com" 
+                    subject="Feedback eFoilMap" 
+                    className="hover:text-foreground transition-colors font-bold text-blue-500"
+                >
                     Feedback
-                </a>
+                </ObfuscatedEmail>
             </div>
         </footer>
     );

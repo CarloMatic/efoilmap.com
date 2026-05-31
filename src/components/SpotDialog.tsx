@@ -1,6 +1,6 @@
 "use client";
 
-import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store, Heart, Bookmark } from "lucide-react";
+import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store, Heart, Bookmark, Navigation } from "lucide-react";
 import Image from "next/image";
 import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview, toggleLikeSpot, getSpotLikesCount, getSpotLikeStatus, toggleBookmarkSpot, getSpotQuestionsAndAnswers, createSpotQuestion, createSpotAnswer, SpotQuestion, SpotAnswer, toggleLikeQuestion, toggleLikeAnswer } from "@/app/actions";
 import { useSearchParams } from "next/navigation";
@@ -16,6 +16,54 @@ const addedByText: Record<string, string> = {
     nl: "Toegevoegd door",
     pl: "Dodane przez",
     sv: "Tillagd av"
+};
+
+const commentSuccessText: Record<string, string> = {
+    en: "Comment posted successfully!",
+    de: "Kommentar erfolgreich gepostet!",
+    es: "¡Comentario publicado con éxito!",
+    fr: "Commentaire publié avec succès !",
+    it: "Commento pubblicato con successo!",
+    pt: "Comentário publicado com sucesso!",
+    nl: "Reactie succesvol geplaatst!",
+    pl: "Komentarz został pomyślnie opublikowany!",
+    sv: "Kommentaren har publicerats!"
+};
+
+const commentErrorText: Record<string, string> = {
+    en: "Error posting comment.",
+    de: "Fehler beim Posten des Kommentars.",
+    es: "Error al publicar el comentario.",
+    fr: "Erreur lors de la publication du commentaire.",
+    it: "Errore durante la pubblicazione del commento.",
+    pt: "Erro ao publicar o comentário.",
+    nl: "Fout bij het plaatsen van de reactie.",
+    pl: "Błąd podczas publikowania komentarza.",
+    sv: "Fel vid publicering av kommentaren."
+};
+
+const replySuccessText: Record<string, string> = {
+    en: "Reply posted successfully!",
+    de: "Antwort erfolgreich gepostet!",
+    es: "¡Respuesta publicada con éxito!",
+    fr: "Réponse publiée avec succès !",
+    it: "Risposta pubblicata con successo!",
+    pt: "Resposta publicada com sucesso!",
+    nl: "Antwoord succesvol geplaatst!",
+    pl: "Odpowiedź została pomyślnie opublikowana!",
+    sv: "Svaret har publicerats!"
+};
+
+const replyErrorText: Record<string, string> = {
+    en: "Error posting reply.",
+    de: "Fehler beim Posten der Antwort.",
+    es: "Error al publicar la resposta.",
+    fr: "Erreur lors de la publication de la réponse.",
+    it: "Errore durante la pubblicazione della risposta.",
+    pt: "Erro ao publicar a resposta.",
+    nl: "Fout bij het plaatsen van het antwoord.",
+    pl: "Błąd podczas publikowania odpowiedzi.",
+    sv: "Fel vid publicering av svaret."
 };
 
 const monthNames: Record<string, string[]> = {
@@ -807,13 +855,13 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                 const updated = await getSpotQuestionsAndAnswers(spot.id);
                 setQuestions(updated);
                 setNewQuestion("");
-                showToast(locale === 'de' ? "Frage erfolgreich gepostet!" : "Question posted successfully!");
+                showToast(commentSuccessText[locale] || commentSuccessText['en']);
             } else {
                 showToast(locale === 'de' ? "Fehler: " + res.error : "Error: " + res.error, "error");
             }
         } catch (err: any) {
             console.error(err);
-            showToast(locale === 'de' ? "Fehler beim Posten der Frage." : "Error posting question.", "error");
+            showToast(commentErrorText[locale] || commentErrorText['en'], "error");
         } finally {
             setSubmittingQuestion(false);
         }
@@ -830,13 +878,13 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                 setQuestions(updated);
                 setNewAnswerText("");
                 setActiveReplyBoxId(null);
-                showToast(locale === 'de' ? "Antwort erfolgreich gepostet!" : "Reply posted successfully!");
+                showToast(replySuccessText[locale] || replySuccessText['en']);
             } else {
                 showToast(locale === 'de' ? "Fehler: " + res.error : "Error: " + res.error, "error");
             }
         } catch (err: any) {
             console.error(err);
-            showToast(locale === 'de' ? "Fehler beim Posten der Antwort." : "Error posting reply.", "error");
+            showToast(replyErrorText[locale] || replyErrorText['en'], "error");
         } finally {
             setSubmittingAnswer(false);
         }
@@ -997,7 +1045,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="fixed inset-x-0 bottom-0 top-[57px] z-[90] flex items-end sm:items-center justify-center p-0 sm:p-4">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -1005,7 +1053,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
             />
 
             {/* Modal Content */}
-            <div className="relative w-full sm:max-w-md bg-card border-x border-t sm:border border-border rounded-t-2xl sm:rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 sm:zoom-in-95 sm:fade-in max-h-[92dvh] sm:max-h-[90vh] flex flex-col">
+            <div className="relative w-full sm:max-w-md bg-card border-x border-t sm:border border-border rounded-t-2xl sm:rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 sm:zoom-in-95 sm:fade-in max-h-[calc(100dvh-57px)] sm:max-h-[85vh] flex flex-col">
 
                 {/* Header */}
                 <div className="p-4 border-b flex flex-col gap-3 bg-muted/30">
@@ -1119,6 +1167,21 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                 </svg>
                                 <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
                                     {t('forms.website')}
+                                </span>
+                            </a>
+                        )}
+
+                        {spot.location?.coordinates && (
+                            <a
+                                href={`https://www.google.com/maps/dir/?api=1&destination=${spot.location.coordinates[1]},${spot.location.coordinates[0]}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer"
+                                title={locale === 'de' ? "Wegbeschreibung erhalten" : "Get directions"}
+                            >
+                                <Navigation className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                                <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
+                                    {locale === 'de' ? "Route" : "Route"}
                                 </span>
                             </a>
                         )}
@@ -1448,14 +1511,14 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                             {locale === 'de' ? 'Neuen Termin planen' : 'Schedule a New Visit'}
                                         </h3>
                                         
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-2 gap-2">
                                             <div className="space-y-1">
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase">{locale === 'de' ? 'Datum' : 'Date'}</label>
                                                 <input
                                                     type="date"
                                                     value={selectedDate}
                                                     onChange={(e) => setSelectedDate(e.target.value)}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-2.5 py-1.5 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                                     required
                                                 />
                                             </div>
@@ -1465,7 +1528,7 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                     type="time"
                                                     value={visitTime}
                                                     onChange={(e) => setVisitTime(e.target.value)}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-2.5 py-1.5 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                                     required
                                                 />
                                             </div>

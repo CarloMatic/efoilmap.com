@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { Footer } from "@/components/Footer";
+import { ObfuscatedEmail } from "@/components/ui/ObfuscatedEmail";
 
 const content = {
     en: {
@@ -207,7 +208,14 @@ export default function Imprint() {
 
                     <div className="space-y-2 bg-card border border-border p-6 rounded-xl">
                         <h2 className="text-lg font-bold text-foreground">{t.contactHeading}</h2>
-                        <p className="text-muted-foreground">{t.email}</p>
+                        <p className="text-muted-foreground">
+                            {t.email.includes("hi@efoilmap.com") ? (
+                                <>
+                                    {t.email.split("hi@efoilmap.com")[0]}
+                                    <ObfuscatedEmail email="hi@efoilmap.com" className="text-blue-500 hover:underline font-bold" />
+                                </>
+                            ) : t.email}
+                        </p>
                         <p className="text-muted-foreground">{t.phone}</p>
                     </div>
 

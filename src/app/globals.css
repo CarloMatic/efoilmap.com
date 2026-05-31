@@ -74,6 +74,12 @@
 /* Light Mode Override (if ever needed, but Mobile First = Dark Mode often better for outdoor maps) */
 /* Keeping strict Dark Mode for V1 to ensure consistent 'Premium' feel */
 
+html, body {
+  overscroll-behavior: none;
+  overflow: hidden;
+  height: 100%;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);

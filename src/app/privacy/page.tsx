@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { Footer } from "@/components/Footer";
+import { ObfuscatedEmail } from "@/components/ui/ObfuscatedEmail";
 
 // We define localized content for the Privacy Policy.
 const content = {
@@ -910,7 +911,14 @@ export default function Privacy() {
                             <p className="font-semibold text-foreground">{t.sections.controller.company}</p>
                             <p>{t.sections.controller.address}</p>
                             <p>{t.sections.controller.represented}</p>
-                            <p>{t.sections.controller.email}</p>
+                            <p>
+                                {t.sections.controller.email.includes("hi@efoilmap.com") ? (
+                                    <>
+                                        {t.sections.controller.email.split("hi@efoilmap.com")[0]}
+                                        <ObfuscatedEmail email="hi@efoilmap.com" className="text-blue-500 hover:underline font-bold" />
+                                    </>
+                                ) : t.sections.controller.email}
+                            </p>
                         </div>
                     </div>
 

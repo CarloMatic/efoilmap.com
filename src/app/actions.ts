@@ -240,7 +240,7 @@ export async function deleteSpot(spotId: string, token?: string) {
     const isAdmin = user.email === 'callematic@gmail.com';
     const { data: existingSpot, error: fetchError } = await dbClient
         .from("spots")
-        .select("user_id, created_by")
+        .select("user_id, created_by, name")
         .eq("id", spotId)
         .maybeSingle();
 
@@ -254,6 +254,18 @@ export async function deleteSpot(spotId: string, token?: string) {
     }
 
     try {
+        // If deleted by an admin who is not the creator, create a spot deletion record to notify them
+        const creatorId = existingSpot.user_id || existingSpot.created_by;
+        if (isAdmin && creatorId && creatorId !== user.id) {
+            await supabase
+                .from("spot_deletions")
+                .insert({
+                    spot_name: existingSpot.name,
+                    user_id: creatorId,
+                    reason: "not_compliant"
+                });
+        }
+
         const { error } = await dbClient
             .from("spots")
             .delete()

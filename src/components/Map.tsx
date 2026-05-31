@@ -406,7 +406,18 @@ export default function EfoilMap() {
                             <div className="flex-1 hidden md:block" /> 
 
                             {/* Search Box - Center */}
-                            <SearchBox spots={spots} onSelectSpot={handleSpotSelect} />
+                            <SearchBox 
+                                spots={spots} 
+                                onSelectSpot={handleSpotSelect} 
+                                onSelectLocation={(center) => {
+                                    mapRef.current?.flyTo({
+                                        center: center,
+                                        zoom: 12,
+                                        duration: 1500,
+                                        essential: true
+                                    });
+                                }}
+                            />
 
                             {/* Auth / Profile - Right */}
                             <div className="flex-1 flex justify-end shrink-0 gap-3">
