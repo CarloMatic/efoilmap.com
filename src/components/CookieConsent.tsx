@@ -16,6 +16,18 @@ export function CookieBanner() {
             setTimeout(() => {
                 setHasConsent(true);
                 setIsVisible(false);
+                
+                // Update Google Consent Mode on initial load
+                if (typeof window !== "undefined" && (window as any).gtag) {
+                    (window as any).gtag('consent', 'update', {
+                        'ad_storage': 'granted',
+                        'analytics_storage': 'granted',
+                        'personalization_storage': 'granted',
+                        'functionality_storage': 'granted',
+                        'ad_user_data': 'granted',
+                        'ad_personalization': 'granted'
+                    });
+                }
             }, 0);
         } else if (consent === "false") {
             setTimeout(() => {
@@ -49,6 +61,19 @@ export function CookieBanner() {
         setHasConsent(true);
         setIsVisible(false);
         setIsRejected(false);
+        
+        // Update Google Consent Mode
+        if (typeof window !== "undefined" && (window as any).gtag) {
+            (window as any).gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'analytics_storage': 'granted',
+                'personalization_storage': 'granted',
+                'functionality_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted'
+            });
+        }
+        
         window.dispatchEvent(new Event('efoilmap-consent-change'));
     };
 
@@ -56,6 +81,19 @@ export function CookieBanner() {
         localStorage.setItem("efoilmap-consent", "false");
         setHasConsent(false);
         setIsRejected(true);
+        
+        // Ensure Google Consent Mode remains denied
+        if (typeof window !== "undefined" && (window as any).gtag) {
+            (window as any).gtag('consent', 'update', {
+                'ad_storage': 'denied',
+                'analytics_storage': 'denied',
+                'personalization_storage': 'denied',
+                'functionality_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied'
+            });
+        }
+        
         window.dispatchEvent(new Event('efoilmap-consent-change'));
     };
 
