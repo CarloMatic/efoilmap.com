@@ -183,6 +183,18 @@ export const commentSignInPrompt: Record<string, string> = {
     sv: "Logga in för att lämna kommentarer."
 };
 
+export const reviewSignInPrompt: Record<string, string> = {
+    de: "Bitte logge dich ein, um Bewertungen zu hinterlassen.",
+    en: "Please sign in to leave reviews.",
+    es: "Por favor, inicia sesión para dejar reseñas.",
+    fr: "Veuillez vous connecter pour laisser des avis.",
+    it: "Per favore, accedi per lasciare recensioni.",
+    pt: "Por favor, inicia sessão para deixar avaliações.",
+    nl: "Log in om beoordelingen achter te laten.",
+    pl: "Zaloguj się, aby zostawić opinię.",
+    sv: "Logga in för att lämna recensioner."
+};
+
 export const replyPlaceholderText: Record<string, string> = {
     de: "Antworte auf diesen Kommentar...",
     en: "Reply to this comment...",
@@ -1807,51 +1819,66 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             {/* Verification Form */}
                             <div className="bg-muted/20 p-4 rounded-xl border border-border">
                                 <h3 className="text-sm font-semibold uppercase text-muted-foreground mb-3 tracking-wider">{t('forms.review_title')}</h3>
-                                <div className="flex items-center gap-1 mb-3">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <button
-                                            key={star}
-                                            onClick={() => setRating(star)}
-                                            className="focus:outline-none transition-transform hover:scale-110"
+                                {user ? (
+                                    <>
+                                        <div className="flex items-center gap-1 mb-3">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    onClick={() => setRating(star)}
+                                                    className="focus:outline-none transition-transform hover:scale-110"
+                                                >
+                                                    <Star
+                                                        className={cn(
+                                                            "w-8 h-8 transition-colors",
+                                                            rating >= star ? "fill-yellow-400 text-yellow-500" : "text-input hover:text-yellow-200"
+                                                        )}
+                                                    />
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <textarea
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            placeholder={t('forms.review_placeholder')}
+                                            className="w-full p-3 rounded-lg bg-background border border-input text-sm resize-none focus:ring-2 focus:ring-primary focus:outline-none h-20 mb-3"
+                                        />
+
+                                        <div className="flex gap-2 mb-3">
+                                            <button
+                                                onClick={handleVerify}
+                                                disabled={verifying}
+                                                className="flex-1 py-2 bg-primary text-primary-foreground font-bold rounded-lg shadow hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                            >
+                                                {verifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />}
+                                                {hasExistingReview ? (t('forms.update_review') || "Update Review") : (t('forms.post_review') || "Post Review")}
+                                            </button>
+
+                                            {hasExistingReview && (
+                                                <button
+                                                    onClick={handleDeleteReview}
+                                                    disabled={isDeletingReview}
+                                                    className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 font-bold rounded-lg transition-all flex items-center justify-center disabled:opacity-50"
+                                                    title="Bewertung löschen"
+                                                >
+                                                    {isDeletingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                                </button>
+                                            )}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="bg-muted/10 p-3.5 rounded-2xl border border-border text-center text-xs text-muted-foreground leading-normal mb-1">
+                                        {reviewSignInPrompt[locale] || reviewSignInPrompt['en']}{" "}
+                                        <button 
+                                            type="button"
+                                            onClick={() => setIsAuthOpen(true)}
+                                            className="text-blue-400 font-bold hover:underline cursor-pointer border-none bg-transparent p-0"
                                         >
-                                            <Star
-                                                className={cn(
-                                                    "w-8 h-8 transition-colors",
-                                                    rating >= star ? "fill-yellow-400 text-yellow-500" : "text-input hover:text-yellow-200"
-                                                )}
-                                            />
+                                            {locale === 'de' ? 'Einloggen' : 'Sign In'}
                                         </button>
-                                    ))}
-                                </div>
-
-                                <textarea
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    placeholder={t('forms.review_placeholder')}
-                                    className="w-full p-3 rounded-lg bg-background border border-input text-sm resize-none focus:ring-2 focus:ring-primary focus:outline-none h-20 mb-3"
-                                />
-
-                                <div className="flex gap-2 mb-3">
-                                    <button
-                                        onClick={handleVerify}
-                                        disabled={verifying}
-                                        className="flex-1 py-2 bg-primary text-primary-foreground font-bold rounded-lg shadow hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
-                                        {verifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />}
-                                        {hasExistingReview ? (t('forms.update_review') || "Update Review") : (t('forms.post_review') || "Post Review")}
-                                    </button>
-
-                                    {hasExistingReview && (
-                                        <button
-                                            onClick={handleDeleteReview}
-                                            disabled={isDeletingReview}
-                                            className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 font-bold rounded-lg transition-all flex items-center justify-center disabled:opacity-50"
-                                            title="Bewertung löschen"
-                                        >
-                                            {isDeletingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                                        </button>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         </>
                     )}
