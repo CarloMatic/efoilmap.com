@@ -10,6 +10,10 @@ export interface Profile {
     avatar_url?: string | null;
     bio?: string | null;
     ai_translation_enabled?: boolean;
+    locale?: string;
+    email_pref_visits?: boolean;
+    email_pref_questions?: boolean;
+    email_pref_appointments?: boolean;
 }
 
 export function useAuth() {

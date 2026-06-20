@@ -5,7 +5,7 @@ import { getSpots, getSpotQuestionsAndAnswers } from "@/app/actions";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; visit?: string }>;
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
@@ -13,6 +13,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const resolvedSearchParams = await searchParams;
   const slug = resolvedParams.slug;
   const lang = resolvedSearchParams.lang || "en";
+  const visitId = resolvedSearchParams.visit;
   
   const locale = (SUPPORTED_LOCALES as readonly string[]).includes(lang) ? lang as Locale : 'en';
   const dict = dictionaries[locale as Locale];
@@ -22,10 +23,62 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   
   let title = dict.meta.title;
   let description = dict.meta.description;
+  let imageUrl = "https://www.efoilmap.com/teaser.jpg";
   
   if (spot) {
     title = `${spot.name} - eFoilMap`;
     description = spot.attributes?.description || dict.meta.description;
+
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      
+      // Try to fetch spot photo
+      const { data: photoData } = await supabase
+        .from('spot_photos')
+        .select('url')
+        .eq('spot_id', spot.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (photoData?.url) {
+        imageUrl = photoData.url;
+      }
+
+      // If sharing a specific visit, get visit details and dynamic OG image
+      if (visitId) {
+        const { data: visitData } = await supabase
+          .from("spot_visits")
+          .select("id, visit_date, visit_time, description, profiles(username)")
+          .eq("id", visitId)
+          .maybeSingle();
+
+        if (visitData) {
+          let dateStr = visitData.visit_date;
+          try {
+            const dateObj = new Date(visitData.visit_date);
+            dateStr = dateObj.toLocaleDateString(locale === 'de' ? 'de-DE' : 'en-US', {
+              day: 'numeric',
+              month: 'short',
+            });
+          } catch (e) {}
+          const timeStr = visitData.visit_time ? visitData.visit_time.substring(0, 5) : '';
+          const creatorName = (visitData.profiles as any)?.username || 'eFoiler';
+          
+          title = locale === 'de'
+            ? `eFoil Session @ ${spot.name} – ${dateStr} ${timeStr}`
+            : `eFoil Session @ ${spot.name} – ${dateStr} ${timeStr}`;
+            
+          description = locale === 'de'
+            ? `@${creatorName} plant eine eFoil-Session am Spot "${spot.name}". Seid dabei! Details: "${visitData.description}"`
+            : `@${creatorName} is planning an eFoil session at "${spot.name}". Join in! Details: "${visitData.description}"`;
+            
+          imageUrl = `https://www.efoilmap.com/api/og/visit?visit=${visitId}`;
+        }
+      }
+    } catch (e) {
+      console.error("Error setting metadata:", e);
+    }
   }
 
   return {
@@ -35,9 +88,9 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     openGraph: {
       title,
       description,
-      url: `https://www.efoilmap.com/spots/${slug}`,
+      url: `https://www.efoilmap.com/spots/${slug}${visitId ? `?visit=${visitId}` : ''}`,
       siteName: "eFoilMap",
-      images: ["https://www.efoilmap.com/teaser.jpg"],
+      images: [imageUrl],
       locale: (() => {
         const ogLocales: Record<string, string> = {
           de: 'de_DE',
@@ -57,7 +110,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       card: "summary_large_image",
       title,
       description,
-      images: ["https://www.efoilmap.com/teaser.jpg"],
+      images: [imageUrl],
     },
   };
 }

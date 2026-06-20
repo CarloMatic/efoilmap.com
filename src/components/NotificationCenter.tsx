@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Bell, MessageSquare, Star, X, User as UserIcon, Heart, Trash2 } from "lucide-react";
+import { Bell, MessageSquare, Star, X, User as UserIcon, Heart, Trash2, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useLanguage, useTranslate } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,7 @@ interface NotificationCenterProps {
 
 interface NotificationItem {
     id: string;
-    type: "spot_comment" | "visit_comment" | "spot_like" | "spot_question" | "spot_answer" | "spot_deleted";
+    type: "spot_comment" | "visit_comment" | "spot_like" | "spot_question" | "spot_answer" | "spot_deleted" | "spot_visit_created";
     spotId: string;
     spotName: string;
     visitId?: string;
@@ -145,6 +145,31 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
 
             const spotDeletions = deletions || [];
 
+            // 4.9. Fetch new visits at user's bookmarked or rated spots
+            const { data: bookmarks } = await supabase
+                .from("spot_bookmarks")
+                .select("spot_id")
+                .eq("user_id", user.id);
+            const bookmarkedSpotIds = bookmarks?.map(b => b.spot_id) || [];
+
+            const { data: verifications } = await supabase
+                .from("spot_verifications")
+                .select("spot_id")
+                .eq("user_id", user.id);
+            const verifiedSpotIds = verifications?.map(v => v.spot_id) || [];
+
+            const followedSpotIds = Array.from(new Set([...bookmarkedSpotIds, ...verifiedSpotIds]));
+
+            let followedSpotVisits: any[] = [];
+            if (followedSpotIds.length > 0) {
+                const { data } = await supabase
+                    .from("spot_visits")
+                    .select("id, spot_id, description, visit_date, visit_time, created_at, user_id, spots(name), profiles(username, avatar_url)")
+                    .in("spot_id", followedSpotIds)
+                    .neq("user_id", user.id);
+                followedSpotVisits = data || [];
+            }
+
             // 5. Combine and map to NotificationItem format
             const items: NotificationItem[] = [];
 
@@ -247,6 +272,23 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                     createdAt: c.created_at,
                     username: "System",
                     avatarUrl: undefined
+                });
+            });
+
+            followedSpotVisits.forEach(v => {
+                const prof = Array.isArray(v.profiles) ? v.profiles[0] : v.profiles;
+                const spot = Array.isArray(v.spots) ? v.spots[0] : v.spots;
+                items.push({
+                    id: v.id,
+                    type: "spot_visit_created",
+                    spotId: v.spot_id,
+                    spotName: spot?.name || "Spot",
+                    visitId: v.id,
+                    comment: v.description || "",
+                    createdAt: v.created_at,
+                    username: prof?.username || "eFoiler",
+                    avatarUrl: prof?.avatar_url,
+                    likerId: v.user_id
                 });
             });
 
@@ -443,7 +485,13 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                             </span>
                                         </div>
 
-                                        {notif.type === "spot_like" ? (
+                                        {notif.type === "spot_visit_created" ? (
+                                            <p className="text-[11px] text-gray-300 leading-normal font-semibold mb-1.5">
+                                                {locale === "de" 
+                                                    ? `plant einen eFoil-Termin am Spot! 📅` 
+                                                    : `is planning an eFoil session at the spot! 📅`}
+                                            </p>
+                                        ) : notif.type === "spot_like" ? (
                                             <p className="text-[11px] text-gray-300 leading-normal font-semibold mb-1.5 flex items-center gap-1">
                                                 {likedSpotText[locale] || likedSpotText['en']}
                                             </p>
@@ -460,7 +508,9 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                         )}
 
                                         <div className="flex items-center gap-1">
-                                            {notif.type === "spot_like" ? (
+                                            {notif.type === "spot_visit_created" ? (
+                                                <Calendar className="w-3 h-3 text-blue-400 shrink-0 animate-pulse" />
+                                            ) : notif.type === "spot_like" ? (
                                                 <Heart className="w-3 h-3 text-red-500 fill-red-500/20 shrink-0 animate-pulse" />
                                             ) : notif.type === "spot_deleted" ? (
                                                 <Trash2 className="w-3 h-3 text-red-500 shrink-0" />
@@ -474,17 +524,19 @@ export function NotificationCenter({ user, onSelectSpot, onViewProfile }: Notifi
                                                 <MessageSquare className="w-3 h-3 text-blue-400 shrink-0" />
                                             )}
                                             <span className="text-[9px] text-blue-400 font-extrabold truncate">
-                                                {notif.type === "spot_like"
-                                                    ? (locale === "de" ? `Gefällt mir: ${notif.spotName}` : `Like: ${notif.spotName}`)
-                                                    : notif.type === "spot_deleted"
-                                                        ? (locale === "de" ? `Gelöscht: ${notif.spotName}` : `Deleted: ${notif.spotName}`)
-                                                        : notif.type === "spot_comment"
-                                                            ? (locale === "de" ? `Spot: ${notif.spotName}` : `Spot: ${notif.spotName}`)
-                                                            : notif.type === "spot_question"
-                                                                ? (locale === "de" ? `Spot-Kommentar: ${notif.spotName}` : `Spot Comment: ${notif.spotName}`)
-                                                                : notif.type === "spot_answer"
-                                                                    ? (locale === "de" ? `Spot-Antwort: ${notif.spotName}` : `Spot Reply: ${notif.spotName}`)
-                                                                    : (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)}
+                                                {notif.type === "spot_visit_created"
+                                                    ? (locale === "de" ? `Termin: ${notif.spotName}` : `Visit: ${notif.spotName}`)
+                                                    : notif.type === "spot_like"
+                                                        ? (locale === "de" ? `Gefällt mir: ${notif.spotName}` : `Like: ${notif.spotName}`)
+                                                        : notif.type === "spot_deleted"
+                                                            ? (locale === "de" ? `Gelöscht: ${notif.spotName}` : `Deleted: ${notif.spotName}`)
+                                                            : notif.type === "spot_comment"
+                                                                ? (locale === "de" ? `Spot: ${notif.spotName}` : `Spot: ${notif.spotName}`)
+                                                                : notif.type === "spot_question"
+                                                                    ? (locale === "de" ? `Spot-Kommentar: ${notif.spotName}` : `Spot Comment: ${notif.spotName}`)
+                                                                    : notif.type === "spot_answer"
+                                                                        ? (locale === "de" ? `Spot-Antwort: ${notif.spotName}` : `Spot Reply: ${notif.spotName}`)
+                                                                        : (locale === "de" ? `Kommentar: ${notif.spotName}` : `Comment: ${notif.spotName}`)}
                                             </span>
                                         </div>
                                     </div>

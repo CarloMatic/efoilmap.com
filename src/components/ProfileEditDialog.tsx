@@ -15,6 +15,57 @@ interface ProfileEditDialogProps {
     onSelectSpot?: (spot: Spot) => void;
 }
 
+const toggleTranslations: Record<string, { title: string; desc: string }> = {
+  de: {
+    title: "Neue Termine an gespeicherten Spots",
+    desc: "E-Mail erhalten, wenn jemand einen neuen Termin an einem Spot plant, den du gespeichert oder bewertet hast."
+  },
+  en: {
+    title: "New appointments at saved spots",
+    desc: "Receive an email when someone plans a new appointment at a spot you saved or rated."
+  },
+  es: {
+    title: "Nuevos compromisos en spots guardados",
+    desc: "Recibir un correo electrónico cuando alguien planee una nueva cita en un spot que hayas guardado o valorado."
+  },
+  fr: {
+    title: "Nouveaux rendez-vous sur les spots enregistrés",
+    desc: "Recevoir un e-mail quand quelqu'un planifie un nouveau rendez-vous sur un spot que tu as enregistré ou évalué."
+  },
+  it: {
+    title: "Nuovi appuntamenti nei spot salvati",
+    desc: "Ricevi un'e-mail quando qualcuno pianifica un nuovo appuntamento in uno spot che hai salvato o valutato."
+  },
+  pt: {
+    title: "Novos compromissos em spots guardados",
+    desc: "Receber um e-mail quando alguém planejar um novo compromisso em um spot que você guardou ou classificou."
+  },
+  nl: {
+    title: "Nieuwe afspraken op bewaarde spots",
+    desc: "Ontvang een e-mail wanneer iemand een nieuwe afspraak plant op een spot die je hebt opgeslagen of beoordeeld."
+  },
+  pl: {
+    title: "Nowe terminy na zapisanych spotach",
+    desc: "Otrzymuj e-mail, gdy ktoś zaplanuje nowy termin na spocie, który zapisałeś lub oceniłeś."
+  },
+  sv: {
+    title: "Nya tider på sparade spots",
+    desc: "Få ett e-postmeddelande när någon planerar en ny tid på en spot som du har sparat eller betygsatt."
+  }
+};
+
+const settingsSavedText: Record<string, string> = {
+  de: "Einstellungen gespeichert!",
+  en: "Settings saved successfully!",
+  es: "¡Ajustes guardados con éxito!",
+  fr: "Paramètres enregistrés avec succès !",
+  it: "Impostazioni salvate con successo!",
+  pt: "Configurações salvas com sucesso!",
+  nl: "Instellingen succesvol opgeslagen!",
+  pl: "Ustawienia zapisane pomyślnie!",
+  sv: "Inställningarna har sparats!"
+};
+
 export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDialogProps) {
     const { user, profile, updateProfile, signOut } = useAuth();
     const [username, setUsername] = useState("");
@@ -31,6 +82,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
 
     const [emailPrefVisits, setEmailPrefVisits] = useState(true);
     const [emailPrefQuestions, setEmailPrefQuestions] = useState(true);
+    const [emailPrefAppointments, setEmailPrefAppointments] = useState(true);
     const [aiTranslationEnabled, setAiTranslationEnabled] = useState(true);
     const [notificationLocale, setNotificationLocale] = useState("de");
 
@@ -64,6 +116,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
             setBio(profile.bio || "");
             setEmailPrefVisits((profile as any).email_pref_visits !== false);
             setEmailPrefQuestions((profile as any).email_pref_questions !== false);
+            setEmailPrefAppointments((profile as any).email_pref_appointments !== false);
             setAiTranslationEnabled((profile as any).ai_translation_enabled !== false);
             setNotificationLocale((profile as any).locale || locale || "de");
         }
@@ -174,11 +227,12 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
             const { error } = await updateProfile({ 
                 email_pref_visits: emailPrefVisits,
                 email_pref_questions: emailPrefQuestions,
+                email_pref_appointments: emailPrefAppointments,
                 ai_translation_enabled: aiTranslationEnabled,
                 locale: notificationLocale
             } as any);
             if (error) throw error;
-            showToast(locale === 'de' ? 'Einstellungen gespeichert!' : 'Settings saved successfully!', "success");
+            showToast(settingsSavedText[locale] || settingsSavedText.en, "success");
             onClose();
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
@@ -336,7 +390,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                     <button
                                         type="button"
                                         onClick={() => { signOut(); onClose(); }}
-                                        className="flex-1 bg-white/5 hover:bg-red-500/10 text-red-400 font-semibold py-4 rounded-2xl border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                        className="flex-1 bg-white/5 hover:bg-red-500/10 text-red-400 font-semibold px-4 py-3 rounded-2xl border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                     >
                                         <LogOut className="w-5 h-5" />
                                         {t('common.logout')}
@@ -344,7 +398,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                     <button
                                         type="submit"
                                         disabled={loading || uploading}
-                                        className="flex-[2] bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-blue-400/30 cursor-pointer"
+                                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-3 rounded-2xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-blue-400/30 cursor-pointer"
                                     >
                                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
                                         {t('common.save')}
@@ -428,6 +482,27 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                         </label>
                                     </div>
 
+                                    {/* Spot appointments toggle */}
+                                    <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all duration-150">
+                                        <div className="flex-1 pr-4">
+                                            <h4 className="text-sm font-semibold text-white">
+                                                {(toggleTranslations[locale] || toggleTranslations.en).title}
+                                            </h4>
+                                            <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
+                                                {(toggleTranslations[locale] || toggleTranslations.en).desc}
+                                            </p>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={emailPrefAppointments} 
+                                                onChange={(e) => setEmailPrefAppointments(e.target.checked)} 
+                                                className="sr-only peer" 
+                                            />
+                                            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
                                     {/* AI Translation toggle */}
                                     <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all duration-150">
                                         <div className="flex-1 pr-4">
@@ -456,7 +531,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                     <button
                                         type="button"
                                         onClick={() => { signOut(); onClose(); }}
-                                        className="flex-1 bg-white/5 hover:bg-red-500/10 text-red-400 font-semibold py-4 rounded-2xl border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                        className="flex-1 bg-white/5 hover:bg-red-500/10 text-red-400 font-semibold px-4 py-3 rounded-2xl border border-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                     >
                                         <LogOut className="w-5 h-5" />
                                         {t('common.logout')}
@@ -464,7 +539,7 @@ export function ProfileEditDialog({ open, onClose, onSelectSpot }: ProfileEditDi
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="flex-[2] bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-blue-400/30 cursor-pointer"
+                                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-3 rounded-2xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-blue-400/30 cursor-pointer"
                                     >
                                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
                                         {t('common.save')}

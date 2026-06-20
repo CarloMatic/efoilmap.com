@@ -356,7 +356,7 @@ export default function EfoilMap() {
                     <ScaleControl />
 
                     {/* Floating Map Style Selector */}
-                    <div className="absolute bottom-6 left-28 z-10 flex flex-col-reverse items-start gap-2 pointer-events-auto">
+                    <div className="absolute bottom-14 left-2.5 z-10 flex flex-col-reverse items-start gap-2 pointer-events-auto">
                         <button
                             type="button"
                             onClick={() => setIsStylesMenuOpen(!isStylesMenuOpen)}

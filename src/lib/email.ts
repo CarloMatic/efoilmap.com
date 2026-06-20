@@ -473,3 +473,298 @@ export async function sendQuestionNotificationEmail({
     console.error("Error writing simulated email:", err);
   }
 }
+
+interface AppointmentEmailParams {
+  followerEmail: string;
+  creatorUsername: string;
+  spotName: string;
+  eventDate: string;
+  eventTime: string;
+  description: string;
+  spotId: string;
+  visitId: string;
+  followerLang: string;
+}
+
+const APPOINTMENT_EMAIL_LOCALIZATION: Record<string, {
+  subject: (spotName: string) => string;
+  preheader: (creator: string, spotName: string) => string;
+  greeting: string;
+  bodyText: (creator: string, spotName: string) => string;
+  ctaText: string;
+  fallbackText: string;
+  footerText: (settingsLink: string) => string;
+}> = {
+  de: {
+    subject: (spotName) => `Neuer eFoil-Termin an deinem gespeicherten Spot ${spotName}! 📅`,
+    preheader: (creator, spotName) => `@${creator} hat einen eFoil-Termin an deinem Spot ${spotName} geplant!`,
+    greeting: "Hallo!",
+    bodyText: (creator, spotName) => `Ein neuer eFoil-Termin wurde an deinem gespeicherten oder bewerteten Spot <strong>${spotName}</strong> geplant. <strong>@${creator}</strong> lädt zum Mitfahren ein:`,
+    ctaText: "Termin ansehen & mitfahren 🏄",
+    fallbackText: "Falls der Button nicht funktioniert, kopiere diesen Link direkt in deinen Webbrowser:",
+    footerText: (settingsLink) => `Du erhältst diese E-Mail, weil du auf <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a> diesen Spot gespeichert oder bewertet hast. Du kannst diese Benachrichtigungen in deinen <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">Einstellungen</a> verwalten.`
+  },
+  en: {
+    subject: (spotName) => `New eFoil session at your saved spot ${spotName}! 📅`,
+    preheader: (creator, spotName) => `@${creator} scheduled an eFoil session at your spot ${spotName}!`,
+    greeting: "Hello!",
+    bodyText: (creator, spotName) => `A new eFoil session has been scheduled at your bookmarked or rated spot <strong>${spotName}</strong>. <strong>@${creator}</strong> invited others to join:`,
+    ctaText: "View session & join 🏄",
+    fallbackText: "If the button does not work, copy this link directly into your web browser:",
+    footerText: (settingsLink) => `You are receiving this email because you saved or rated this spot on <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. You can manage these notifications in your <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">settings</a>.`
+  },
+  es: {
+    subject: (spotName) => `¡Nueva sesión de eFoil en tu spot guardado ${spotName}! 📅`,
+    preheader: (creator, spotName) => `¡@${creator} ha programado una sesión de eFoil en tu spot ${spotName}!`,
+    greeting: "¡Hola!",
+    bodyText: (creator, spotName) => `Se ha programado una nueva sesión de eFoil en tu spot guardado o valorado <strong>${spotName}</strong>. <strong>@${creator}</strong> invita a otros a unirse:`,
+    ctaText: "Ver sesión y unirse 🏄",
+    fallbackText: "Si el botón no funciona, copia este enlace directamente en tu navegador web:",
+    footerText: (settingsLink) => `Recibes este correo electrónico porque guardaste o valoraste este spot en <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Puedes administrar estas notificaciones en tus <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">ajustes</a>.`
+  },
+  fr: {
+    subject: (spotName) => `Nouvelle session eFoil sur ton spot enregistré ${spotName} ! 📅`,
+    preheader: (creator, spotName) => `@${creator} a planifié une session eFoil sur ton spot ${spotName} !`,
+    greeting: "Bonjour !",
+    bodyText: (creator, spotName) => `Une nouvelle session eFoil a été planifiée sur ton spot enregistré ou évalué <strong>${spotName}</strong>. <strong>@${creator}</strong> invite d'autres riders à le rejoindre :`,
+    ctaText: "Voir la session et rejoindre 🏄",
+    fallbackText: "Si le bouton ne fonctionne pas, copie ce lien directement dans ton navigateur web :",
+    footerText: (settingsLink) => `Tu reçois cet e-mail car tu as enregistré ou évalué ce spot sur <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Tu peux gérer ces notifications dans tes <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">paramètres</a>.`
+  },
+  it: {
+    subject: (spotName) => `Nuova sessione eFoil sul tuo spot salvato ${spotName}! 📅`,
+    preheader: (creator, spotName) => `@${creator} ha programmato una sessione eFoil sul tuo spot ${spotName}!`,
+    greeting: "Ciao!",
+    bodyText: (creator, spotName) => `Una nuova sessione eFoil è stata programmata sul tuo spot salvato o valutato <strong>${spotName}</strong>. <strong>@${creator}</strong> invita altri a unirsi:`,
+    ctaText: "Vedi la sessione e partecipa 🏄",
+    fallbackText: "Se il pulsante non funziona, copia questo link direttamente nel tuo browser:",
+    footerText: (settingsLink) => `Ricevi questa email perché hai salvato o valutato questo spot su <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Puoi gestire queste notifiche nelle tue <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">impostazioni</a>.`
+  },
+  pt: {
+    subject: (spotName) => `Nova sessão de eFoil no teu spot guardado ${spotName}! 📅`,
+    preheader: (creator, spotName) => `@${creator} agendou uma sessão de eFoil no teu spot ${spotName}!`,
+    greeting: "Olá!",
+    bodyText: (creator, spotName) => `Uma nova sessão de eFoil foi agendada no teu spot guardado ou classificado <strong>${spotName}</strong>. <strong>@${creator}</strong> convida outros a juntarem-se:`,
+    ctaText: "Ver sessão e participar 🏄",
+    fallbackText: "Se o botão não funcionar, copia este link diretamente para o teu navegador:",
+    footerText: (settingsLink) => `Recebeste este email porque guardaste ou classificaste este spot em <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Podes gerir estas notificações nas tuas <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">definições</a>.`
+  },
+  nl: {
+    subject: (spotName) => `Nieuwe eFoil-sessie op jouw bewaarde spot ${spotName}! 📅`,
+    preheader: (creator, spotName) => `@${creator} heeft een eFoil-sessie gepland op jouw spot ${spotName}!`,
+    greeting: "Hallo!",
+    bodyText: (creator, spotName) => `Er is een nieuwe eFoil-sessie gepland op jouw opgeslagen of beoordeelde spot <strong>${spotName}</strong>. <strong>@${creator}</strong> nodigt anderen uit om mee te doen:`,
+    ctaText: "Sessie bekijken en meedoen 🏄",
+    fallbackText: "Als de knop niet werkt, kopieer dan deze link rechtstreeks in je webbrowser:",
+    footerText: (settingsLink) => `Je ontvangt deze e-mail omdat je deze spot hebt opgeslagen of beoordeeld op <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Je kunt deze meldingen beheren in je <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">instellingen</a>.`
+  },
+  pl: {
+    subject: (spotName) => `Nowa sesja eFoil na Twoim zapisanym spocie ${spotName}! 📅`,
+    preheader: (creator, spotName) => `@${creator} zaplanował sesję eFoil na Twoim spocie ${spotName}!`,
+    greeting: "Cześć!",
+    bodyText: (creator, spotName) => `Nowa sesja eFoil została zaplanowana na Twoim zapisanym lub ocenionym spocie <strong>${spotName}</strong>. <strong>@${creator}</strong> zaprasza innych do dołączenia:`,
+    ctaText: "Zobacz sesję i dołącz 🏄",
+    fallbackText: "Jeśli przycisk nie działa, skopiuj ten link bezpośrednio do przeglądarki internetowej:",
+    footerText: (settingsLink) => `Otrzymujesz tę wiadomość e-mail, ponieważ zapisałeś lub oceniłeś ten spot na stronie <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Możesz zarządzać tymi powiadomieniami w swoich <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">ustawieniach</a>.`
+  },
+  sv: {
+    subject: (spotName) => `Ny eFoil-session på din sparade spot ${spotName}! 📅`,
+    preheader: (creator, spotName) => `@${creator} har planerat en eFoil-session på din spot ${spotName}!`,
+    greeting: "Hej!",
+    bodyText: (creator, spotName) => `En ny eFoil-session har planerats på din sparade eller betygsatta spot <strong>${spotName}</strong>. <strong>@${creator}</strong> bjuder in andra att gå med:`,
+    ctaText: "Visa sessionen och gå med 🏄",
+    fallbackText: "Om knappen inte fungerar, kopiera denna länk direkt till din webbläsare:",
+    footerText: (settingsLink) => `Du får detta e-postmeddelande eftersom du har sparat eller betygsatt denna spot på <a href="https://www.efoilmap.com" target="_blank" style="color: #94a3b8; text-decoration: underline;">efoilmap.com</a>. Du kan hantera dessa aviseringar i dina <a href="${settingsLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">inställningar</a>.`
+  }
+};
+
+export async function sendAppointmentNotificationEmail({
+  followerEmail,
+  creatorUsername,
+  spotName,
+  eventDate,
+  eventTime,
+  description,
+  spotId,
+  visitId,
+  followerLang
+}: AppointmentEmailParams) {
+  const langKey = APPOINTMENT_EMAIL_LOCALIZATION[followerLang] ? followerLang : 'en';
+  const local = APPOINTMENT_EMAIL_LOCALIZATION[langKey];
+  
+  const deepLink = `http://localhost:3000/?spot=${spotId}&visit=${visitId}`;
+  const settingsLink = `http://localhost:3000/?settings=true`;
+  
+  const emailHtml = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${langKey}">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${local.subject(spotName)}</title>
+  <style type="text/css">
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    table { border-collapse: collapse !important; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    
+    @media screen and (max-width: 600px) {
+      .email-container { width: 100% !important; padding: 10px !important; }
+      .button-wrapper { width: 100% !important; text-align: center !important; }
+      .button { display: block !important; padding: 16px 20px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; width: 100%; background-color: #0f172a; color: #f8fafc;">
+  <div style="display: none; max-height: 0px; overflow: hidden;">
+    ${local.preheader(creatorUsername, spotName)}
+  </div>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0f172a; table-layout: fixed;">
+    <tr>
+      <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 580px; background-color: #1e293b; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+          
+          <tr>
+            <td height="6" style="background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);"></td>
+          </tr>
+
+          <tr>
+            <td align="center" valign="top" style="padding: 40px 30px 20px 30px;">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="background-color: rgba(56, 189, 248, 0.1); border-radius: 16px; padding: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
+                    <span style="font-size: 24px; font-weight: 800; color: #38bdf8; letter-spacing: -1px; font-family: system-ui, sans-serif; display: block; line-height: 1;">⚡</span>
+                  </td>
+                </tr>
+              </table>
+              <h1 style="margin: 20px 0 0 0; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">eFoilMap</h1>
+              <p style="margin: 5px 0 0 0; font-size: 13px; font-weight: 500; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px;">Co-Foil Coordination</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" style="padding: 10px 40px 30px 40px;">
+              <p style="font-size: 16px; line-height: 1.6; color: #f8fafc; margin-bottom: 20px;">
+                ${local.greeting}
+              </p>
+              <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1; margin-bottom: 25px;">
+                ${local.bodyText(creatorUsername, spotName)}
+              </p>
+
+              <!-- Card Event Details -->
+              <table border="0" cellpadding="15" cellspacing="0" width="100%" style="background-color: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 30px;">
+                <tr>
+                  <td valign="top">
+                    <p style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">Spot</p>
+                    <p style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0 0 15px 0;">📍 ${spotName}</p>
+
+                    <p style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">Termin Details</p>
+                    <p style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0 0 15px 0;">📅 ${eventDate} um ⏰ ${eventTime} Uhr</p>
+                    
+                    ${description ? `
+                    <p style="font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">Beschreibung</p>
+                    <p style="font-size: 14px; font-style: italic; color: #e2e8f0; margin: 0; padding-left: 10px; border-left: 2px solid #38bdf8;">
+                      "${description}"
+                    </p>
+                    ` : ''}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button Section -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 35px;">
+                <tr>
+                  <td align="center">
+                    <table border="0" cellpadding="0" cellspacing="0" class="button-wrapper">
+                      <tr>
+                        <td align="center" style="background-color: #0ea5e9; border-radius: 14px; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2), 0 2px 4px -1px rgba(14, 165, 233, 0.1);">
+                          <a href="${deepLink}" target="_blank" class="button" style="display: inline-block; padding: 14px 32px; font-size: 15px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 14px; border: 1px solid #38bdf8;">
+                            ${local.ctaText}
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 25px;">
+                <tr><td></td></tr>
+              </table>
+
+              <p style="font-size: 12px; line-height: 1.5; color: #94a3b8; margin-bottom: 8px;">
+                ${local.fallbackText}
+              </p>
+              <p style="font-size: 11px; line-height: 1.5; color: #38bdf8; word-break: break-all; margin-bottom: 0px;">
+                <a href="${deepLink}" target="_blank" style="color: #38bdf8; text-decoration: underline;">
+                  ${deepLink}
+                </a>
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" valign="top" style="padding: 20px 40px 40px 40px; background-color: #0f172a; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+              <p style="font-size: 11px; line-height: 1.6; color: #64748b; margin-bottom: 15px;">
+                ${local.footerText(settingsLink)}
+              </p>
+              
+              <p style="font-size: 11px; line-height: 1.6; color: #64748b; margin-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 15px;">
+                <strong>eFoilMap.com</strong><br />
+                Angelpower UG (haftungsbeschränkt)<br />
+                Belvedereallee 5, 52070 Aachen, Deutschland<br />
+                Vertreten durch die Geschäftsführung: Carlo Matic<br />
+                E-Mail: <a href="mailto:hi@efoilmap.com" style="color: #64748b; text-decoration: none;">hi@efoilmap.com</a>
+              </p>
+              
+              <p style="font-size: 10px; line-height: 1.5; color: #475569; margin-top: 20px;">
+                © 2026 eFoilMap. Alle Rechte vorbehalten.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  try {
+    const scratchDir = path.join(process.cwd(), 'scratch');
+    if (!fs.existsSync(scratchDir)) {
+      fs.mkdirSync(scratchDir, { recursive: true });
+    }
+    
+    const filePath = path.join(scratchDir, 'last_visit_notification.html');
+    fs.writeFileSync(filePath, emailHtml, 'utf8');
+
+    const publicDir = path.join(process.cwd(), 'public');
+    if (!fs.existsSync(publicDir)) {
+      fs.mkdirSync(publicDir, { recursive: true });
+    }
+    const publicFilePath = path.join(publicDir, 'last_visit_notification.html');
+    fs.writeFileSync(publicFilePath, emailHtml, 'utf8');
+
+    // Print highly premium CLI announcement
+    console.log(`\n\x1b[36m================== ⚡ eFoilMap EMAIL SIMULATOR ⚡ ==================\x1b[0m`);
+    console.log(`\x1b[32m📧 New Appointment Notification Triggered Successfully!\x1b[0m`);
+    console.log(`\x1b[37mTo Follower:\x1b[0m \x1b[33m${followerEmail || 'unknown@efoilmap.com'}\x1b[0m`);
+    console.log(`\x1b[37mLanguage:\x1b[0m \x1b[35m${langKey.toUpperCase()}\x1b[0m`);
+    console.log(`\x1b[37mSubject:\x1b[0m ${local.subject(spotName)}`);
+    console.log(`\x1b[37mScheduled By:\x1b[0m @${creatorUsername}`);
+    console.log(`\x1b[37mTime:\x1b[0m ${eventDate} @ ${eventTime}`);
+    if (description) {
+      console.log(`\x1b[37mDescription:\x1b[0m "${description}"`);
+    }
+    console.log(`\x1b[36m-----------------------------------------------------------------\x1b[0m`);
+    console.log(`\x1b[35m👉 Local Browser Preview Links:\x1b[0m`);
+    console.log(`\x1b[37mWeb URL:\x1b[0m \x1b[4mhttp://localhost:3000/last_visit_notification.html\x1b[0m`);
+    console.log(`\x1b[37mFile URL:\x1b[0m \x1b[4mfile://${filePath}\x1b[0m`);
+    console.log(`\x1b[36m=================================================================\x1b[0m\n`);
+
+  } catch (err) {
+    console.error("Error writing simulated email:", err);
+  }
+}

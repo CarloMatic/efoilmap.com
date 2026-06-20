@@ -1,6 +1,6 @@
 "use client";
 
-import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store, Heart, Bookmark, Navigation } from "lucide-react";
+import { X, BatteryCharging, Utensils, Car, Camera, ThumbsUp, Loader2, Star, Share2, Sparkles, User as UserIcon, Calendar, Clock, ChevronLeft, ChevronRight, Plus, MessageSquare, Store, Heart, Bookmark, Navigation, Globe } from "lucide-react";
 import Image from "next/image";
 import { Spot, createSpotVisit, addVisitComment, joinOrCancelVisit, deleteSpotVisit, updateVisitComment, deleteVisitComment, updateSpotReview, deleteSpotReview, toggleLikeSpot, getSpotLikesCount, getSpotLikeStatus, toggleBookmarkSpot, getSpotQuestionsAndAnswers, createSpotQuestion, createSpotAnswer, SpotQuestion, SpotAnswer, toggleLikeQuestion, toggleLikeAnswer } from "@/app/actions";
 import { useSearchParams } from "next/navigation";
@@ -40,6 +40,138 @@ const commentErrorText: Record<string, string> = {
     nl: "Fout bij het plaatsen van de reactie.",
     pl: "Błąd podczas publikowania komentarza.",
     sv: "Fel vid publicering av kommentaren."
+};
+
+const tooltipTranslations: Record<string, {
+    close: string;
+    like: string;
+    unlike: string;
+    bookmark: string;
+    unbookmark: string;
+    directions: string;
+    shareSpot: string;
+    visitWebsite: string;
+    prevMonth: string;
+    nextMonth: string;
+    shareVisit: string;
+}> = {
+    en: {
+        close: "Close",
+        like: "Like spot",
+        unlike: "Unlike spot",
+        bookmark: "Bookmark spot",
+        unbookmark: "Remove bookmark",
+        directions: "Get directions",
+        shareSpot: "Share this spot",
+        visitWebsite: "Visit website",
+        prevMonth: "Previous month",
+        nextMonth: "Next month",
+        shareVisit: "Share visit"
+    },
+    de: {
+        close: "Schließen",
+        like: "Gefällt mir",
+        unlike: "Gefällt mir nicht mehr",
+        bookmark: "Lesezeichen speichern",
+        unbookmark: "Aus Lesezeichen entfernen",
+        directions: "Wegbeschreibung erhalten",
+        shareSpot: "Spot teilen",
+        visitWebsite: "Website besuchen",
+        prevMonth: "Vorheriger Monat",
+        nextMonth: "Nächster Monat",
+        shareVisit: "Termin teilen"
+    },
+    es: {
+        close: "Cerrar",
+        like: "Me gusta",
+        unlike: "Ya no me gusta",
+        bookmark: "Guardar en marcadores",
+        unbookmark: "Eliminar de marcadores",
+        directions: "Obtener indicaciones",
+        shareSpot: "Compartir spot",
+        visitWebsite: "Visitar sitio web",
+        prevMonth: "Mes anterior",
+        nextMonth: "Mes siguiente",
+        shareVisit: "Compartir cita"
+    },
+    fr: {
+        close: "Fermer",
+        like: "J'aime",
+        unlike: "Je n'aime plus",
+        bookmark: "Ajouter aux favoris",
+        unbookmark: "Retirer des favoris",
+        directions: "Obtenir l'itinéraire",
+        shareSpot: "Partager le spot",
+        visitWebsite: "Visiter le site web",
+        prevMonth: "Mois précédent",
+        nextMonth: "Mois suivant",
+        shareVisit: "Partager le rendez-vous"
+    },
+    it: {
+        close: "Chiudi",
+        like: "Mi piace",
+        unlike: "Non mi piace più",
+        bookmark: "Salva nei preferiti",
+        unbookmark: "Rimuovi dai preferiti",
+        directions: "Ottieni indicazioni",
+        shareSpot: "Condividi spot",
+        visitWebsite: "Visita il sito web",
+        prevMonth: "Mese precedente",
+        nextMonth: "Mese successivo",
+        shareVisit: "Condividi appuntamento"
+    },
+    pt: {
+        close: "Fechar",
+        like: "Gostar",
+        unlike: "Não gostar mais",
+        bookmark: "Adicionar aos favoritos",
+        unbookmark: "Remover dos favoritos",
+        directions: "Obter direções",
+        shareSpot: "Compartilhar spot",
+        visitWebsite: "Visitar site",
+        prevMonth: "Mês anterior",
+        nextMonth: "Mês seguinte",
+        shareVisit: "Compartilhar compromisso"
+    },
+    nl: {
+        close: "Sluiten",
+        like: "Leuk vinden",
+        unlike: "Niet meer leuk vinden",
+        bookmark: "Spot opslaan",
+        unbookmark: "Spot verwijderen",
+        directions: "Routebeschrijving",
+        shareSpot: "Spot delen",
+        visitWebsite: "Website bezoeken",
+        prevMonth: "Vorige maand",
+        nextMonth: "Volgende maand",
+        shareVisit: "Afspraak delen"
+    },
+    pl: {
+        close: "Zamknij",
+        like: "Polub spot",
+        unlike: "Usuń polubienie",
+        bookmark: "Zapisz spot",
+        unbookmark: "Usuń z zapisanych",
+        directions: "Wyznacz trasę",
+        shareSpot: "Udostępnij spot",
+        visitWebsite: "Odwiedź stronę",
+        prevMonth: "Poprzedni miesiąc",
+        nextMonth: "Następny miesiąc",
+        shareVisit: "Udostępnij termin"
+    },
+    sv: {
+        close: "Stäng",
+        like: "Gilla spot",
+        unlike: "Sluta gilla spot",
+        bookmark: "Spara spot",
+        unbookmark: "Ta bort sparad spot",
+        directions: "Få vägbeskrivning",
+        shareSpot: "Dela spot",
+        visitWebsite: "Besök webbplats",
+        prevMonth: "Föregående månad",
+        nextMonth: "Nästa månad",
+        shareVisit: "Dela tid"
+    }
 };
 
 const replySuccessText: Record<string, string> = {
@@ -231,7 +363,7 @@ export const noCommentsText: Record<string, string> = {
     sv: "Inga kommentarer eller frågor om denna spot ännu. Skriv den första kommentaren eller ställ den första frågan!"
 };
 
-import { cn } from "@/lib/utils";
+import { cn, generateSlug } from "@/lib/utils";
 import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage, useTranslate } from "@/lib/i18n";
@@ -1056,6 +1188,54 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
         showToast(t('common.link_copied') || "Link copied to clipboard!");
     };
 
+    const handleShareVisit = (visit: any) => {
+        if (!spot) return;
+        const slug = spot.slug || generateSlug(spot);
+        const baseUrl = `${window.location.origin}/spots/${slug}`;
+        const shareUrl = `${baseUrl}?visit=${visit.id}&lang=${locale}`;
+        
+        const title = `eFoil Session @ ${spot.name}`;
+        
+        // Format date and time
+        const dateObj = new Date(visit.visit_date);
+        const formattedDate = dateObj.toLocaleDateString(locale === 'de' ? 'de-DE' : 'en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        const formattedTime = visit.visit_time.substring(0, 5);
+        
+        // Get active participants' usernames
+        const activeParticipants = (visit.visit_participants || [])
+            .filter((p: any) => p.status === 'JOINED')
+            .map((p: any) => `@${p.profiles?.username || 'User'}`);
+
+        // If activeParticipants is empty, fallback to the creator of the visit
+        if (activeParticipants.length === 0 && visit.profiles?.username) {
+            activeParticipants.push(`@${visit.profiles.username}`);
+        }
+
+        const ridersText = activeParticipants.length > 0 
+            ? `${locale === 'de' ? 'Rider' : 'Riders'}: ${activeParticipants.join(', ')}`
+            : '';
+            
+        const locationText = `${locale === 'de' ? 'Ort' : 'Location'}: ${spot.name}`;
+        const text = `📅 ${formattedDate} ⏰ ${formattedTime}\n📍 ${locationText}\n👥 ${ridersText}${visit.description ? `\n📝 ${visit.description}` : ''}`;
+
+        if (navigator.share) {
+            navigator.share({
+                title,
+                text,
+                url: shareUrl
+            }).catch((err) => {
+                console.error("Error sharing:", err);
+            });
+        } else {
+            navigator.clipboard.writeText(shareUrl);
+            showToast(t('common.link_copied') || "Link copied to clipboard!");
+        }
+    };
+
     return (
         <div className="fixed inset-x-0 bottom-0 top-[57px] z-[90] flex items-end sm:items-center justify-center p-0 sm:p-4">
             {/* Backdrop */}
@@ -1120,82 +1300,99 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             )}
                         </div>
 
-                        <button
-                            onClick={onClose}
-                            className="p-1 -mr-1 rounded-full hover:bg-muted transition-colors shrink-0"
-                        >
-                            <X className="w-5 h-5 text-muted-foreground" />
-                        </button>
+                        <div className="relative group">
+                            <button
+                                onClick={onClose}
+                                className="p-1 -mr-1 rounded-full hover:bg-muted transition-colors shrink-0"
+                            >
+                                <X className="w-5 h-5 text-muted-foreground" />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-950 border border-white/10 text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[120] shadow-xl">
+                                {tooltipTranslations[locale]?.close || tooltipTranslations.en.close}
+                            </span>
+                        </div>
                     </div>
 
                     {/* Actions Row */}
                     <div className="flex items-center gap-3 pt-1">
-                        <button
-                            onClick={handleShare}
-                            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md"
-                            title="Share this spot"
-                        >
-                            <Share2 className="w-3.5 h-3.5" />
-                            {t('common.share') || "Share"}
-                        </button>
 
                         {/* Like Button */}
-                        <button
-                            onClick={handleLikeToggle}
-                            disabled={likeLoading}
-                            className={cn(
-                                "flex items-center gap-1.5 text-xs transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer",
-                                isLiked ? "text-red-500 hover:text-red-400 font-bold" : "text-muted-foreground hover:text-red-500"
-                            )}
-                            title={isLiked ? "Unlike spot" : "Like spot"}
-                        >
-                            <Heart className={cn("w-3.5 h-3.5 transition-all duration-300 ease-out", isLiked ? "fill-red-500 text-red-500 scale-125 rotate-12" : "scale-100 rotate-0")} />
-                            <span>{likesCount}</span>
-                        </button>
+                        <div className="relative group">
+                            <button
+                                onClick={handleLikeToggle}
+                                disabled={likeLoading}
+                                className={cn(
+                                    "flex items-center gap-1.5 text-xs transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer",
+                                    isLiked ? "text-red-500 hover:text-red-400 font-bold" : "text-muted-foreground hover:text-red-500"
+                                )}
+                            >
+                                <Heart className={cn("w-3.5 h-3.5 transition-all duration-300 ease-out", isLiked ? "fill-red-500 text-red-500 scale-125 rotate-12" : "scale-100 rotate-0")} />
+                                <span>{likesCount}</span>
+                            </button>
+                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-950 border border-white/10 text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[120] shadow-xl">
+                                {(tooltipTranslations[locale] || tooltipTranslations.en)[isLiked ? 'unlike' : 'like']}
+                            </span>
+                        </div>
 
                         {/* Bookmark Button */}
-                        <button
-                            onClick={handleBookmarkToggle}
-                            disabled={bookmarkLoading}
-                            className={cn(
-                                "flex items-center gap-1.5 text-xs transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer",
-                                isBookmarked ? "text-yellow-500 hover:text-yellow-400" : "text-muted-foreground hover:text-yellow-500"
-                            )}
-                            title={isBookmarked ? "Remove bookmark" : "Bookmark spot"}
-                        >
-                            <Bookmark className={cn("w-3.5 h-3.5", isBookmarked && "fill-current")} />
-                        </button>
-
-                        {spot.attributes?.website && (
-                            <a
-                                href={spot.attributes.website.startsWith('http') ? spot.attributes.website : `https://${spot.attributes.website}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer"
-                                title="Visit website"
+                        <div className="relative group">
+                            <button
+                                onClick={handleBookmarkToggle}
+                                disabled={bookmarkLoading}
+                                className={cn(
+                                    "flex items-center gap-1.5 text-xs transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer",
+                                    isBookmarked ? "text-yellow-500 hover:text-yellow-400" : "text-muted-foreground hover:text-yellow-500"
+                                )}
                             >
-                                <svg className="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
-                                    {t('forms.website')}
-                                </span>
-                            </a>
-                        )}
+                                <Bookmark className={cn("w-3.5 h-3.5", isBookmarked && "fill-current")} />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-950 border border-white/10 text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[120] shadow-xl">
+                                {(tooltipTranslations[locale] || tooltipTranslations.en)[isBookmarked ? 'unbookmark' : 'bookmark']}
+                            </span>
+                        </div>
 
                         {spot.location?.coordinates && (
-                            <a
-                                href={`https://www.google.com/maps/dir/?api=1&destination=${spot.location.coordinates[1]},${spot.location.coordinates[0]}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer"
-                                title={locale === 'de' ? "Wegbeschreibung erhalten" : "Get directions"}
-                            >
-                                <Navigation className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                                <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
-                                    {locale === 'de' ? "Route" : "Route"}
+                            <div className="relative group">
+                                <a
+                                    href={`https://www.google.com/maps/dir/?api=1&destination=${spot.location.coordinates[1]},${spot.location.coordinates[0]}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-xs text-white hover:text-blue-400 transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer"
+                                >
+                                    <Navigation className="w-3.5 h-3.5 shrink-0" />
+                                </a>
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-950 border border-white/10 text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[120] shadow-xl">
+                                    {(tooltipTranslations[locale] || tooltipTranslations.en).directions}
                                 </span>
-                            </a>
+                            </div>
+                        )}
+
+                        <div className="relative group">
+                            <button
+                                onClick={handleShare}
+                                className="flex items-center gap-1.5 text-xs text-white hover:text-blue-400 transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer"
+                            >
+                                <Share2 className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-950 border border-white/10 text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[120] shadow-xl">
+                                {(tooltipTranslations[locale] || tooltipTranslations.en).shareSpot}
+                            </span>
+                        </div>
+
+                        {spot.attributes?.website && (
+                            <div className="relative group">
+                                <a
+                                    href={spot.attributes.website.startsWith('http') ? spot.attributes.website : `https://${spot.attributes.website}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-xs text-white hover:text-blue-400 transition-colors hover:bg-muted/50 px-2 py-1.5 rounded-md cursor-pointer"
+                                >
+                                    <Globe className="w-3.5 h-3.5 shrink-0" />
+                                </a>
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-950 border border-white/10 text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[120] shadow-xl">
+                                    {(tooltipTranslations[locale] || tooltipTranslations.en).visitWebsite}
+                                </span>
+                            </div>
                         )}
 
                         <button
@@ -1211,12 +1408,17 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                             {showPlanning ? (
                                 <>
                                     <Sparkles className="w-3.5 h-3.5" />
-                                    <span>{locale === 'de' ? 'Details ℹ️' : 'Details ℹ️'}</span>
+                                    <span>{locale === 'de' ? 'Details' : 'Details'}</span>
                                 </>
                             ) : (
                                 <>
                                     <Calendar className="w-3.5 h-3.5" />
-                                    <span>{locale === 'de' ? 'Termine 📅' : 'Visits 📅'}</span>
+                                    <span>{locale === 'de' ? 'Termine' : 'Visits'}</span>
+                                    {visits.length > 0 && (
+                                        <span className="bg-blue-500 text-white text-[9px] font-black rounded-full px-1.5 py-0.5 leading-none flex items-center justify-center">
+                                            {visits.length}
+                                        </span>
+                                    )}
                                 </>
                             )}
                         </button>
@@ -1252,10 +1454,10 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                     : `${monthNames.en[month]} ${year}`}
                                             </h3>
                                             <div className="flex items-center gap-1">
-                                                <button onClick={handlePrevMonth} className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors cursor-pointer">
+                                                <button onClick={handlePrevMonth} className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors cursor-pointer" title={tooltipTranslations[locale]?.prevMonth || tooltipTranslations.en.prevMonth}>
                                                     <ChevronLeft className="w-4 h-4" />
                                                 </button>
-                                                <button onClick={handleNextMonth} className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors cursor-pointer">
+                                                <button onClick={handleNextMonth} className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors cursor-pointer" title={tooltipTranslations[locale]?.nextMonth || tooltipTranslations.en.nextMonth}>
                                                     <ChevronRight className="w-4 h-4" />
                                                 </button>
                                             </div>
@@ -1364,18 +1566,17 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                                         )}
                                                                     </button>
                                                                     <div className="min-w-0 flex-1">
-                                                                        <div className="flex items-center justify-between gap-2">
+                                                                        <div className="flex flex-col">
                                                                             <button 
                                                                                 onClick={() => onViewProfile?.(visit.user_id)}
                                                                                 className="text-xs font-black text-white hover:text-blue-400 hover:underline transition-colors border-none bg-transparent p-0 cursor-pointer text-left focus:outline-none"
                                                                             >
                                                                                 @{visit.profiles?.username || 'User'}
                                                                             </button>
-                                                                            <span className="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-400/20 font-black">
-                                                                                ⏰ {visit.visit_time.substring(0, 5)}
+                                                                            <span className="text-[10px] text-blue-400 font-bold mt-0.5">
+                                                                                ⏰ {visit.visit_time.substring(0, 5)}{locale === 'de' ? ' Uhr' : ''}
                                                                             </span>
                                                                         </div>
-                                                                        <p className="text-[10px] text-gray-500">{new Date(visit.created_at).toLocaleDateString()}</p>
                                                                     </div>
 
                                                                     {/* Action Button: Zusagen / Absagen / Löschen */}
@@ -1401,11 +1602,18 @@ export function SpotDialog({ spot, open, onClose, onEdit, onViewProfile }: SpotD
                                                                         >
                                                                             {isJoined
                                                                                 ? isCreator
-                                                                                    ? (locale === 'de' ? 'Termin Absagen ❌' : 'Cancel Visit ❌')
+                                                                                    ? (locale === 'de' ? 'Absagen ❌' : 'Cancel ❌')
                                                                                     : (locale === 'de' ? 'Absagen 👋' : 'Cancel 👋')
                                                                                 : (locale === 'de' ? 'Zusagen 🤝' : 'Join 🤝')}
                                                                         </button>
                                                                     )}
+                                                                    <button
+                                                                        onClick={() => handleShareVisit(visit)}
+                                                                        className="p-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-muted-foreground hover:text-white transition-all active:scale-95 cursor-pointer shrink-0"
+                                                                        title={tooltipTranslations[locale]?.shareVisit || tooltipTranslations.en.shareVisit}
+                                                                    >
+                                                                        <Share2 className="w-3.5 h-3.5" />
+                                                                    </button>
                                                                 </div>
 
                                                                 {/* Event Comment */}

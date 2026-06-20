@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.0] - 2026-06-20
+
+### Added
+- **Visit Scheduling & Calendar**: Added a full-featured visit scheduling calendar to spots, allowing users to select dates, plan session times, write session descriptions, and view planned sessions in a responsive monthly calendar.
+- **Appointment Sharing & Rich Details**: Implemented direct visit sharing with deep-links (`?visit=visitId`) and rich share details (listing the spot location, date/time, and usernames of all joined riders).
+- **Edge OG Image Generator**: Designed an Edge-runtime OG image generator that dynamically overlays visit details (date, time, spot name) on the spot photo or fallback teaser.
+- **Follower Notifications**: Bookmarkers and raters of a spot are automatically notified via in-app notification center when a new visit is scheduled by another rider.
+- **Settings Opt-Out**: Introduced a new toggle setting `"Neue Termine an gespeicherten Spots"` in English and German to enable/disable email notifications for new visits, saved securely in the database user profiles.
+- **Multilingual Email Templates**: Created localized rich-HTML simulated email templates for visit notifications in all 9 supported languages (DE, EN, ES, FR, IT, PT, NL, PL, SV).
+- **Map Control Optimization**: Repositioned the map layer dropdown menu to the bottom-left corner (`bottom-14 left-2.5`) directly above the map scale control to resolve floating/overlapping issues on mobile.
+- **Visit List UX Redesign**: Placed visit times directly under user handles and hid creation dates to declutter layout; adjusted cancellation text to `"Absagen ❌"` / `"Cancel ❌"`.
+- **Button Styling Standardization**: Aligned sizing and padding of Profile edit dialog's "Abmelden" and "Speichern" buttons to equal widths (`flex-1`) and padding (`px-4 py-3`).
+- **Icon-only Tooltips**: Added localized browser hover tooltips (in 9 languages) to Close, Like, Bookmark, Directions, Share Spot, and Website buttons.
+
 ## [0.13.0] - 2026-05-25
 
 ### Added

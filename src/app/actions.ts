@@ -509,6 +509,84 @@ export async function createSpotVisit(visit: {
     } catch (partErr) {
         console.warn("Could not auto-join creator (migration not run yet):", partErr);
     }
+
+    // Notify Spot Followers asynchronously
+    try {
+        const { data: spotData } = await supabase
+            .from("spots")
+            .select("name")
+            .eq("id", visit.spot_id)
+            .single();
+
+        const spotName = spotData?.name || "Spot";
+
+        // 1. Get users who bookmarked the spot
+        const { data: bookmarkedUsers } = await supabase
+            .from("spot_bookmarks")
+            .select("user_id")
+            .eq("spot_id", visit.spot_id);
+
+        // 2. Get users who rated the spot
+        const { data: verifyingUsers } = await supabase
+            .from("spot_verifications")
+            .select("user_id")
+            .eq("spot_id", visit.spot_id);
+
+        const followerIds = new Set<string>();
+        bookmarkedUsers?.forEach(u => {
+            if (u.user_id && u.user_id !== user.id) {
+                followerIds.add(u.user_id);
+            }
+        });
+        verifyingUsers?.forEach(u => {
+            if (u.user_id && u.user_id !== user.id) {
+                followerIds.add(u.user_id);
+            }
+        });
+
+        if (followerIds.size > 0) {
+            // Fetch username of the creator
+            const { data: creatorProfile } = await supabase
+                .from("profiles")
+                .select("username")
+                .eq("id", user.id)
+                .single();
+            const creatorUsername = creatorProfile?.username || "eFoiler";
+
+            // Fetch followers' profiles
+            const { data: profiles } = await supabase
+                .from("profiles")
+                .select("id, locale, email_pref_appointments")
+                .in("id", Array.from(followerIds));
+
+            if (profiles) {
+                const { sendAppointmentNotificationEmail } = await import("@/lib/email");
+
+                for (const p of profiles) {
+                    if (p.email_pref_appointments !== false) {
+                        const { data: followerEmail } = await supabase
+                            .rpc("get_profile_email", { profile_id: p.id });
+
+                        if (followerEmail) {
+                            await sendAppointmentNotificationEmail({
+                                followerEmail,
+                                creatorUsername,
+                                spotName,
+                                eventDate: visit.visit_date,
+                                eventTime: visit.visit_time,
+                                description: visit.description,
+                                spotId: visit.spot_id,
+                                visitId: data.id,
+                                followerLang: p.locale || "de"
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    } catch (notifErr) {
+        console.error("Failed to notify spot followers of new visit:", notifErr);
+    }
     
     return { success: true, data };
 }
@@ -1013,6 +1091,7 @@ export interface UserProfileData {
         locale?: string;
         email_pref_visits?: boolean;
         email_pref_questions?: boolean;
+        email_pref_appointments?: boolean;
         ai_translation_enabled?: boolean;
     };
     spots: Spot[];
@@ -1035,7 +1114,7 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
         // 1. Get profile details
         const { data: profile, error: profileErr } = await supabase
             .from("profiles")
-            .select("id, username, avatar_url, bio, created_at, locale, email_pref_visits, email_pref_questions, ai_translation_enabled")
+            .select("id, username, avatar_url, bio, created_at, locale, email_pref_visits, email_pref_questions, email_pref_appointments, ai_translation_enabled")
             .eq("id", profileId)
             .maybeSingle();
 
@@ -1178,7 +1257,8 @@ export async function getUserProfileData(profileId: string): Promise<UserProfile
                 created_at: profile.created_at,
                 locale: profile.locale,
                 email_pref_visits: profile.email_pref_visits,
-                email_pref_questions: profile.email_pref_questions
+                email_pref_questions: profile.email_pref_questions,
+                email_pref_appointments: profile.email_pref_appointments
             },
             spots,
             visits,
